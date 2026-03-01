@@ -233,11 +233,11 @@
                 // 遍历数组，为每一项生成卡片
                 items.forEach((item, index) => {
                     // 提取字段 (支持自定义容错)
-                    const label = item.label || item.title || `条目 #${index+1}`;
+                    const id = item.id || item.title || `条目 #${index+1}`;
                     // 优先使用 url 字段，若没有则尝试 link、href，最后使用 text 或空字符串
-                    const content = item.url || item.link || item.href || item.text || '';
+                    const room = item.room || item.link || item.href || item.text || '';
                     // 备用描述 (可选)
-                    const description = item.desc || item.description || item.note || '';
+                    const code = item.code || item.description || item.note || '';
 
                     // 如果内容为空，可以显示占位信息，但避免生成空二维码
                     if (!content) {
@@ -248,9 +248,8 @@
                             <div class="qr-canvas-wrap" style="background:#f0f2f5; padding:1.6rem;">
                                 <span style="font-size:3rem;">⚠️</span>
                             </div>
-                            <div class="card-title">${escapeHtml(label)}</div>
-                            // <div class="card-desc">${escapeHtml(description) || '无有效链接'}</div>
-                            // <div class="card-url" style="color:#b00;">(空数据)</div>
+                            <div class="card-title">${escapeHtml(room)}</div>
+                            <div class="card-desc">${escapeHtml(code) || '无有效链接'}</div>
                         `;
                         grid.appendChild(card);
                         return;
