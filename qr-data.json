@@ -1,1 +1,23 @@
 
+[
+  {
+    "label": "GitHub",
+    "url": "https://github.com",
+    "description": "全球最大的代码托管平台"
+  },
+  {
+    "label": "Stack Overflow",
+    "url": "https://stackoverflow.com",
+    "description": "程序员问答社区"
+  },
+  {
+    "label": "MDN Web Docs",
+    "url": "https://developer.mozilla.org",
+    "description": "Web技术权威文档"
+  },
+  {
+    "label": "Google",
+    "url": "https://google.com",
+    "description": "搜索引擎"
+  }
+]
