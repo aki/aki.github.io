@@ -14,7 +14,7 @@
             font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
         }
         body {
-            background: #f4f7fb;
+            background: #fcf8f0;  /* 羊皮纸色背景 */
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,7 +22,7 @@
             padding: 1.5rem;
         }
         .card-grid {
-            max-width: 1200px;
+            max-width: 1400px;
             width: 100%;
         }
         .header {
@@ -32,7 +32,7 @@
         .header h1 {
             font-size: 2.2rem;
             font-weight: 600;
-            color: #1f2b3a;
+            color: #5d4a36;  /* 深棕色，配合羊皮纸色调 */
             letter-spacing: -0.5px;
             display: flex;
             align-items: center;
@@ -40,119 +40,142 @@
             gap: 10px;
         }
         .header h1 span {
-            background: #1f2b3a;
-            color: white;
+            background: #5d4a36;
+            color: #fcf8f0;
             font-size: 0.9rem;
             font-weight: 400;
             padding: 0.2rem 1rem;
             border-radius: 30px;
         }
         .sub {
-            color: #4a5b6e;
+            color: #7c6b58;
             font-size: 1.1rem;
             margin-top: 0.5rem;
-            border-bottom: 2px solid #dde3ed;
+            border-bottom: 2px solid #e8d9c8;
             padding-bottom: 1rem;
             display: inline-block;
         }
         /* json 数据源标记 */
         .json-badge {
-            background: #e8ecf3;
+            background: #f5ede1;
             padding: 0.5rem 1.2rem;
             border-radius: 60px;
             display: inline-flex;
             align-items: center;
             gap: 10px;
             font-size: 0.95rem;
-            color: #1f2b3a;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            color: #5d4a36;
+            box-shadow: 0 2px 6px rgba(93, 74, 54, 0.1);
             margin-bottom: 1.8rem;
+            border: 1px solid #e8d9c8;
         }
         .json-badge code {
-            background: #1f2b3a;
-            color: #d4e0f0;
+            background: #5d4a36;
+            color: #fcf8f0;
             padding: 0.2rem 0.8rem;
             border-radius: 20px;
             font-size: 0.9rem;
         }
-        /* 卡片区 */
+        /* 卡片区 - 每行6个 */
         .qr-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1.8rem;
+            grid-template-columns: repeat(6, 1fr);  /* 固定每行6列 */
+            gap: 1.5rem;
             justify-items: center;
             margin-top: 1rem;
         }
         .qr-card {
-            background: white;
+            background: #fffbf5;  /* 浅羊皮纸色 */
             width: 100%;
-            max-width: 280px;
-            border-radius: 28px;
-            padding: 1.8rem 1rem 1.4rem 1rem;
-            box-shadow: 0 15px 30px -10px rgba(0,20,40,0.15);
+            max-width: 220px;
+            border-radius: 24px;
+            padding: 1.5rem 0.8rem 1.2rem 0.8rem;
+            box-shadow: 0 10px 25px -8px rgba(93, 74, 54, 0.15);
             transition: 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            border: 1px solid #ffffff50;
-            backdrop-filter: blur(2px);
+            border: 1px solid #ede3d6;
         }
         .qr-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 25px 35px -12px rgba(18, 52, 77, 0.2);
-            border-color: #b3ceff;
+            transform: translateY(-4px);
+            box-shadow: 0 18px 30px -10px rgba(93, 74, 54, 0.25);
+            border-color: #dac9b6;
         }
         .qr-canvas-wrap {
-            background: white;
-            padding: 0.8rem;
-            border-radius: 20px;
-            box-shadow: inset 0 2px 8px #ebf0f8, 0 8px 14px rgba(0,30,60,0.1);
-            margin-bottom: 1rem;
+            background: #fcf8f0;
+            padding: 0.6rem;
+            border-radius: 18px;
+            box-shadow: inset 0 2px 6px #f0e6d9, 0 6px 10px rgba(93, 74, 54, 0.1);
+            margin-bottom: 0.8rem;
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
         }
         canvas, img {
-            width: 160px;
-            height: 160px;
-            border-radius: 12px;
+            width: 140px;
+            height: 140px;
+            border-radius: 10px;
             display: block;
         }
         .card-title {
             font-weight: 600;
-            font-size: 1.25rem;
-            color: #152b42;
+            font-size: 1.1rem;
+            color: #5d4a36;
             word-break: break-word;
             width: 100%;
-            margin-top: 0.5rem;
+            margin-top: 0.3rem;
         }
         .footer-note {
             text-align: center;
             margin-top: 3rem;
-            color: #4f658d;
+            color: #7c6b58;
             font-size: 0.9rem;
-            border-top: 1px solid #d9e2ef;
+            border-top: 1px solid #e8d9c8;
             padding-top: 1.8rem;
         }
         .footer-note a {
-            color: #1d4ed8;
+            color: #8b6f50;
             text-decoration: none;
             font-weight: 500;
+        }
+        .footer-note a:hover {
+            text-decoration: underline;
         }
         .loading-placeholder {
             grid-column: 1 / -1;
             padding: 3rem;
             font-size: 1.2rem;
-            color: #4b6589;
+            color: #7c6b58;
+            text-align: center;
         }
         .error-message {
-            background: #ffe6e6;
-            color: #a12;
+            background: #fff0e6;
+            color: #b3563b;
             padding: 2rem;
             border-radius: 2rem;
             grid-column: 1 / -1;
+            text-align: center;
+            border: 1px solid #ffd9c5;
+        }
+
+        /* 响应式处理：当屏幕较小时自动减少列数 */
+        @media (max-width: 1200px) {
+            .qr-container {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        @media (max-width: 800px) {
+            .qr-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 500px) {
+            .qr-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -160,7 +183,7 @@
     <div class="card-grid">
         <div class="header">
             <h1>
-                📦 QR · 会议室码
+                📜 QR · 会议室码
                 <span>github.io</span>
             </h1>
             <div class="json-badge">
@@ -169,7 +192,7 @@
                 <span>字段: room / code</span>
             </div>
             <div class="sub">
-                ✦ 二维码内容 = code 字段 ✦
+                ✦ 二维码内容 = code 字段 · 每行6个 ✦
             </div>
         </div>
 
@@ -181,7 +204,7 @@
         <div class="footer-note">
             🌐 使用 <strong>qrcode-generator</strong> · 
             字段映射: <code>room</code> (标题), <code>code</code> (二维码内容) · 
-            只显示二维码图片和会议室名称
+            只显示二维码图片和会议室名称 · 羊皮纸色背景
         </div>
     </div>
 
@@ -212,11 +235,11 @@
                         const card = document.createElement('div');
                         card.className = 'qr-card';
                         card.innerHTML = `
-                            <div class="qr-canvas-wrap" style="background:#f0f2f5; padding:1.6rem;">
-                                <span style="font-size:3rem;">⚠️</span>
+                            <div class="qr-canvas-wrap" style="background:#f5ede1; padding:1.6rem;">
+                                <span style="font-size:2.5rem; color:#b3563b;">⚠️</span>
                             </div>
                             <div class="card-title">${escapeHtml(room)}</div>
-                            <div style="color:#b91c1c; font-size:0.9rem; margin-top:0.5rem;">暂无二维码内容</div>
+                            <div style="color:#b3563b; font-size:0.8rem; margin-top:0.5rem;">暂无二维码内容</div>
                         `;
                         grid.appendChild(card);
                         return;
@@ -245,12 +268,12 @@
                         canvas.height = size * cellSize;
 
                         const ctx = canvas.getContext('2d');
-                        // 绘制白色背景
-                        ctx.fillStyle = '#ffffff';
+                        // 绘制羊皮纸色背景
+                        ctx.fillStyle = '#fcf8f0';
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                        // 绘制深色模块
-                        ctx.fillStyle = '#0a1a2b';
+                        // 绘制深色模块 (深棕色)
+                        ctx.fillStyle = '#5d4a36';
                         for (let row = 0; row < size; row++) {
                             for (let col = 0; col < size; col++) {
                                 if (qr.isDark(row, col)) {
@@ -262,7 +285,7 @@
                         qrWrapper.appendChild(canvas);
                     } catch (e) {
                         console.warn('二维码生成失败', e);
-                        qrWrapper.innerHTML = `<span style="color:#b00; padding:1rem;">二维码生成失败</span>`;
+                        qrWrapper.innerHTML = `<span style="color:#b3563b; padding:1rem;">二维码生成失败</span>`;
                     }
 
                     // 创建房间名（作为标题）- 只显示这个，不显示code原文
@@ -270,10 +293,9 @@
                     roomEl.className = 'card-title';
                     roomEl.textContent = room;
 
-                    // 组装卡片 (只有二维码和房间名，没有code原文)
+                    // 组装卡片 (只有二维码和房间名)
                     card.appendChild(qrWrapper);
                     card.appendChild(roomEl);
-                    // 注意：这里没有添加codeEl，所以code原文不会显示
                     
                     grid.appendChild(card);
                 });
