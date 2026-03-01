@@ -1,23 +1,34 @@
 
 [
   {
-    "label": "D2-1-01R弱电间",
-    "url": "rJ8leZgV4lYsziMPmi-Qhw",
-    "description": ""
+    "id": 1,
+    "room": "D2-1-01R弱电间",
+    "code": "rJ8leZgV4lYsziMPmi-Qhw",
   },
   {
-    "label": "Stack Overflow",
-    "url": "https://stackoverflow.com",
-    "description": "程序员问答社区"
+    "id": 2,
+    "room": "D2-1-02R弱电间",
+    "code": "rJ8leZgV4lYsziMPmi-Qhw",
   },
   {
-    "label": "MDN Web Docs",
-    "url": "https://developer.mozilla.org",
-    "description": "Web技术权威文档"
+    "id": 3,
+    "room": "D2-1-03R弱电间",
+    "code": "rJ8leZgV4lYsziMPmi-Qhw",
   },
   {
-    "label": "Google",
-    "url": "https://google.com",
-    "description": "搜索引擎"
-  }
+    "id": 4,
+    "room": "D2-1-04R弱电间",
+    "code": "rJ8leZgV4lYsziMPmi-Qhw",
+  },
+  {
+    "id": 5,
+    "room": "D2-1-05R弱电间",
+    "code": "rJ8leZgV4lYsziMPmi-Qhw",
+  },
+  {
+    "id": 6,
+    "room": "D2-1-06R弱电间",
+    "code": "rJ8leZgV4lYsziMPmi-Qhw",
+  },
+  
 ]
