@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code · JSON Showcase</title>
+    <title>QR Code · 会议室码展示</title>
     <!-- 使用轻量的 QR 库 qrcode-generator -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <!-- 简单样式，干净卡片布局 -->
@@ -127,35 +126,19 @@
             color: #152b42;
             word-break: break-word;
             width: 100%;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.5rem;
         }
-        .card-desc {
-            color: #3f5569;
-            font-size: 0.9rem;
-            background: #f0f5fd;
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            max-width: 90%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            margin: 0.5rem 0 0.2rem;
-            border: 1px solid #dae4f0;
-        }
-        .card-url {
-            color: #2563eb;
-            font-size: 0.75rem;
-            background: #eef4ff;
+        .card-code {
+            color: #0f172a;
+            font-size: 0.85rem;
+            background: #f8fafc;
             width: 100%;
-            padding: 0.4rem;
+            padding: 0.5rem;
             border-radius: 30px;
             word-break: break-all;
-            text-decoration: none;
-            border: 1px dashed #a2c0f0;
+            border: 1px dashed #94a3b8;
             margin-top: 0.5rem;
-        }
-        .card-url:hover {
-            background: #dbebff;
+            font-family: monospace;
         }
         .footer-note {
             text-align: center;
@@ -188,7 +171,18 @@
 <body>
     <div class="card-grid">
         <div class="header">
-            <h1>练秋湖D组团</h1>
+            <h1>
+                练秋湖D组团
+                <span>github.io</span>
+            </h1>
+            <div class="json-badge">
+                <span>📄 数据源</span>
+                <code>/qr-data.json</code>
+                <span>字段: room / code</span>
+            </div>
+            <div class="sub">
+                ✦ 二维码内容 = code 字段 ✦
+            </div>
         </div>
 
         <!-- 二维码卡片将动态插入这里 -->
@@ -198,8 +192,8 @@
 
         <div class="footer-note">
             🌐 使用 <strong>qrcode-generator</strong> · 
-            搭配 <code style="background:#eef2f7;">qr-data.json</code> 动态渲染 · 
-            适配 GitHub Pages
+            字段映射: <code>room</code> (标题), <code>code</code> (二维码内容) · 
+            <code>id</code> 字段不显示
         </div>
     </div>
 
@@ -221,16 +215,13 @@
 
                 // 遍历数组，为每一项生成卡片
                 items.forEach((item, index) => {
-                    // 提取字段 (支持自定义容错)
-                    const id = item.id || item.title || `条目 #${index+1}`;
-                    // 优先使用 url 字段，若没有则尝试 link、href，最后使用 text 或空字符串
-                    const room = item.room || item.link || item.href || item.text || '';
-                    // 备用描述 (可选)
-                    const code = item.code || item.description || item.note || '';
-
-                    // 如果内容为空，可以显示占位信息，但避免生成空二维码
-                    if (!content) {
-                        // 生成一个带警告的卡片，说明无有效链接
+                    // 提取需要的字段：room 作为标题，code 作为二维码内容
+                    // id 字段被忽略，不显示
+                    const room = item.room || '未命名会议室';
+                    const code = item.code || '';
+                    
+                    // 如果code为空，显示警告卡片
+                    if (!code) {
                         const card = document.createElement('div');
                         card.className = 'qr-card';
                         card.innerHTML = `
@@ -238,7 +229,7 @@
                                 <span style="font-size:3rem;">⚠️</span>
                             </div>
                             <div class="card-title">${escapeHtml(room)}</div>
-                            <div class="card-desc">${escapeHtml(code) || '无有效链接'}</div>
+                            <div class="card-code" style="background:#fee2e2; color:#b91c1c;">缺失code</div>
                         `;
                         grid.appendChild(card);
                         return;
@@ -247,21 +238,20 @@
                     // 创建卡片外层
                     const card = document.createElement('div');
                     card.className = 'qr-card';
-
+                    
                     // 用于放置二维码的容器
                     const qrWrapper = document.createElement('div');
                     qrWrapper.className = 'qr-canvas-wrap';
                     
-                    // 生成二维码
+                    // 生成二维码 (使用code字段作为内容)
                     try {
                         // 使用 qrcode-generator 库 (全局变量 qrcode)
-                        const qr = qrcode(0, 'M');  // 类型0 (自动选择) , 纠错级别 M
-                        qr.addData(content);
+                        const qr = qrcode(0, 'M');  // 类型0 (自动选择), 纠错级别 M
+                        qr.addData(code);
                         qr.make();
 
-                        // 创建 canvas 元素 (也可以生成 table, 但 canvas 更清晰)
+                        // 创建 canvas 元素
                         const canvas = document.createElement('canvas');
-                        // 获取矩阵大小
                         const cellSize = 4;      // 每个点放大倍数
                         const size = qr.getModuleCount();
                         canvas.width = size * cellSize;
@@ -273,7 +263,7 @@
                         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
                         // 绘制深色模块
-                        ctx.fillStyle = '#0a1a2b';   // 深色风格
+                        ctx.fillStyle = '#0a1a2b';
                         for (let row = 0; row < size; row++) {
                             for (let col = 0; col < size; col++) {
                                 if (qr.isDark(row, col)) {
@@ -285,38 +275,31 @@
                         qrWrapper.appendChild(canvas);
                     } catch (e) {
                         console.warn('二维码生成失败', e);
-                        qrWrapper.innerHTML = `<span style="color:#b00; padding:1rem;">QR error</span>`;
+                        qrWrapper.innerHTML = `<span style="color:#b00; padding:1rem;">二维码生成失败</span>`;
                     }
 
-                    // 创建标题、描述、链接
-                    const titleEl = document.createElement('div');
-                    titleEl.className = 'card-title';
-                    titleEl.textContent = label.length > 30 ? label.slice(0,30)+'…' : label;
+                    // 创建房间名（作为标题）
+                    const roomEl = document.createElement('div');
+                    roomEl.className = 'card-title';
+                    roomEl.textContent = room;
 
-                    const descEl = document.createElement('div');
-                    descEl.className = 'card-desc';
-                    descEl.textContent = description.length > 40 ? description.slice(0,40)+'…' : (description || ' ');
+                    // 创建code显示
+                    const codeEl = document.createElement('div');
+                    codeEl.className = 'card-code';
+                    codeEl.textContent = code;
 
-                    const linkEl = document.createElement('a');
-                    linkEl.className = 'card-url';
-                    linkEl.href = content;
-                    linkEl.target = '_blank';    // 安全打开
-                    linkEl.rel = 'noopener noreferrer';
-                    linkEl.textContent = content.length > 50 ? content.slice(0,45)+'…' : content;
-
-                    // 组装卡片
+                    // 组装卡片 (不包含id元素)
                     card.appendChild(qrWrapper);
-                    card.appendChild(titleEl);
-                    card.appendChild(descEl);
-                    card.appendChild(linkEl);
+                    card.appendChild(roomEl);
+                    card.appendChild(codeEl);
                     grid.appendChild(card);
                 });
             }
 
-            // 简单的防XSS转义 (针对用户输入，上面textContent已经安全，但用在innerHTML时需要)
+            // 简单的防XSS转义
             function escapeHtml(unsafe) {
                 if (!unsafe) return '';
-                return unsafe
+                return String(unsafe)
                     .replace(/&/g, "&amp;")
                     .replace(/</g, "&lt;")
                     .replace(/>/g, "&gt;")
@@ -326,7 +309,7 @@
 
             // 从相对路径获取 JSON (适合 github.io)
             function loadJSONData() {
-                const jsonPath = 'qr-data.json';  // 同一目录下的 json 文件
+                const jsonPath = 'qr-data.json';
                 fetch(jsonPath, {
                     method: 'GET',
                     headers: {
@@ -340,16 +323,16 @@
                     return response.json();
                 })
                 .then(data => {
-                    // 支持两种常见结构：直接是数组，或者嵌套在根字段如 "items", "qrlist" 里
+                    // 支持多种数据结构：直接数组，或包含items/qrList等数组字段
                     let itemsArray = null;
                     if (Array.isArray(data)) {
                         itemsArray = data;
                     } else if (data && Array.isArray(data.items)) {
                         itemsArray = data.items;
-                    } else if (data && Array.isArray(data.qrList)) {
-                        itemsArray = data.qrList;
-                    } else if (data && Array.isArray.data.entries) {
-                        itemsArray = data.entries;
+                    } else if (data && Array.isArray(data.rooms)) {
+                        itemsArray = data.rooms;
+                    } else if (data && Array.isArray(data.data)) {
+                        itemsArray = data.data;
                     } else {
                         // 尝试取出第一个值是数组的字段
                         for (let key in data) {
@@ -361,9 +344,7 @@
                     }
 
                     if (!itemsArray) {
-                        // 如果依然没找到数组，则降级：将整个对象包装成数组？
-                        // 但那样可能不符合预期，提示格式错误。
-                        grid.innerHTML = `<div class="error-message">❌ JSON 根级应为数组，或包含 items/qrList 数组字段。</div>`;
+                        grid.innerHTML = `<div class="error-message">❌ JSON 中未找到数组数据。请确保包含 room/code 字段的数组。</div>`;
                         return;
                     }
                     renderQRCards(itemsArray);
@@ -371,30 +352,14 @@
                 .catch(error => {
                     console.error(error);
                     let friendlyMsg = `🚫 读取 ${jsonPath} 失败。<br>`;
-                    if (!location.hostname.includes('github') && !location.hostname.includes('localhost')) {
-                        friendlyMsg += '请确认文件存在且同目录，或启用了正确的路由。';
-                    } else {
-                        friendlyMsg += '详情：' + error.message;
-                    }
+                    friendlyMsg += '请确认文件存在且格式正确。详情：' + error.message;
                     grid.innerHTML = `<div class="error-message">${friendlyMsg}</div>`;
                 });
             }
 
             // 执行加载
             loadJSONData();
-
-            // 可选：如果您想直接嵌入一个示例 JSON 以防找不到文件（调试用），但这里保留纯净 fetch
-            // 若希望后备显示示例，也可在 fetch 失败时展示硬编码数据。
-            // 但题目要求「用 github.io 搭配 json 文件里面的内容生成二维码」，所以严格从 json 读取。
-            // 为了体验，假如 fetch 404 咱们可以给提示同时展示 demo 数据。但先尊重 fetch 失败错误。
-            // 但是为了首次访问时能直接看到效果（如果仓库内没有放置 qr-data.json），可以放置一个备用数据按钮。
-            // 但更好：自动生成一个简单的提示，并让用户知道如何创建 json。
-            // 我在下方增加一个小特性：如果 fetch 404 之后，如果 grid 里还是错误信息，加一个建议框，但保持错误可见。
-            // 同时可以添加一个“加载演示数据”的按钮，但为了符合题目，不做默认展示。如果需要演示，在 json 存在时自然展示。
         })();
     </script>
-
-    <!-- 添加一段微说明 (若没有json，给用户指引) 但不会覆盖核心功能 -->
-    <div style="display: none;">兼容 github pages 部署：请确保 qr-data.json 位于同一目录下</div>
 </body>
 </html>
