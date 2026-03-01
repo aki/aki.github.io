@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练秋湖D组团</title>
+    <title>QR Code · 会议室码展示</title>
     <!-- 使用轻量的 QR 库 qrcode-generator -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <!-- 简单样式，干净卡片布局 -->
@@ -126,19 +126,7 @@
             color: #152b42;
             word-break: break-word;
             width: 100%;
-            margin-bottom: 0.5rem;
-        }
-        .card-code {
-            color: #0f172a;
-            font-size: 0.85rem;
-            background: #f8fafc;
-            width: 100%;
-            padding: 0.5rem;
-            border-radius: 30px;
-            word-break: break-all;
-            border: 1px dashed #94a3b8;
             margin-top: 0.5rem;
-            font-family: monospace;
         }
         .footer-note {
             text-align: center;
@@ -171,7 +159,18 @@
 <body>
     <div class="card-grid">
         <div class="header">
-            <h1>练秋湖D组团</h1>
+            <h1>
+                📦 QR · 会议室码
+                <span>github.io</span>
+            </h1>
+            <div class="json-badge">
+                <span>📄 数据源</span>
+                <code>/qr-data.json</code>
+                <span>字段: room / code</span>
+            </div>
+            <div class="sub">
+                ✦ 二维码内容 = code 字段 ✦
+            </div>
         </div>
 
         <!-- 二维码卡片将动态插入这里 -->
@@ -180,7 +179,9 @@
         </div>
 
         <div class="footer-note">
-            🌐 使用 <strong>qrcode-generator</strong> · by aki
+            🌐 使用 <strong>qrcode-generator</strong> · 
+            字段映射: <code>room</code> (标题), <code>code</code> (二维码内容) · 
+            只显示二维码图片和会议室名称
         </div>
     </div>
 
@@ -203,11 +204,10 @@
                 // 遍历数组，为每一项生成卡片
                 items.forEach((item, index) => {
                     // 提取需要的字段：room 作为标题，code 作为二维码内容
-                    // id 字段被忽略，不显示
                     const room = item.room || '未命名会议室';
                     const code = item.code || '';
                     
-                    // 如果code为空，显示警告卡片
+                    // 如果code为空，显示警告卡片（但也不显示code原文）
                     if (!code) {
                         const card = document.createElement('div');
                         card.className = 'qr-card';
@@ -216,7 +216,7 @@
                                 <span style="font-size:3rem;">⚠️</span>
                             </div>
                             <div class="card-title">${escapeHtml(room)}</div>
-                            <div class="card-code" style="background:#fee2e2; color:#b91c1c;">缺失code</div>
+                            <div style="color:#b91c1c; font-size:0.9rem; margin-top:0.5rem;">暂无二维码内容</div>
                         `;
                         grid.appendChild(card);
                         return;
@@ -265,20 +265,16 @@
                         qrWrapper.innerHTML = `<span style="color:#b00; padding:1rem;">二维码生成失败</span>`;
                     }
 
-                    // 创建房间名（作为标题）
+                    // 创建房间名（作为标题）- 只显示这个，不显示code原文
                     const roomEl = document.createElement('div');
                     roomEl.className = 'card-title';
                     roomEl.textContent = room;
 
-                    // 创建code显示
-                    const codeEl = document.createElement('div');
-                    codeEl.className = 'card-code';
-                    codeEl.textContent = code;
-
-                    // 组装卡片 (不包含id元素)
+                    // 组装卡片 (只有二维码和房间名，没有code原文)
                     card.appendChild(qrWrapper);
                     card.appendChild(roomEl);
-                    card.appendChild(codeEl);
+                    // 注意：这里没有添加codeEl，所以code原文不会显示
+                    
                     grid.appendChild(card);
                 });
             }
