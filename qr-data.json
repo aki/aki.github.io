@@ -1,32 +1,32 @@
 
 [
   {
-    "id": 1,
+    "id": "1",
     "room": "D2-1-01R弱电间",
     "code": "rJ8leZgV4lYsziMPmi-Qhw",
   },
   {
-    "id": 2,
+    "id": "2",
     "room": "D2-1-02R弱电间",
     "code": "rJ8leZgV4lYsziMPmi-Qhw",
   },
   {
-    "id": 3,
+    "id": "3",
     "room": "D2-1-03R弱电间",
     "code": "rJ8leZgV4lYsziMPmi-Qhw",
   },
   {
-    "id": 4,
+    "id": "4",
     "room": "D2-1-04R弱电间",
     "code": "rJ8leZgV4lYsziMPmi-Qhw",
   },
   {
-    "id": 5,
+    "id": "5",
     "room": "D2-1-05R弱电间",
     "code": "rJ8leZgV4lYsziMPmi-Qhw",
   },
   {
-    "id": 6,
+    "id": "6",
     "room": "D2-1-06R弱电间",
     "code": "rJ8leZgV4lYsziMPmi-Qhw",
   }
