@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练秋湖D组团</title>
-    <!-- 使用轻量的 QR 库 qrcode-generator -->
-    <script src="qrcode.min.js"></script>
-    <!-- 简单样式，干净卡片布局 -->
+    <title>练秋湖D组团 · 时段筛选</title>
+    <!-- 轻量二维码库 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <!-- 简洁样式：羊皮纸风格 + 筛选条 -->
     <style>
         * {
             box-sizing: border-box;
@@ -14,11 +14,11 @@
             font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
         }
         body {
-            background: #fcf8f0;  /* 羊皮纸色背景 */
+            background: #fcf8f0;  /* 羊皮纸底色 */
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 1.5rem;
         }
         .card-grid {
@@ -27,65 +27,96 @@
         }
         .header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
         .header h1 {
             font-size: 2.2rem;
             font-weight: 600;
-            color: #5d4a36;  /* 深棕色，配合羊皮纸色调 */
+            color: #5d4a36;
             letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
-        .header h1 span {
-            background: #5d4a36;
-            color: #fcf8f0;
-            font-size: 0.9rem;
-            font-weight: 400;
-            padding: 0.2rem 1rem;
-            border-radius: 30px;
-        }
         .sub {
             color: #7c6b58;
             font-size: 1.1rem;
-            margin-top: 0.5rem;
+            margin-top: 0.2rem;
             border-bottom: 2px solid #e8d9c8;
             padding-bottom: 1rem;
             display: inline-block;
         }
-        /* json 数据源标记 */
-        .json-badge {
-            background: #f5ede1;
-            padding: 0.5rem 1.2rem;
-            border-radius: 60px;
-            display: inline-flex;
+
+        /* 筛选栏 — 优雅小药丸 */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            gap: 10px;
-            font-size: 0.95rem;
-            color: #5d4a36;
-            box-shadow: 0 2px 6px rgba(93, 74, 54, 0.1);
-            margin-bottom: 1.8rem;
-            border: 1px solid #e8d9c8;
+            justify-content: center;
+            gap: 0.8rem 1.2rem;
+            background: #f5ede1;
+            padding: 0.9rem 2rem;
+            border-radius: 60px;
+            margin: 1.5rem auto 2.2rem auto;
+            width: fit-content;
+            border: 1px solid #e1d2c0;
+            box-shadow: 0 4px 12px rgba(93, 74, 54, 0.08);
         }
-        .json-badge code {
+        .filter-label {
+            font-weight: 500;
+            color: #5d4a36;
+            font-size: 1rem;
+            letter-spacing: 0.3px;
+            background: #e8d9c8;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+        }
+        .filter-btn {
+            background: transparent;
+            border: none;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 40px;
+            color: #5d4a36;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid transparent;
+        }
+        .filter-btn:hover {
+            background: #e8d9c8;
+            border-color: #d2bca5;
+        }
+        .filter-btn.active {
             background: #5d4a36;
             color: #fcf8f0;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            box-shadow: 0 4px 8px rgba(93, 74, 54, 0.3);
+            border-color: #5d4a36;
         }
-        /* 卡片区 - 每行6个 */
+        .filter-clear {
+            background: #fff3e0;
+            border: 1px solid #d2bca5;
+            color: #7c5e40;
+            margin-left: 0.5rem;
+        }
+        .filter-clear:hover {
+            background: #f5e5d2;
+        }
+
+        /* 卡片网格 — 默认6列 */
         .qr-container {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);  /* 固定每行6列 */
+            grid-template-columns: repeat(6, 1fr);
             gap: 1.5rem;
             justify-items: center;
             margin-top: 1rem;
+            transition: 0.3s;
         }
+
+        /* 卡片样式 */
         .qr-card {
-            background: #fffbf5;  /* 浅羊皮纸色 */
+            background: #fffbf5;
             width: 100%;
             max-width: 220px;
             border-radius: 24px;
@@ -128,6 +159,20 @@
             width: 100%;
             margin-top: 0.3rem;
         }
+        /* 时段标记小标签 */
+        .period-badge {
+            background: #e8d9c8;
+            color: #4a3a2a;
+            font-size: 0.7rem;
+            font-weight: 500;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            margin-top: 0.3rem;
+            display: inline-block;
+            letter-spacing: 0.3px;
+            border: 1px solid #dac9b6;
+        }
+
         .footer-note {
             text-align: center;
             margin-top: 3rem;
@@ -136,15 +181,8 @@
             border-top: 1px solid #e8d9c8;
             padding-top: 1.8rem;
         }
-        .footer-note a {
-            color: #8b6f50;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        .footer-note a:hover {
-            text-decoration: underline;
-        }
-        .loading-placeholder {
+
+        .loading-placeholder, .error-message {
             grid-column: 1 / -1;
             padding: 3rem;
             font-size: 1.2rem;
@@ -154,169 +192,225 @@
         .error-message {
             background: #fff0e6;
             color: #b3563b;
-            padding: 2rem;
             border-radius: 2rem;
-            grid-column: 1 / -1;
-            text-align: center;
             border: 1px solid #ffd9c5;
         }
 
-        /* 响应式处理：当屏幕较小时自动减少列数 */
+        /* 响应式 */
         @media (max-width: 1200px) {
-            .qr-container {
-                grid-template-columns: repeat(4, 1fr);
-            }
+            .qr-container { grid-template-columns: repeat(4, 1fr); }
         }
         @media (max-width: 800px) {
-            .qr-container {
-                grid-template-columns: repeat(3, 1fr);
-            }
+            .qr-container { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 500px) {
-            .qr-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
+            .qr-container { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
     <div class="card-grid">
         <div class="header">
-            <h1>
-                练秋湖D组团
+            <h1>练秋湖D组团 · 时段房态</h1>
         </div>
 
-        <!-- 二维码卡片将动态插入这里 -->
+        <!-- 筛选按钮动态插入到此区域 -->
+        <div id="filterSection" class="filter-bar">
+            <span class="filter-label">📅 时段</span>
+            <!-- 通过js生成按钮，包含“全部”和各period值 -->
+        </div>
+
+        <!-- 二维码卡片网格 -->
         <div id="qrGrid" class="qr-container">
             <div class="loading-placeholder">⏳ 载入 JSON 数据中……</div>
         </div>
 
         <div class="footer-note">
-            🌐 by aki 2026/3/2
+            🌐 by aki 2026/3/2 · 数据包含 period 分类
         </div>
     </div>
 
     <script>
         (function() {
-            // 待会要填充的网格容器
             const grid = document.getElementById('qrGrid');
+            const filterDiv = document.getElementById('filterSection');
 
-            // 初始化所有二维码的函数 (接收解析后的数组)
+            // 存储原始所有卡片数据 (从JSON解析出来的完整数组)
+            let masterData = [];
+
+            // 当前选中的period (null表示全部)
+            let currentPeriod = null;
+
+            // ---------- 渲染卡片 (接受过滤后的数据) ----------
             function renderQRCards(items) {
-                // 清空 loading 或旧内容
-                grid.innerHTML = '';
+                grid.innerHTML = '';  // 清空
 
-                // 防御性检查：必须是非空数组
-                if (!Array.isArray(items) || items.length === 0) {
-                    grid.innerHTML = `<div class="error-message">❌ JSON 数据格式不符：应为包含对象的数组，或数组为空。</div>`;
+                if (!items || items.length === 0) {
+                    grid.innerHTML = `<div class="error-message" style="background: #f5ede1; color: #7c6b58;">📭 没有符合该时段的会议室</div>`;
                     return;
                 }
 
-                // 遍历数组，为每一项生成卡片
-                items.forEach((item, index) => {
-                    // 提取需要的字段：room 作为标题，code 作为二维码内容
+                items.forEach(item => {
                     const room = item.room || '未命名会议室';
                     const code = item.code || '';
-                    
-                    // 如果code为空，显示警告卡片（但也不显示code原文）
-                    if (!code) {
-                        const card = document.createElement('div');
-                        card.className = 'qr-card';
-                        card.innerHTML = `
-                            <div class="qr-canvas-wrap" style="background:#f5ede1; padding:1.6rem;">
-                                <span style="font-size:2.5rem; color:#b3563b;">⚠️</span>
-                            </div>
-                            <div class="card-title">${escapeHtml(room)}</div>
-                            <div style="color:#b3563b; font-size:0.8rem; margin-top:0.5rem;">暂无二维码内容</div>
-                        `;
-                        grid.appendChild(card);
-                        return;
-                    }
+                    const period = item.period || '未分类';   // 显示用
 
-                    // 创建卡片外层
+                    // 卡片创建
                     const card = document.createElement('div');
                     card.className = 'qr-card';
-                    
-                    // 用于放置二维码的容器
+
+                    // 二维码区域
                     const qrWrapper = document.createElement('div');
                     qrWrapper.className = 'qr-canvas-wrap';
-                    
-                    // 生成二维码 (使用code字段作为内容)
-                    try {
-                        // 使用 qrcode-generator 库 (全局变量 qrcode)
-                        const qr = qrcode(0, 'M');  // 类型0 (自动选择), 纠错级别 M
-                        qr.addData(code);
-                        qr.make();
 
-                        // 创建 canvas 元素
-                        const canvas = document.createElement('canvas');
-                        const cellSize = 4;      // 每个点放大倍数
-                        const size = qr.getModuleCount();
-                        canvas.width = size * cellSize;
-                        canvas.height = size * cellSize;
+                    if (!code) {
+                        // 无code展示警告
+                        qrWrapper.innerHTML = `<span style="font-size:2rem; color:#b3563b;">⚠️</span>`;
+                    } else {
+                        try {
+                            const qr = qrcode(0, 'M');
+                            qr.addData(code);
+                            qr.make();
 
-                        const ctx = canvas.getContext('2d');
-                        // 绘制羊皮纸色背景
-                        ctx.fillStyle = '#fcf8f0';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            const canvas = document.createElement('canvas');
+                            const cellSize = 4;
+                            const size = qr.getModuleCount();
+                            canvas.width = size * cellSize;
+                            canvas.height = size * cellSize;
 
-                        // 绘制深色模块 (深棕色)
-                        ctx.fillStyle = '#5d4a36';
-                        for (let row = 0; row < size; row++) {
-                            for (let col = 0; col < size; col++) {
-                                if (qr.isDark(row, col)) {
-                                    ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                            const ctx = canvas.getContext('2d');
+                            ctx.fillStyle = '#fcf8f0';
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                            ctx.fillStyle = '#5d4a36';
+                            for (let row = 0; row < size; row++) {
+                                for (let col = 0; col < size; col++) {
+                                    if (qr.isDark(row, col)) {
+                                        ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                                    }
                                 }
                             }
+                            qrWrapper.appendChild(canvas);
+                        } catch (e) {
+                            console.warn('二维码生成失败', e);
+                            qrWrapper.innerHTML = `<span style="color:#b3563b;">❌</span>`;
                         }
-
-                        qrWrapper.appendChild(canvas);
-                    } catch (e) {
-                        console.warn('二维码生成失败', e);
-                        qrWrapper.innerHTML = `<span style="color:#b3563b; padding:1rem;">二维码生成失败</span>`;
                     }
 
-                    // 创建房间名（作为标题）- 只显示这个，不显示code原文
-                    const roomEl = document.createElement('div');
-                    roomEl.className = 'card-title';
-                    roomEl.textContent = room;
-
-                    // 组装卡片 (只有二维码和房间名)
                     card.appendChild(qrWrapper);
-                    card.appendChild(roomEl);
-                    
+
+                    // 标题 + period小标
+                    const titleEl = document.createElement('div');
+                    titleEl.className = 'card-title';
+                    titleEl.textContent = room;
+
+                    const periodEl = document.createElement('div');
+                    periodEl.className = 'period-badge';
+                    periodEl.textContent = period;   // 直接显示period字段
+
+                    card.appendChild(titleEl);
+                    card.appendChild(periodEl);
                     grid.appendChild(card);
                 });
             }
 
-            // 简单的防XSS转义
-            function escapeHtml(unsafe) {
-                if (!unsafe) return '';
-                return String(unsafe)
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
+            // ---------- 更新视图 (根据currentPeriod过滤masterData) ----------
+            function updateGridByFilter() {
+                if (!masterData.length) {
+                    grid.innerHTML = `<div class="loading-placeholder">⏳ 暂无数据</div>`;
+                    return;
+                }
+
+                let filtered = masterData;
+                if (currentPeriod !== null) {
+                    filtered = masterData.filter(item => item.period === currentPeriod);
+                }
+                renderQRCards(filtered);
             }
 
-            // 从相对路径获取 JSON (适合 github.io)
+            // ---------- 生成筛选按钮 (从masterData提取唯一period) ----------
+            function buildFilterButtons() {
+                // 提取所有period值 (过滤掉空字符串或null，但保留'未分类'等)
+                const periodSet = new Set();
+                masterData.forEach(item => {
+                    // 如果period不存在，可以归为'未指定'；但一般json会有字段
+                    if (item.hasOwnProperty('period')) {
+                        // 保证字符串，即使是数字也转成字符串
+                        periodSet.add(String(item.period));
+                    } else {
+                        periodSet.add('未指定');
+                    }
+                });
+
+                // 转换为数组并排序 (可选)
+                let periods = Array.from(periodSet).sort((a,b) => a.localeCompare(b));
+
+                // 清空filterDiv，保留左侧的filter-label (手动保留)
+                filterDiv.innerHTML = '<span class="filter-label">📅 时段</span>';
+
+                // 添加“全部”按钮 (始终显示)
+                const allBtn = document.createElement('button');
+                allBtn.className = `filter-btn ${currentPeriod === null ? 'active' : ''}`;
+                allBtn.textContent = '全部';
+                allBtn.dataset.period = 'null';  // 字符串标记
+                allBtn.addEventListener('click', () => {
+                    currentPeriod = null;
+                    // 按钮激活样式更新
+                    updateActiveClass();
+                    updateGridByFilter();
+                });
+                filterDiv.appendChild(allBtn);
+
+                // 添加每个period按钮
+                periods.forEach(p => {
+                    const btn = document.createElement('button');
+                    btn.className = `filter-btn ${currentPeriod === p ? 'active' : ''}`;
+                    btn.textContent = p;
+                    btn.dataset.period = p;
+                    btn.addEventListener('click', () => {
+                        currentPeriod = p;
+                        updateActiveClass();
+                        updateGridByFilter();
+                    });
+                    filterDiv.appendChild(btn);
+                });
+
+                // 添加一个小清除图标(可选) 已经包含全部按钮，所以清除可以用全部替代，但加一个重置更顺手
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'filter-btn filter-clear';
+                resetBtn.textContent = '↺ 重置';
+                resetBtn.addEventListener('click', () => {
+                    currentPeriod = null;
+                    updateActiveClass();
+                    updateGridByFilter();
+                });
+                filterDiv.appendChild(resetBtn);
+
+                function updateActiveClass() {
+                    // 遍历所有按钮，设置active
+                    Array.from(filterDiv.querySelectorAll('.filter-btn')).forEach(btn => {
+                        if (btn.dataset.period === 'null' && currentPeriod === null) {
+                            btn.classList.add('active');
+                        } else if (btn.dataset.period !== 'null' && btn.dataset.period === currentPeriod) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                }
+            }
+
+            // ---------- 加载JSON数据 ----------
             function loadJSONData() {
-                const jsonPath = 'qr-data.json';
-                fetch(jsonPath, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                })
+                const jsonPath = 'qr-data.json';  // 相对路径，适合github.io
+
+                fetch(jsonPath, { method: 'GET', headers: { 'Accept': 'application/json' } })
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status} — 无法加载 ${jsonPath}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP ${response.status} — 无法加载 ${jsonPath}`);
                     return response.json();
                 })
                 .then(data => {
-                    // 支持多种数据结构：直接数组，或包含items/qrList等数组字段
+                    // 解析数组 (兼容多种字段)
                     let itemsArray = null;
                     if (Array.isArray(data)) {
                         itemsArray = data;
@@ -327,7 +421,7 @@
                     } else if (data && Array.isArray(data.data)) {
                         itemsArray = data.data;
                     } else {
-                        // 尝试取出第一个值是数组的字段
+                        // 尝试取第一个数组字段
                         for (let key in data) {
                             if (Array.isArray(data[key])) {
                                 itemsArray = data[key];
@@ -337,20 +431,38 @@
                     }
 
                     if (!itemsArray) {
-                        grid.innerHTML = `<div class="error-message">❌ JSON 中未找到数组数据。请确保包含 room/code 字段的数组。</div>`;
+                        grid.innerHTML = `<div class="error-message">❌ JSON 中未找到数组数据。需要包含 room, code, period 的数组。</div>`;
                         return;
                     }
-                    renderQRCards(itemsArray);
+
+                    // 保存到masterData，并保证每条至少包含room/code/period（缺失则补默认）
+                    masterData = itemsArray.map((item, idx) => {
+                        return {
+                            room: item.room || `会议室-${idx+1}`,
+                            code: item.code || '',
+                            period: item.period !== undefined ? String(item.period) : '未指定'
+                        };
+                    });
+
+                    // 如果没有任何数据
+                    if (masterData.length === 0) {
+                        grid.innerHTML = `<div class="error-message">📂 数组为空，请添加数据</div>`;
+                        return;
+                    }
+
+                    // 构建筛选按钮 (必须先有masterData)
+                    buildFilterButtons();
+
+                    // 初始显示全部 (currentPeriod = null)
+                    updateGridByFilter();
                 })
                 .catch(error => {
                     console.error(error);
-                    let friendlyMsg = `🚫 读取 ${jsonPath} 失败。<br>`;
-                    friendlyMsg += '请确认文件存在且格式正确。详情：' + error.message;
-                    grid.innerHTML = `<div class="error-message">${friendlyMsg}</div>`;
+                    grid.innerHTML = `<div class="error-message">🚫 读取 ${jsonPath} 失败。<br>请确认文件存在且格式正确。详情：${error.message}</div>`;
                 });
             }
 
-            // 执行加载
+            // 开始加载
             loadJSONData();
         })();
     </script>
