@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练秋湖D组团 · 按ID排序</title>
+    <title>练秋湖D组团 · 周期按ID列排序</title>
     <!-- 轻量二维码库 (qrcode-generator) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    <!-- 简洁样式：羊皮纸风格 + 下拉周期 + 正则 + 计数 + 按ID排序 -->
+    <!-- 简洁样式：羊皮纸风格 + 下拉周期 + 正则 + 计数 + 严格按ID列排序 -->
     <style>
         * {
             box-sizing: border-box;
@@ -286,8 +286,8 @@
 <body>
     <div class="card-grid">
         <div class="header">
-            <h1>练秋湖D组团 · 按ID排序</h1>
-            <div class="sub">🏷️ 周期下拉按ID排序 (A1 &lt; A2 &lt; B1 ...)</div>
+            <h1>练秋湖D组团 · 周期按ID列排序</h1>
+            <div class="sub">🏷️ 下拉周期严格按CSV中ID列顺序排列</div>
         </div>
 
         <!-- 筛选栏 -->
@@ -302,7 +302,7 @@
         </div>
 
         <div class="footer-note">
-            🌐 by aki · 周期下拉按ID排序 + 计数 · 2026/3/3
+            🌐 by aki · 周期按ID列排序 + 计数 · 2026/3/3
         </div>
     </div>
 
@@ -311,7 +311,7 @@
             const grid = document.getElementById('qrGrid');
             const filterBar = document.getElementById('filterBar');
 
-            // 原始数据
+            // 原始数据 (每行包含room, code, period, 以及可选的id)
             let masterData = [];
 
             // 当前选中的周期 (null = 全部)
@@ -326,36 +326,6 @@
             let periodSelect = null;
             let regexInput = null;
             let countSpan = null;
-
-            // ---------- 工具函数：按ID排序 (支持字母+数字混合，例如 A1, A2, B1, B10, C2 等) ----------
-            function sortPeriodsByID(periods) {
-                // 复制一份避免修改原数组
-                return [...periods].sort((a, b) => {
-                    // 用正则将字符串拆分为字母部分和数字部分（支持尾部数字）
-                    const regex = /^([A-Za-z]+)(\d*)$/;
-                    const matchA = a.match(regex);
-                    const matchB = b.match(regex);
-
-                    // 如果格式不匹配，回退到普通字符串比较
-                    if (!matchA || !matchB) {
-                        return a.localeCompare(b);
-                    }
-
-                    const lettersA = matchA[1].toUpperCase();
-                    const lettersB = matchB[1].toUpperCase();
-
-                    // 先比较字母部分
-                    if (lettersA !== lettersB) {
-                        return lettersA.localeCompare(lettersB);
-                    }
-
-                    // 字母相同，比较数字部分（处理可能无数字的情况）
-                    const numA = matchA[2] === '' ? 0 : parseInt(matchA[2], 10);
-                    const numB = matchB[2] === '' ? 0 : parseInt(matchB[2], 10);
-
-                    return numA - numB;
-                });
-            }
 
             // ---------- 渲染卡片 ----------
             function renderQRCards(items) {
@@ -471,7 +441,7 @@
                 }, 300);
             }
 
-            // ---------- 构建筛选条 (下拉 + 重置 + 正则 + 计数) ----------
+            // ---------- 构建筛选条 ----------
             function buildFilterControls() {
                 filterBar.innerHTML = '<span class="filter-label">📅 周期</span>';
 
@@ -513,14 +483,24 @@
                 const regexClear = document.getElementById('regexClearBtn');
                 countSpan = document.getElementById('roomCountBadge');
 
-                // --- 填充下拉选项 (按ID排序) ---
+                // --- 填充下拉选项 (严格按照原始数据中ID列出现的顺序) ---
                 function populateSelect() {
                     if (!masterData.length) return;
-                    const periodSet = new Set(masterData.map(item => String(item.period)));
-                    let periods = Array.from(periodSet);
-                    
-                    // 使用自定义ID排序
-                    periods = sortPeriodsByID(periods);
+
+                    // 我们需要获取每个周期第一次出现时的顺序
+                    // 方法：遍历masterData，记录每个period第一次出现的索引
+                    const periodFirstIndex = new Map();
+                    masterData.forEach((item, index) => {
+                        const period = String(item.period);
+                        if (!periodFirstIndex.has(period)) {
+                            periodFirstIndex.set(period, index);
+                        }
+                    });
+
+                    // 将周期按照第一次出现的索引排序
+                    const sortedPeriods = Array.from(periodFirstIndex.entries())
+                        .sort((a, b) => a[1] - b[1])  // 按首次出现索引排序
+                        .map(entry => entry[0]);      // 只保留周期值
 
                     periodSelect.innerHTML = ''; // 清空
 
@@ -530,7 +510,8 @@
                     allOption.textContent = '全部周期';
                     periodSelect.appendChild(allOption);
 
-                    periods.forEach(p => {
+                    // 按首次出现顺序添加周期
+                    sortedPeriods.forEach(p => {
                         const opt = document.createElement('option');
                         opt.value = p;
                         opt.textContent = p;
@@ -538,7 +519,7 @@
                     });
 
                     // 恢复选中状态
-                    if (currentPeriod !== null && periods.includes(currentPeriod)) {
+                    if (currentPeriod !== null && sortedPeriods.includes(currentPeriod)) {
                         periodSelect.value = currentPeriod;
                     } else {
                         periodSelect.value = '';
@@ -582,7 +563,7 @@
                 window._refreshPeriodSelect = populateSelect;
             }
 
-            // ---------- CSV解析 (保留原逻辑，同时提取id列但本次未用，仅用于周期) ----------
+            // ---------- CSV解析 (增加对ID列的识别) ----------
             function parseCSV(csvText) {
                 const lines = [];
                 const rawLines = csvText.split(/\r?\n/);
@@ -620,9 +601,14 @@
                 }
 
                 const header = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
+                
+                // 查找必需的列
                 let roomIdx = header.findIndex(h => h === 'room' || h === '会议室' || h === '名称');
                 let codeIdx = header.findIndex(h => h === 'code' || h === '二维码' || h === 'qr' || h === '内容');
                 let periodIdx = header.findIndex(h => h === 'period' || h === '时段' || h === '时间段');
+                
+                // 查找ID列 (用于排序周期)
+                let idIdx = header.findIndex(h => h === 'id' || h === '序号' || h === '顺序');
 
                 if (roomIdx === -1 && codeIdx === -1 && periodIdx === -1 && header.length >= 3) {
                     console.warn('未找到标准列名，尝试按顺序映射 (第1列->room, 第2列->code, 第3列->period)');
@@ -639,14 +625,22 @@
                 for (let i = 1; i < lines.length; i++) {
                     const values = parseCSVLine(lines[i]);
                     while (values.length < header.length) values.push('');
+                    
                     const roomVal = values[roomIdx] ? values[roomIdx].trim() : `会议室-${i}`;
                     const codeVal = values[codeIdx] ? values[codeIdx].trim() : '';
                     const periodVal = values[periodIdx] ? values[periodIdx].trim() : '未指定';
+                    
+                    // 读取ID值（如果存在），用于后续排序
+                    let idVal = null;
+                    if (idIdx !== -1 && values[idIdx] && values[idIdx].trim() !== '') {
+                        idVal = values[idIdx].trim();
+                    }
 
                     dataRows.push({
                         room: roomVal,
                         code: codeVal,
-                        period: periodVal || '未指定'
+                        period: periodVal || '未指定',
+                        id: idVal  // 保存ID值，但当前未直接使用，因为排序逻辑基于首次出现顺序
                     });
                 }
                 return dataRows;
@@ -677,7 +671,7 @@
 
                     masterData = parsedData;
 
-                    // 构建控件 (内部会根据masterData填充下拉，并按ID排序)
+                    // 构建控件 (内部会根据masterData填充下拉，并按照数据原始顺序排序)
                     buildFilterControls();
 
                     if (window._refreshPeriodSelect) window._refreshPeriodSelect();
