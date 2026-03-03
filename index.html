@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练秋湖D组团 · 显示计数</title>
+    <title>练秋湖D组团 · 按ID排序</title>
     <!-- 轻量二维码库 (qrcode-generator) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    <!-- 简洁样式：羊皮纸风格 + 下拉周期 + 正则输入框 + 计数标签 -->
+    <!-- 简洁样式：羊皮纸风格 + 下拉周期 + 正则 + 计数 + 按ID排序 -->
     <style>
         * {
             box-sizing: border-box;
@@ -48,7 +48,7 @@
             display: inline-block;
         }
 
-        /* 筛选栏 — 用下拉代替按钮组，保留正则，增加计数标签 */
+        /* 筛选栏 */
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
@@ -166,7 +166,7 @@
             background: #ede3d6;
         }
 
-        /* 新增计数标签样式 */
+        /* 计数标签样式 */
         .count-badge {
             background: #5d4a36;
             color: #fcf8f0;
@@ -286,14 +286,14 @@
 <body>
     <div class="card-grid">
         <div class="header">
-            <h1>练秋湖D组团 · 带计数</h1>
-            <div class="sub">🏷️ 下拉周期 + 正则 + 实时房间计数</div>
+            <h1>练秋湖D组团 · 按ID排序</h1>
+            <div class="sub">🏷️ 周期下拉按ID排序 (A1 &lt; A2 &lt; B1 ...)</div>
         </div>
 
-        <!-- 筛选栏：周期下拉 + 重置 + 正则输入框 + 计数标签 (动态生成) -->
+        <!-- 筛选栏 -->
         <div id="filterBar" class="filter-bar">
             <span class="filter-label">📅 周期</span>
-            <!-- 其余控件由js动态插入，包括计数标签 -->
+            <!-- 其余控件由js动态插入 -->
         </div>
 
         <!-- 二维码卡片网格 -->
@@ -302,7 +302,7 @@
         </div>
 
         <div class="footer-note">
-            🌐 by aki · 周期下拉 + 计数标签 · 2026/3/3
+            🌐 by aki · 周期下拉按ID排序 + 计数 · 2026/3/3
         </div>
     </div>
 
@@ -325,9 +325,39 @@
             // DOM元素引用
             let periodSelect = null;
             let regexInput = null;
-            let countSpan = null;          // 新增计数标签
+            let countSpan = null;
 
-            // ---------- 工具函数：渲染卡片 ----------
+            // ---------- 工具函数：按ID排序 (支持字母+数字混合，例如 A1, A2, B1, B10, C2 等) ----------
+            function sortPeriodsByID(periods) {
+                // 复制一份避免修改原数组
+                return [...periods].sort((a, b) => {
+                    // 用正则将字符串拆分为字母部分和数字部分（支持尾部数字）
+                    const regex = /^([A-Za-z]+)(\d*)$/;
+                    const matchA = a.match(regex);
+                    const matchB = b.match(regex);
+
+                    // 如果格式不匹配，回退到普通字符串比较
+                    if (!matchA || !matchB) {
+                        return a.localeCompare(b);
+                    }
+
+                    const lettersA = matchA[1].toUpperCase();
+                    const lettersB = matchB[1].toUpperCase();
+
+                    // 先比较字母部分
+                    if (lettersA !== lettersB) {
+                        return lettersA.localeCompare(lettersB);
+                    }
+
+                    // 字母相同，比较数字部分（处理可能无数字的情况）
+                    const numA = matchA[2] === '' ? 0 : parseInt(matchA[2], 10);
+                    const numB = matchB[2] === '' ? 0 : parseInt(matchB[2], 10);
+
+                    return numA - numB;
+                });
+            }
+
+            // ---------- 渲染卡片 ----------
             function renderQRCards(items) {
                 grid.innerHTML = '';
 
@@ -396,13 +426,13 @@
                 });
             }
 
-            // ---------- 过滤逻辑 (period + 正则) ----------
+            // ---------- 过滤逻辑 ----------
             function getFilteredData() {
                 if (!masterData.length) return [];
 
                 let filtered = masterData;
 
-                // 周期过滤 (currentPeriod === null 代表全部)
+                // 周期过滤
                 if (currentPeriod !== null) {
                     filtered = filtered.filter(item => item.period === currentPeriod);
                 }
@@ -414,7 +444,6 @@
                         filtered = filtered.filter(item => regex.test(item.room));
                     } catch (e) {
                         console.warn('无效的正则表达式:', currentRegex, e);
-                        // 正则无效，不应用过滤，保持原filtered
                     }
                 }
                 return filtered;
@@ -429,13 +458,12 @@
                 }
                 const filtered = getFilteredData();
                 renderQRCards(filtered);
-                // 更新计数标签
                 if (countSpan) {
                     countSpan.textContent = filtered.length;
                 }
             }
 
-            // 防抖包装 (只更新grid，内部调用了更新count)
+            // 防抖包装
             function debouncedUpdate() {
                 if (debounceTimer) clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
@@ -443,15 +471,13 @@
                 }, 300);
             }
 
-            // ---------- 构建新式筛选条：下拉周期 + 重置 + 正则输入 + 计数标签 ----------
+            // ---------- 构建筛选条 (下拉 + 重置 + 正则 + 计数) ----------
             function buildFilterControls() {
-                // 清空filterBar，保留最前面的 label (手动重建)
                 filterBar.innerHTML = '<span class="filter-label">📅 周期</span>';
 
-                // 1. 创建下拉容器
+                // 1. 下拉容器
                 const selectWrapper = document.createElement('div');
                 selectWrapper.className = 'period-select-wrapper';
-
                 const selectEl = document.createElement('select');
                 selectEl.className = 'period-select';
                 selectEl.id = 'periodSelect';
@@ -464,7 +490,7 @@
                 resetBtn.textContent = '↺ 重置筛选';
                 filterBar.appendChild(resetBtn);
 
-                // 3. 正则输入包装
+                // 3. 正则包装
                 const regexWrapper = document.createElement('div');
                 regexWrapper.className = 'regex-wrapper';
                 regexWrapper.innerHTML = `
@@ -474,31 +500,31 @@
                 `;
                 filterBar.appendChild(regexWrapper);
 
-                // 4. 新增计数标签 (放在正则后面)
+                // 4. 计数标签
                 const countBadge = document.createElement('span');
                 countBadge.className = 'count-badge';
                 countBadge.id = 'roomCountBadge';
-                countBadge.textContent = '0';  // 初始0
+                countBadge.textContent = '0';
                 filterBar.appendChild(countBadge);
 
-                // 获取元素引用
+                // 获取引用
                 periodSelect = document.getElementById('periodSelect');
                 regexInput = document.getElementById('regexInput');
                 const regexClear = document.getElementById('regexClearBtn');
                 countSpan = document.getElementById('roomCountBadge');
 
-                // --- 填充下拉选项 (从masterData提取唯一period) ---
+                // --- 填充下拉选项 (按ID排序) ---
                 function populateSelect() {
                     if (!masterData.length) return;
                     const periodSet = new Set(masterData.map(item => String(item.period)));
-                    const periods = Array.from(periodSet).sort((a, b) => a.localeCompare(b));
-
-                    // 保存当前选中的值 (尝试保持)
-                    const oldVal = periodSelect.value;
+                    let periods = Array.from(periodSet);
+                    
+                    // 使用自定义ID排序
+                    periods = sortPeriodsByID(periods);
 
                     periodSelect.innerHTML = ''; // 清空
 
-                    // 添加“全部”选项，值为空字符串 (代表null)
+                    // 全部选项
                     const allOption = document.createElement('option');
                     allOption.value = '';
                     allOption.textContent = '全部周期';
@@ -511,27 +537,25 @@
                         periodSelect.appendChild(opt);
                     });
 
-                    // 恢复选中状态：如果currentPeriod有值且存在于选项中，否则置为全部
+                    // 恢复选中状态
                     if (currentPeriod !== null && periods.includes(currentPeriod)) {
                         periodSelect.value = currentPeriod;
                     } else {
                         periodSelect.value = '';
-                        currentPeriod = null;  // 同步
+                        currentPeriod = null;
                     }
                 }
 
-                // 首次填充
                 if (masterData.length) populateSelect();
 
                 // --- 监听下拉改变 ---
                 periodSelect.addEventListener('change', (e) => {
                     const val = e.target.value;
-                    // 空字符串代表全部
                     currentPeriod = val === '' ? null : val;
-                    updateGridAndCount(); // 直接更新
+                    updateGridAndCount();
                 });
 
-                // --- 监听正则输入 ---
+                // --- 正则输入 ---
                 regexInput.addEventListener('input', (e) => {
                     currentRegex = e.target.value;
                     debouncedUpdate();
@@ -541,28 +565,24 @@
                 regexClear.addEventListener('click', () => {
                     regexInput.value = '';
                     currentRegex = '';
-                    updateGridAndCount(); // 立即更新
+                    updateGridAndCount();
                     regexInput.focus();
                 });
 
-                // --- 重置按钮：清空周期 (设为全部) 和 清空正则 ---
+                // 重置按钮
                 resetBtn.addEventListener('click', () => {
-                    // 周期重置为全部
                     periodSelect.value = '';
                     currentPeriod = null;
-
-                    // 正则重置
                     regexInput.value = '';
                     currentRegex = '';
-
                     updateGridAndCount();
                 });
 
-                // 提供给外部刷新下拉的方法 (例如数据重载时)
+                // 暴露刷新方法
                 window._refreshPeriodSelect = populateSelect;
             }
 
-            // ---------- CSV解析 (保持不变) ----------
+            // ---------- CSV解析 (保留原逻辑，同时提取id列但本次未用，仅用于周期) ----------
             function parseCSV(csvText) {
                 const lines = [];
                 const rawLines = csvText.split(/\r?\n/);
@@ -632,9 +652,9 @@
                 return dataRows;
             }
 
-            // ---------- 加载CSV数据 ----------
+            // ---------- 加载CSV ----------
             function loadCSVData() {
-                const csvPath = 'data';  // 同目录下 data 文件 (无后缀，与原逻辑一致)
+                const csvPath = 'data';
 
                 fetch(csvPath, { method: 'GET', headers: { 'Accept': 'text/csv' } })
                 .then(response => {
@@ -657,24 +677,21 @@
 
                     masterData = parsedData;
 
-                    // 构建下拉控件 (内部会调用populateSelect并创建计数标签)
+                    // 构建控件 (内部会根据masterData填充下拉，并按ID排序)
                     buildFilterControls();
 
-                    // 确保下拉选项刷新 (已经包含在build中)
                     if (window._refreshPeriodSelect) window._refreshPeriodSelect();
 
-                    // 初始更新网格 + 计数
+                    // 初始更新
                     updateGridAndCount();
                 })
                 .catch(error => {
                     console.error(error);
                     grid.innerHTML = `<div class="error-message">🚫 读取 ${csvPath} 失败。<br>请确认文件存在且格式正确。详情：${error.message}</div>`;
-                    // 即便失败也显示计数0
                     if (countSpan) countSpan.textContent = '0';
                 });
             }
 
-            // 开始加载
             loadCSVData();
         })();
     </script>
