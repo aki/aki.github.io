@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练秋湖D组团 · 下拉周期</title>
+    <title>练秋湖D组团 · 显示计数</title>
     <!-- 轻量二维码库 (qrcode-generator) -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    <!-- 简洁样式：羊皮纸风格 + 下拉周期 + 正则输入框 -->
+    <!-- 简洁样式：羊皮纸风格 + 下拉周期 + 正则输入框 + 计数标签 -->
     <style>
         * {
             box-sizing: border-box;
@@ -48,7 +48,7 @@
             display: inline-block;
         }
 
-        /* 筛选栏 — 用下拉代替按钮组，保留正则 */
+        /* 筛选栏 — 用下拉代替按钮组，保留正则，增加计数标签 */
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
@@ -120,7 +120,7 @@
             background: #f5e5d2;
         }
 
-        /* 正则输入框区域 */
+        /* 正则输入框区域 + 计数标签 */
         .regex-wrapper {
             display: flex;
             align-items: center;
@@ -164,6 +164,21 @@
         .regex-clear:hover {
             color: #5d4a36;
             background: #ede3d6;
+        }
+
+        /* 新增计数标签样式 */
+        .count-badge {
+            background: #5d4a36;
+            color: #fcf8f0;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            margin-left: 0.2rem;
+            white-space: nowrap;
+            border: 1px solid #ac9a86;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 6px rgba(93,74,54,0.2);
         }
 
         /* 卡片网格 */
@@ -271,14 +286,14 @@
 <body>
     <div class="card-grid">
         <div class="header">
-            <h1>练秋湖D组团 · 周期下拉</h1>
-            <div class="sub">🏷️ 会议室二维码 · 下拉周期 + 正则筛选</div>
+            <h1>练秋湖D组团 · 带计数</h1>
+            <div class="sub">🏷️ 下拉周期 + 正则 + 实时房间计数</div>
         </div>
 
-        <!-- 筛选栏：周期下拉 + 重置 + 正则输入框 (动态生成时填充) -->
+        <!-- 筛选栏：周期下拉 + 重置 + 正则输入框 + 计数标签 (动态生成) -->
         <div id="filterBar" class="filter-bar">
             <span class="filter-label">📅 周期</span>
-            <!-- 下拉会动态生成在此处，重置按钮也动态插入，正则同样 -->
+            <!-- 其余控件由js动态插入，包括计数标签 -->
         </div>
 
         <!-- 二维码卡片网格 -->
@@ -287,7 +302,7 @@
         </div>
 
         <div class="footer-note">
-            🌐 by aki · 周期下拉版 · 2026/3/3
+            🌐 by aki · 周期下拉 + 计数标签 · 2026/3/3
         </div>
     </div>
 
@@ -307,9 +322,10 @@
             // 防抖timer
             let debounceTimer = null;
 
-            // DOM元素引用 (后续赋值)
+            // DOM元素引用
             let periodSelect = null;
             let regexInput = null;
+            let countSpan = null;          // 新增计数标签
 
             // ---------- 工具函数：渲染卡片 ----------
             function renderQRCards(items) {
@@ -398,31 +414,36 @@
                         filtered = filtered.filter(item => regex.test(item.room));
                     } catch (e) {
                         console.warn('无效的正则表达式:', currentRegex, e);
-                        // 正则无效，暂时不应用过滤，保持原filtered
-                        // 可以在输入框样式提示，略
+                        // 正则无效，不应用过滤，保持原filtered
                     }
                 }
                 return filtered;
             }
 
-            // 更新网格
-            function updateGrid() {
+            // 更新网格 + 更新计数标签
+            function updateGridAndCount() {
                 if (!masterData.length) {
                     grid.innerHTML = `<div class="loading-placeholder">⏳ 暂无数据</div>`;
+                    if (countSpan) countSpan.textContent = '0';
                     return;
                 }
                 const filtered = getFilteredData();
                 renderQRCards(filtered);
+                // 更新计数标签
+                if (countSpan) {
+                    countSpan.textContent = filtered.length;
+                }
             }
 
+            // 防抖包装 (只更新grid，内部调用了更新count)
             function debouncedUpdate() {
                 if (debounceTimer) clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
-                    updateGrid();
+                    updateGridAndCount();
                 }, 300);
             }
 
-            // ---------- 构建新式筛选条：下拉周期 + 重置 + 正则输入 ----------
+            // ---------- 构建新式筛选条：下拉周期 + 重置 + 正则输入 + 计数标签 ----------
             function buildFilterControls() {
                 // 清空filterBar，保留最前面的 label (手动重建)
                 filterBar.innerHTML = '<span class="filter-label">📅 周期</span>';
@@ -453,10 +474,18 @@
                 `;
                 filterBar.appendChild(regexWrapper);
 
+                // 4. 新增计数标签 (放在正则后面)
+                const countBadge = document.createElement('span');
+                countBadge.className = 'count-badge';
+                countBadge.id = 'roomCountBadge';
+                countBadge.textContent = '0';  // 初始0
+                filterBar.appendChild(countBadge);
+
                 // 获取元素引用
                 periodSelect = document.getElementById('periodSelect');
                 regexInput = document.getElementById('regexInput');
                 const regexClear = document.getElementById('regexClearBtn');
+                countSpan = document.getElementById('roomCountBadge');
 
                 // --- 填充下拉选项 (从masterData提取唯一period) ---
                 function populateSelect() {
@@ -499,7 +528,7 @@
                     const val = e.target.value;
                     // 空字符串代表全部
                     currentPeriod = val === '' ? null : val;
-                    updateGrid(); // 不防抖，直接更新
+                    updateGridAndCount(); // 直接更新
                 });
 
                 // --- 监听正则输入 ---
@@ -512,7 +541,7 @@
                 regexClear.addEventListener('click', () => {
                     regexInput.value = '';
                     currentRegex = '';
-                    updateGrid(); // 立即更新
+                    updateGridAndCount(); // 立即更新
                     regexInput.focus();
                 });
 
@@ -526,15 +555,14 @@
                     regexInput.value = '';
                     currentRegex = '';
 
-                    updateGrid();
+                    updateGridAndCount();
                 });
 
-                // 如果后续masterData更新（本例只加载一次），但保留动态增加能力（一般不需要，但假如未来重新填充可调用populate）
-                // 为了一致，暴露给load
+                // 提供给外部刷新下拉的方法 (例如数据重载时)
                 window._refreshPeriodSelect = populateSelect;
             }
 
-            // ---------- CSV解析 (与之前相同) ----------
+            // ---------- CSV解析 (保持不变) ----------
             function parseCSV(csvText) {
                 const lines = [];
                 const rawLines = csvText.split(/\r?\n/);
@@ -629,19 +657,20 @@
 
                     masterData = parsedData;
 
-                    // 构建下拉控件 (第一次调用)
+                    // 构建下拉控件 (内部会调用populateSelect并创建计数标签)
                     buildFilterControls();
 
-                    // 确保周期下拉填充 (如果masterData变化，但之前已经调用buildFilterControls，内部会调用populateSelect? 在build里根据masterData填充)
-                    // 但我们在build里第一次填充过，而且数据已经存在；如果masterData之后又有变化(此处一次性)，可以手动刷新下拉
+                    // 确保下拉选项刷新 (已经包含在build中)
                     if (window._refreshPeriodSelect) window._refreshPeriodSelect();
 
-                    // 初始更新网格
-                    updateGrid();
+                    // 初始更新网格 + 计数
+                    updateGridAndCount();
                 })
                 .catch(error => {
                     console.error(error);
                     grid.innerHTML = `<div class="error-message">🚫 读取 ${csvPath} 失败。<br>请确认文件存在且格式正确。详情：${error.message}</div>`;
+                    // 即便失败也显示计数0
+                    if (countSpan) countSpan.textContent = '0';
                 });
             }
 
