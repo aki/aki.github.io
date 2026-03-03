@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练秋湖D组团 · 时段筛选</title>
+    <title>练秋湖D组团 · 时段+正则筛选</title>
     <!-- 轻量二维码库 -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-    <!-- 简洁样式：羊皮纸风格 + 筛选条 -->
+    <!-- 简洁样式：羊皮纸风格 + 筛选条 + 正则输入框 -->
     <style>
         * {
             box-sizing: border-box;
@@ -14,7 +14,7 @@
             font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
         }
         body {
-            background: #fcf8f0;  /* 羊皮纸底色 */
+            background: #fcf8f0;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -48,7 +48,7 @@
             display: inline-block;
         }
 
-        /* 筛选栏 — 优雅小药丸 */
+        /* 筛选栏 — 更宽以适应输入框 */
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
@@ -60,6 +60,7 @@
             border-radius: 60px;
             margin: 1.5rem auto 2.2rem auto;
             width: fit-content;
+            max-width: 100%;
             border: 1px solid #e1d2c0;
             box-shadow: 0 4px 12px rgba(93, 74, 54, 0.08);
         }
@@ -71,6 +72,7 @@
             background: #e8d9c8;
             padding: 0.3rem 1.2rem;
             border-radius: 40px;
+            white-space: nowrap;
         }
         .filter-btn {
             background: transparent;
@@ -83,6 +85,7 @@
             cursor: pointer;
             transition: 0.15s;
             border: 1px solid transparent;
+            white-space: nowrap;
         }
         .filter-btn:hover {
             background: #e8d9c8;
@@ -104,7 +107,54 @@
             background: #f5e5d2;
         }
 
-        /* 卡片网格 — 默认6列 */
+        /* 正则输入框区域 */
+        .regex-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #fffbf5;
+            padding: 0.2rem 0.5rem 0.2rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #d2bca5;
+            margin-left: 0.5rem;
+        }
+        .regex-icon {
+            color: #7c6b58;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        #regexInput {
+            border: none;
+            background: transparent;
+            padding: 0.4rem 0.2rem;
+            font-size: 0.95rem;
+            outline: none;
+            color: #5d4a36;
+            min-width: 160px;
+            font-family: 'Courier New', monospace;
+        }
+        #regexInput::placeholder {
+            color: #b9a792;
+            font-style: italic;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .regex-clear {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #a48e78;
+            padding: 0 0.3rem;
+            border-radius: 50%;
+            line-height: 1;
+        }
+        .regex-clear:hover {
+            color: #5d4a36;
+            background: #ede3d6;
+        }
+
+        /* 卡片网格 */
         .qr-container {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -114,7 +164,6 @@
             transition: 0.3s;
         }
 
-        /* 卡片样式 */
         .qr-card {
             background: #fffbf5;
             width: 100%;
@@ -159,7 +208,6 @@
             width: 100%;
             margin-top: 0.3rem;
         }
-        /* 时段标记小标签 */
         .period-badge {
             background: #e8d9c8;
             color: #4a3a2a;
@@ -214,19 +262,19 @@
             <h1>练秋湖D组团 · 时段房态</h1>
         </div>
 
-        <!-- 筛选按钮动态插入到此区域 -->
+        <!-- 筛选按钮 + 正则输入框 (动态生成部分 + 静态输入框) 为了保留结构，filterSection只放时段按钮，输入框单独追加 -->
         <div id="filterSection" class="filter-bar">
             <span class="filter-label">📅 时段</span>
-            <!-- 通过js生成按钮，包含“全部”和各period值 -->
+            <!-- 时段按钮通过js生成在此处 -->
         </div>
 
         <!-- 二维码卡片网格 -->
         <div id="qrGrid" class="qr-container">
-            <div class="loading-placeholder">⏳ 载入 JSON 数据中……</div>
+            <div class="loading-placeholder">⏳ 载入 CSV 数据中……</div>
         </div>
 
         <div class="footer-note">
-            🌐 by aki 2026/3/2 · 数据包含 period 分类
+            🌐 by aki 2026/3/2 · 数据来源于CSV，支持正则匹配房间名
         </div>
     </div>
 
@@ -235,36 +283,38 @@
             const grid = document.getElementById('qrGrid');
             const filterDiv = document.getElementById('filterSection');
 
-            // 存储原始所有卡片数据 (从JSON解析出来的完整数组)
+            // 存储原始所有卡片数据
             let masterData = [];
 
             // 当前选中的period (null表示全部)
             let currentPeriod = null;
+            // 当前正则表达式字符串 (空串表示无过滤)
+            let currentRegex = '';
+
+            // 用于防抖的timer
+            let debounceTimer = null;
 
             // ---------- 渲染卡片 (接受过滤后的数据) ----------
             function renderQRCards(items) {
                 grid.innerHTML = '';  // 清空
 
                 if (!items || items.length === 0) {
-                    grid.innerHTML = `<div class="error-message" style="background: #f5ede1; color: #7c6b58;">📭 没有符合该时段的会议室</div>`;
+                    grid.innerHTML = `<div class="error-message" style="background: #f5ede1; color: #7c6b58;">📭 没有符合该时段 + 正则条件的会议室</div>`;
                     return;
                 }
 
                 items.forEach(item => {
                     const room = item.room || '未命名会议室';
                     const code = item.code || '';
-                    const period = item.period || '未分类';   // 显示用
+                    const period = item.period || '未分类';
 
-                    // 卡片创建
                     const card = document.createElement('div');
                     card.className = 'qr-card';
 
-                    // 二维码区域
                     const qrWrapper = document.createElement('div');
                     qrWrapper.className = 'qr-canvas-wrap';
 
                     if (!code) {
-                        // 无code展示警告
                         qrWrapper.innerHTML = `<span style="font-size:2rem; color:#b3563b;">⚠️</span>`;
                     } else {
                         try {
@@ -299,14 +349,13 @@
 
                     card.appendChild(qrWrapper);
 
-                    // 标题 + period小标
                     const titleEl = document.createElement('div');
                     titleEl.className = 'card-title';
                     titleEl.textContent = room;
 
                     const periodEl = document.createElement('div');
                     periodEl.className = 'period-badge';
-                    periodEl.textContent = period;   // 直接显示period字段
+                    periodEl.textContent = period;
 
                     card.appendChild(titleEl);
                     card.appendChild(periodEl);
@@ -314,54 +363,75 @@
                 });
             }
 
-            // ---------- 更新视图 (根据currentPeriod过滤masterData) ----------
-            function updateGridByFilter() {
+            // ---------- 综合过滤 (period + 正则) ----------
+            function getFilteredData() {
+                if (!masterData.length) return [];
+
+                let filtered = masterData;
+
+                // 时段过滤
+                if (currentPeriod !== null) {
+                    filtered = filtered.filter(item => item.period === currentPeriod);
+                }
+
+                // 正则过滤 (如果输入非空)
+                if (currentRegex.trim() !== '') {
+                    try {
+                        const regex = new RegExp(currentRegex, 'i'); // 忽略大小写
+                        filtered = filtered.filter(item => regex.test(item.room));
+                    } catch (e) {
+                        // 正则无效：暂时不过滤，但可以提示（但为了体验，我们返回原过滤但可以在控制台警告）
+                        console.warn('无效的正则表达式:', currentRegex, e);
+                        // 也可以选择显示错误，但为了不中断UI，这里返回未应用正则的过滤（或返回空？选择返回未应用）
+                        // 为了友好，依然返回 filtered (时段过滤后的数据) 但给用户一个视觉提示？可以通过输入框边框变色，此处略。
+                        // 为了清晰，我们在输入框标题简单提示，但保持数据不变。
+                    }
+                }
+
+                return filtered;
+            }
+
+            // 更新视图 (从masterData计算过滤后数据并渲染)
+            function updateGrid() {
                 if (!masterData.length) {
                     grid.innerHTML = `<div class="loading-placeholder">⏳ 暂无数据</div>`;
                     return;
                 }
 
-                let filtered = masterData;
-                if (currentPeriod !== null) {
-                    filtered = masterData.filter(item => item.period === currentPeriod);
-                }
+                const filtered = getFilteredData();
                 renderQRCards(filtered);
+            }
+
+            // 防抖更新 (用于输入框)
+            function debouncedUpdate() {
+                if (debounceTimer) clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    updateGrid();
+                }, 300);
             }
 
             // ---------- 生成筛选按钮 (从masterData提取唯一period) ----------
             function buildFilterButtons() {
-                // 提取所有period值 (过滤掉空字符串或null，但保留'未分类'等)
                 const periodSet = new Set();
-                masterData.forEach(item => {
-                    // 如果period不存在，可以归为'未指定'；但一般json会有字段
-                    if (item.hasOwnProperty('period')) {
-                        // 保证字符串，即使是数字也转成字符串
-                        periodSet.add(String(item.period));
-                    } else {
-                        periodSet.add('未指定');
-                    }
-                });
-
-                // 转换为数组并排序 (可选)
+                masterData.forEach(item => periodSet.add(String(item.period)));
                 let periods = Array.from(periodSet).sort((a,b) => a.localeCompare(b));
 
-                // 清空filterDiv，保留左侧的filter-label (手动保留)
+                // 清空filterDiv，保留左侧的filter-label (第一个span)
                 filterDiv.innerHTML = '<span class="filter-label">📅 时段</span>';
 
-                // 添加“全部”按钮 (始终显示)
+                // 全部按钮
                 const allBtn = document.createElement('button');
                 allBtn.className = `filter-btn ${currentPeriod === null ? 'active' : ''}`;
                 allBtn.textContent = '全部';
-                allBtn.dataset.period = 'null';  // 字符串标记
+                allBtn.dataset.period = 'null';
                 allBtn.addEventListener('click', () => {
                     currentPeriod = null;
-                    // 按钮激活样式更新
                     updateActiveClass();
-                    updateGridByFilter();
+                    updateGrid();
                 });
                 filterDiv.appendChild(allBtn);
 
-                // 添加每个period按钮
+                // 每个period按钮
                 periods.forEach(p => {
                     const btn = document.createElement('button');
                     btn.className = `filter-btn ${currentPeriod === p ? 'active' : ''}`;
@@ -370,24 +440,56 @@
                     btn.addEventListener('click', () => {
                         currentPeriod = p;
                         updateActiveClass();
-                        updateGridByFilter();
+                        updateGrid();
                     });
                     filterDiv.appendChild(btn);
                 });
 
-                // 添加一个小清除图标(可选) 已经包含全部按钮，所以清除可以用全部替代，但加一个重置更顺手
+                // 重置按钮 (重置period和正则)
                 const resetBtn = document.createElement('button');
                 resetBtn.className = 'filter-btn filter-clear';
                 resetBtn.textContent = '↺ 重置';
                 resetBtn.addEventListener('click', () => {
                     currentPeriod = null;
+                    currentRegex = '';
+                    // 清空输入框的值
+                    const regexInput = document.getElementById('regexInput');
+                    if (regexInput) regexInput.value = '';
                     updateActiveClass();
-                    updateGridByFilter();
+                    updateGrid();
                 });
                 filterDiv.appendChild(resetBtn);
 
+                // ---------- 在filterDiv末尾添加正则输入框 (单独包装) ----------
+                const regexWrapper = document.createElement('div');
+                regexWrapper.className = 'regex-wrapper';
+                regexWrapper.innerHTML = `
+                    <span class="regex-icon">🔍 regex</span>
+                    <input type="text" id="regexInput" placeholder="房间名正则 (如 101|202)" value="">
+                    <button class="regex-clear" id="regexClearBtn" title="清除正则">✕</button>
+                `;
+                filterDiv.appendChild(regexWrapper);
+
+                // 绑定输入事件
+                const inputEl = document.getElementById('regexInput');
+                const clearBtn = document.getElementById('regexClearBtn');
+
+                inputEl.addEventListener('input', (e) => {
+                    currentRegex = e.target.value;
+                    // 输入时更新period激活样式？但period保持原样。只需要更新网格
+                    // 但需要保持按钮active样式不变
+                    debouncedUpdate();
+                });
+
+                clearBtn.addEventListener('click', () => {
+                    inputEl.value = '';
+                    currentRegex = '';
+                    updateGrid(); // 立即更新，无需防抖
+                    inputEl.focus();
+                });
+
+                // 更新按钮激活状态
                 function updateActiveClass() {
-                    // 遍历所有按钮，设置active
                     Array.from(filterDiv.querySelectorAll('.filter-btn')).forEach(btn => {
                         if (btn.dataset.period === 'null' && currentPeriod === null) {
                             btn.classList.add('active');
@@ -400,70 +502,110 @@
                 }
             }
 
-            // ---------- 加载JSON数据 ----------
-            function loadJSONData() {
-                const jsonPath = 'qr-data.json';  // 相对路径，适合github.io
+            // ---------- 解析CSV (复用之前的代码) ----------
+            function parseCSV(csvText) {
+                const lines = [];
+                const rawLines = csvText.split(/\r?\n/);
+                for (let line of rawLines) {
+                    if (line.trim() === '') continue;
+                    lines.push(line);
+                }
 
-                fetch(jsonPath, { method: 'GET', headers: { 'Accept': 'application/json' } })
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP ${response.status} — 无法加载 ${jsonPath}`);
-                    return response.json();
-                })
-                .then(data => {
-                    // 解析数组 (兼容多种字段)
-                    let itemsArray = null;
-                    if (Array.isArray(data)) {
-                        itemsArray = data;
-                    } else if (data && Array.isArray(data.items)) {
-                        itemsArray = data.items;
-                    } else if (data && Array.isArray(data.rooms)) {
-                        itemsArray = data.rooms;
-                    } else if (data && Array.isArray(data.data)) {
-                        itemsArray = data.data;
-                    } else {
-                        // 尝试取第一个数组字段
-                        for (let key in data) {
-                            if (Array.isArray(data[key])) {
-                                itemsArray = data[key];
-                                break;
+                if (lines.length < 2) {
+                    throw new Error('CSV至少需要一行标题+一行数据');
+                }
+
+                function parseCSVLine(line) {
+                    const result = [];
+                    let current = '';
+                    let inQuotes = false;
+                    for (let i = 0; i < line.length; i++) {
+                        const ch = line[i];
+                        if (ch === '"') {
+                            if (inQuotes && line[i+1] === '"') {
+                                current += '"';
+                                i++;
+                            } else {
+                                inQuotes = !inQuotes;
                             }
+                        } else if (ch === ',' && !inQuotes) {
+                            result.push(current);
+                            current = '';
+                        } else {
+                            current += ch;
                         }
                     }
+                    result.push(current);
+                    return result;
+                }
 
-                    if (!itemsArray) {
-                        grid.innerHTML = `<div class="error-message">❌ JSON 中未找到数组数据。需要包含 room, code, period 的数组。</div>`;
-                        return;
-                    }
+                const header = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
+                let roomIdx = header.findIndex(h => h === 'room' || h === '会议室' || h === '名称');
+                let codeIdx = header.findIndex(h => h === 'code' || h === '二维码' || h === 'qr' || h === '内容');
+                let periodIdx = header.findIndex(h => h === 'period' || h === '时段' || h === '时间段');
 
-                    // 保存到masterData，并保证每条至少包含room/code/period（缺失则补默认）
-                    masterData = itemsArray.map((item, idx) => {
-                        return {
-                            room: item.room || `会议室-${idx+1}`,
-                            code: item.code || '',
-                            period: item.period !== undefined ? String(item.period) : '未指定'
-                        };
+                if (roomIdx === -1 && codeIdx === -1 && periodIdx === -1 && header.length >= 3) {
+                    console.warn('未找到标准列名，尝试按顺序映射 (第1列->room, 第2列->code, 第3列->period)');
+                    roomIdx = 0;
+                    codeIdx = 1;
+                    periodIdx = 2;
+                }
+
+                if (roomIdx === -1 || codeIdx === -1 || periodIdx === -1) {
+                    throw new Error('CSV缺少必要的列(room, code, period)');
+                }
+
+                const dataRows = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const values = parseCSVLine(lines[i]);
+                    while (values.length < header.length) values.push('');
+                    const roomVal = values[roomIdx] ? values[roomIdx].trim() : `会议室-${i}`;
+                    const codeVal = values[codeIdx] ? values[codeIdx].trim() : '';
+                    const periodVal = values[periodIdx] ? values[periodIdx].trim() : '未指定';
+
+                    dataRows.push({
+                        room: roomVal,
+                        code: codeVal,
+                        period: periodVal || '未指定'
                     });
+                }
+                return dataRows;
+            }
 
-                    // 如果没有任何数据
-                    if (masterData.length === 0) {
-                        grid.innerHTML = `<div class="error-message">📂 数组为空，请添加数据</div>`;
+            // ---------- 加载CSV数据 ----------
+            function loadCSVData() {
+                const csvPath = 'qr-data.csv';
+
+                fetch(csvPath, { method: 'GET', headers: { 'Accept': 'text/csv' } })
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status} — 无法加载 ${csvPath}`);
+                    return response.text();
+                })
+                .then(csvText => {
+                    let parsedData;
+                    try {
+                        parsedData = parseCSV(csvText);
+                    } catch (parseErr) {
+                        grid.innerHTML = `<div class="error-message">❌ CSV 解析失败: ${parseErr.message}</div>`;
                         return;
                     }
 
-                    // 构建筛选按钮 (必须先有masterData)
-                    buildFilterButtons();
+                    if (!parsedData || parsedData.length === 0) {
+                        grid.innerHTML = `<div class="error-message">📂 CSV 解析后无数据行，请检查文件内容。</div>`;
+                        return;
+                    }
 
-                    // 初始显示全部 (currentPeriod = null)
-                    updateGridByFilter();
+                    masterData = parsedData;
+                    buildFilterButtons();   // 这会同时添加正则输入框
+                    updateGrid();            // 初始显示全部
                 })
                 .catch(error => {
                     console.error(error);
-                    grid.innerHTML = `<div class="error-message">🚫 读取 ${jsonPath} 失败。<br>请确认文件存在且格式正确。详情：${error.message}</div>`;
+                    grid.innerHTML = `<div class="error-message">🚫 读取 ${csvPath} 失败。<br>请确认文件存在且格式正确。详情：${error.message}</div>`;
                 });
             }
 
-            // 开始加载
-            loadJSONData();
+            loadCSVData();
         })();
     </script>
 </body>
