@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练秋湖D组团</title>
-    <!-- 轻量二维码库 -->
-    <script src="qrcode.min.js"></script>
-    <!-- 简洁样式：羊皮纸风格 + 筛选条 + 正则输入框 -->
+    <title>练秋湖D组团 · 下拉周期</title>
+    <!-- 轻量二维码库 (qrcode-generator) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <!-- 简洁样式：羊皮纸风格 + 下拉周期 + 正则输入框 -->
     <style>
         * {
             box-sizing: border-box;
@@ -48,13 +48,13 @@
             display: inline-block;
         }
 
-        /* 筛选栏 — 更宽以适应输入框 */
+        /* 筛选栏 — 用下拉代替按钮组，保留正则 */
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: center;
-            gap: 0.8rem 1.2rem;
+            gap: 0.8rem 1.5rem;
             background: #f5ede1;
             padding: 0.9rem 2rem;
             border-radius: 60px;
@@ -74,36 +74,49 @@
             border-radius: 40px;
             white-space: nowrap;
         }
-        .filter-btn {
+        /* 下拉周期样式 */
+        .period-select-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #fffbf5;
+            padding: 0.2rem 0.5rem 0.2rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #d2bca5;
+        }
+        .period-select {
             background: transparent;
             border: none;
-            padding: 0.4rem 1.2rem;
+            padding: 0.4rem 1.5rem 0.4rem 0.5rem;
             font-size: 0.95rem;
-            font-weight: 500;
-            border-radius: 40px;
             color: #5d4a36;
+            outline: none;
+            border-radius: 30px;
             cursor: pointer;
-            transition: 0.15s;
-            border: 1px solid transparent;
-            white-space: nowrap;
+            font-weight: 500;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235d4a36' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 0.2rem center;
+            background-size: 1rem;
         }
-        .filter-btn:hover {
-            background: #e8d9c8;
-            border-color: #d2bca5;
+        .period-select option {
+            background: #fffbf5;
+            color: #2d2d2d;
         }
-        .filter-btn.active {
-            background: #5d4a36;
-            color: #fcf8f0;
-            box-shadow: 0 4px 8px rgba(93, 74, 54, 0.3);
-            border-color: #5d4a36;
-        }
-        .filter-clear {
+        .reset-btn {
             background: #fff3e0;
             border: 1px solid #d2bca5;
             color: #7c5e40;
-            margin-left: 0.5rem;
+            border-radius: 40px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.15s;
         }
-        .filter-clear:hover {
+        .reset-btn:hover {
             background: #f5e5d2;
         }
 
@@ -116,7 +129,6 @@
             padding: 0.2rem 0.5rem 0.2rem 1rem;
             border-radius: 40px;
             border: 1px solid #d2bca5;
-            margin-left: 0.5rem;
         }
         .regex-icon {
             color: #7c6b58;
@@ -259,13 +271,14 @@
 <body>
     <div class="card-grid">
         <div class="header">
-            <h1>练秋湖D组团</h1>
+            <h1>练秋湖D组团 · 周期下拉</h1>
+            <div class="sub">🏷️ 会议室二维码 · 下拉周期 + 正则筛选</div>
         </div>
 
-        <!-- 筛选按钮 + 正则输入框 (动态生成部分 + 静态输入框) 为了保留结构，filterSection只放时段按钮，输入框单独追加 -->
-        <div id="filterSection" class="filter-bar">
+        <!-- 筛选栏：周期下拉 + 重置 + 正则输入框 (动态生成时填充) -->
+        <div id="filterBar" class="filter-bar">
             <span class="filter-label">📅 周期</span>
-            <!-- 时段按钮通过js生成在此处 -->
+            <!-- 下拉会动态生成在此处，重置按钮也动态插入，正则同样 -->
         </div>
 
         <!-- 二维码卡片网格 -->
@@ -274,29 +287,33 @@
         </div>
 
         <div class="footer-note">
-            🌐 by aki 2026/3/3
+            🌐 by aki · 周期下拉版 · 2026/3/3
         </div>
     </div>
 
     <script>
         (function() {
             const grid = document.getElementById('qrGrid');
-            const filterDiv = document.getElementById('filterSection');
+            const filterBar = document.getElementById('filterBar');
 
-            // 存储原始所有卡片数据
+            // 原始数据
             let masterData = [];
 
-            // 当前选中的period (null表示全部)
+            // 当前选中的周期 (null = 全部)
             let currentPeriod = null;
-            // 当前正则表达式字符串 (空串表示无过滤)
+            // 当前正则字符串
             let currentRegex = '';
 
-            // 用于防抖的timer
+            // 防抖timer
             let debounceTimer = null;
 
-            // ---------- 渲染卡片 (接受过滤后的数据) ----------
+            // DOM元素引用 (后续赋值)
+            let periodSelect = null;
+            let regexInput = null;
+
+            // ---------- 工具函数：渲染卡片 ----------
             function renderQRCards(items) {
-                grid.innerHTML = '';  // 清空
+                grid.innerHTML = '';
 
                 if (!items || items.length === 0) {
                     grid.innerHTML = `<div class="error-message" style="background: #f5ede1; color: #7c6b58;">📭 没有符合该时段 + 正则条件的会议室</div>`;
@@ -363,46 +380,41 @@
                 });
             }
 
-            // ---------- 综合过滤 (period + 正则) ----------
+            // ---------- 过滤逻辑 (period + 正则) ----------
             function getFilteredData() {
                 if (!masterData.length) return [];
 
                 let filtered = masterData;
 
-                // 时段过滤
+                // 周期过滤 (currentPeriod === null 代表全部)
                 if (currentPeriod !== null) {
                     filtered = filtered.filter(item => item.period === currentPeriod);
                 }
 
-                // 正则过滤 (如果输入非空)
+                // 正则过滤
                 if (currentRegex.trim() !== '') {
                     try {
-                        const regex = new RegExp(currentRegex, 'i'); // 忽略大小写
+                        const regex = new RegExp(currentRegex, 'i');
                         filtered = filtered.filter(item => regex.test(item.room));
                     } catch (e) {
-                        // 正则无效：暂时不过滤，但可以提示（但为了体验，我们返回原过滤但可以在控制台警告）
                         console.warn('无效的正则表达式:', currentRegex, e);
-                        // 也可以选择显示错误，但为了不中断UI，这里返回未应用正则的过滤（或返回空？选择返回未应用）
-                        // 为了友好，依然返回 filtered (时段过滤后的数据) 但给用户一个视觉提示？可以通过输入框边框变色，此处略。
-                        // 为了清晰，我们在输入框标题简单提示，但保持数据不变。
+                        // 正则无效，暂时不应用过滤，保持原filtered
+                        // 可以在输入框样式提示，略
                     }
                 }
-
                 return filtered;
             }
 
-            // 更新视图 (从masterData计算过滤后数据并渲染)
+            // 更新网格
             function updateGrid() {
                 if (!masterData.length) {
                     grid.innerHTML = `<div class="loading-placeholder">⏳ 暂无数据</div>`;
                     return;
                 }
-
                 const filtered = getFilteredData();
                 renderQRCards(filtered);
             }
 
-            // 防抖更新 (用于输入框)
             function debouncedUpdate() {
                 if (debounceTimer) clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
@@ -410,57 +422,28 @@
                 }, 300);
             }
 
-            // ---------- 生成筛选按钮 (从masterData提取唯一period) ----------
-            function buildFilterButtons() {
-                const periodSet = new Set();
-                masterData.forEach(item => periodSet.add(String(item.period)));
-                let periods = Array.from(periodSet).sort((a,b) => a.localeCompare(b));
+            // ---------- 构建新式筛选条：下拉周期 + 重置 + 正则输入 ----------
+            function buildFilterControls() {
+                // 清空filterBar，保留最前面的 label (手动重建)
+                filterBar.innerHTML = '<span class="filter-label">📅 周期</span>';
 
-                // 清空filterDiv，保留左侧的filter-label (第一个span)
-                filterDiv.innerHTML = '<span class="filter-label">📅 周期</span>';
+                // 1. 创建下拉容器
+                const selectWrapper = document.createElement('div');
+                selectWrapper.className = 'period-select-wrapper';
 
-                // 全部按钮
-                const allBtn = document.createElement('button');
-                allBtn.className = `filter-btn ${currentPeriod === null ? 'active' : ''}`;
-                allBtn.textContent = '全部';
-                allBtn.dataset.period = 'null';
-                allBtn.addEventListener('click', () => {
-                    currentPeriod = null;
-                    updateActiveClass();
-                    updateGrid();
-                });
-                filterDiv.appendChild(allBtn);
+                const selectEl = document.createElement('select');
+                selectEl.className = 'period-select';
+                selectEl.id = 'periodSelect';
+                selectWrapper.appendChild(selectEl);
+                filterBar.appendChild(selectWrapper);
 
-                // 每个period按钮
-                periods.forEach(p => {
-                    const btn = document.createElement('button');
-                    btn.className = `filter-btn ${currentPeriod === p ? 'active' : ''}`;
-                    btn.textContent = p;
-                    btn.dataset.period = p;
-                    btn.addEventListener('click', () => {
-                        currentPeriod = p;
-                        updateActiveClass();
-                        updateGrid();
-                    });
-                    filterDiv.appendChild(btn);
-                });
-
-                // 重置按钮 (重置period和正则)
+                // 2. 重置按钮
                 const resetBtn = document.createElement('button');
-                resetBtn.className = 'filter-btn filter-clear';
-                resetBtn.textContent = '↺ 重置';
-                resetBtn.addEventListener('click', () => {
-                    currentPeriod = null;
-                    currentRegex = '';
-                    // 清空输入框的值
-                    const regexInput = document.getElementById('regexInput');
-                    if (regexInput) regexInput.value = '';
-                    updateActiveClass();
-                    updateGrid();
-                });
-                filterDiv.appendChild(resetBtn);
+                resetBtn.className = 'reset-btn';
+                resetBtn.textContent = '↺ 重置筛选';
+                filterBar.appendChild(resetBtn);
 
-                // ---------- 在filterDiv末尾添加正则输入框 (单独包装) ----------
+                // 3. 正则输入包装
                 const regexWrapper = document.createElement('div');
                 regexWrapper.className = 'regex-wrapper';
                 regexWrapper.innerHTML = `
@@ -468,41 +451,90 @@
                     <input type="text" id="regexInput" placeholder="房间名正则 (如 101|202)" value="">
                     <button class="regex-clear" id="regexClearBtn" title="清除正则">✕</button>
                 `;
-                filterDiv.appendChild(regexWrapper);
+                filterBar.appendChild(regexWrapper);
 
-                // 绑定输入事件
-                const inputEl = document.getElementById('regexInput');
-                const clearBtn = document.getElementById('regexClearBtn');
+                // 获取元素引用
+                periodSelect = document.getElementById('periodSelect');
+                regexInput = document.getElementById('regexInput');
+                const regexClear = document.getElementById('regexClearBtn');
 
-                inputEl.addEventListener('input', (e) => {
+                // --- 填充下拉选项 (从masterData提取唯一period) ---
+                function populateSelect() {
+                    if (!masterData.length) return;
+                    const periodSet = new Set(masterData.map(item => String(item.period)));
+                    const periods = Array.from(periodSet).sort((a, b) => a.localeCompare(b));
+
+                    // 保存当前选中的值 (尝试保持)
+                    const oldVal = periodSelect.value;
+
+                    periodSelect.innerHTML = ''; // 清空
+
+                    // 添加“全部”选项，值为空字符串 (代表null)
+                    const allOption = document.createElement('option');
+                    allOption.value = '';
+                    allOption.textContent = '全部周期';
+                    periodSelect.appendChild(allOption);
+
+                    periods.forEach(p => {
+                        const opt = document.createElement('option');
+                        opt.value = p;
+                        opt.textContent = p;
+                        periodSelect.appendChild(opt);
+                    });
+
+                    // 恢复选中状态：如果currentPeriod有值且存在于选项中，否则置为全部
+                    if (currentPeriod !== null && periods.includes(currentPeriod)) {
+                        periodSelect.value = currentPeriod;
+                    } else {
+                        periodSelect.value = '';
+                        currentPeriod = null;  // 同步
+                    }
+                }
+
+                // 首次填充
+                if (masterData.length) populateSelect();
+
+                // --- 监听下拉改变 ---
+                periodSelect.addEventListener('change', (e) => {
+                    const val = e.target.value;
+                    // 空字符串代表全部
+                    currentPeriod = val === '' ? null : val;
+                    updateGrid(); // 不防抖，直接更新
+                });
+
+                // --- 监听正则输入 ---
+                regexInput.addEventListener('input', (e) => {
                     currentRegex = e.target.value;
-                    // 输入时更新period激活样式？但period保持原样。只需要更新网格
-                    // 但需要保持按钮active样式不变
                     debouncedUpdate();
                 });
 
-                clearBtn.addEventListener('click', () => {
-                    inputEl.value = '';
+                // 清除正则
+                regexClear.addEventListener('click', () => {
+                    regexInput.value = '';
                     currentRegex = '';
-                    updateGrid(); // 立即更新，无需防抖
-                    inputEl.focus();
+                    updateGrid(); // 立即更新
+                    regexInput.focus();
                 });
 
-                // 更新按钮激活状态
-                function updateActiveClass() {
-                    Array.from(filterDiv.querySelectorAll('.filter-btn')).forEach(btn => {
-                        if (btn.dataset.period === 'null' && currentPeriod === null) {
-                            btn.classList.add('active');
-                        } else if (btn.dataset.period !== 'null' && btn.dataset.period === currentPeriod) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
-                        }
-                    });
-                }
+                // --- 重置按钮：清空周期 (设为全部) 和 清空正则 ---
+                resetBtn.addEventListener('click', () => {
+                    // 周期重置为全部
+                    periodSelect.value = '';
+                    currentPeriod = null;
+
+                    // 正则重置
+                    regexInput.value = '';
+                    currentRegex = '';
+
+                    updateGrid();
+                });
+
+                // 如果后续masterData更新（本例只加载一次），但保留动态增加能力（一般不需要，但假如未来重新填充可调用populate）
+                // 为了一致，暴露给load
+                window._refreshPeriodSelect = populateSelect;
             }
 
-            // ---------- 解析CSV (复用之前的代码) ----------
+            // ---------- CSV解析 (与之前相同) ----------
             function parseCSV(csvText) {
                 const lines = [];
                 const rawLines = csvText.split(/\r?\n/);
@@ -574,7 +606,7 @@
 
             // ---------- 加载CSV数据 ----------
             function loadCSVData() {
-                const csvPath = 'data';
+                const csvPath = 'data';  // 同目录下 data 文件 (无后缀，与原逻辑一致)
 
                 fetch(csvPath, { method: 'GET', headers: { 'Accept': 'text/csv' } })
                 .then(response => {
@@ -596,8 +628,16 @@
                     }
 
                     masterData = parsedData;
-                    buildFilterButtons();   // 这会同时添加正则输入框
-                    updateGrid();            // 初始显示全部
+
+                    // 构建下拉控件 (第一次调用)
+                    buildFilterControls();
+
+                    // 确保周期下拉填充 (如果masterData变化，但之前已经调用buildFilterControls，内部会调用populateSelect? 在build里根据masterData填充)
+                    // 但我们在build里第一次填充过，而且数据已经存在；如果masterData之后又有变化(此处一次性)，可以手动刷新下拉
+                    if (window._refreshPeriodSelect) window._refreshPeriodSelect();
+
+                    // 初始更新网格
+                    updateGrid();
                 })
                 .catch(error => {
                     console.error(error);
@@ -605,6 +645,7 @@
                 });
             }
 
+            // 开始加载
             loadCSVData();
         })();
     </script>
