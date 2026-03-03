@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>练秋湖D组团 · 时段+正则筛选</title>
+    <title>练秋湖D组团</title>
     <!-- 轻量二维码库 -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="qrcode.min.js"></script>
     <!-- 简洁样式：羊皮纸风格 + 筛选条 + 正则输入框 -->
     <style>
         * {
@@ -259,12 +259,12 @@
 <body>
     <div class="card-grid">
         <div class="header">
-            <h1>练秋湖D组团 · 时段房态</h1>
+            <h1>练秋湖D组团</h1>
         </div>
 
         <!-- 筛选按钮 + 正则输入框 (动态生成部分 + 静态输入框) 为了保留结构，filterSection只放时段按钮，输入框单独追加 -->
         <div id="filterSection" class="filter-bar">
-            <span class="filter-label">📅 时段</span>
+            <span class="filter-label">📅 周期</span>
             <!-- 时段按钮通过js生成在此处 -->
         </div>
 
@@ -274,7 +274,7 @@
         </div>
 
         <div class="footer-note">
-            🌐 by aki 2026/3/2 · 数据来源于CSV，支持正则匹配房间名
+            🌐 by aki 2026/3/3
         </div>
     </div>
 
@@ -417,7 +417,7 @@
                 let periods = Array.from(periodSet).sort((a,b) => a.localeCompare(b));
 
                 // 清空filterDiv，保留左侧的filter-label (第一个span)
-                filterDiv.innerHTML = '<span class="filter-label">📅 时段</span>';
+                filterDiv.innerHTML = '<span class="filter-label">📅 周期</span>';
 
                 // 全部按钮
                 const allBtn = document.createElement('button');
@@ -574,7 +574,7 @@
 
             // ---------- 加载CSV数据 ----------
             function loadCSVData() {
-                const csvPath = 'qr-data.csv';
+                const csvPath = 'data';
 
                 fetch(csvPath, { method: 'GET', headers: { 'Accept': 'text/csv' } })
                 .then(response => {
