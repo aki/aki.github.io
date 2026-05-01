@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高等数学(经管类)13125 公式集</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+                ignoreHtmlClass: 'tex2jax_ignore'
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'SimSun', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        h2 {
+            color: #2980b9;
+            border-left: 3px solid #3498db;
+            padding-left: 10px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+        h3 {
+            color: #34495e;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        h4 {
+            font-size: 1em;
+            margin-top: 8px;
+            margin-bottom: 4px;
+            color: #2c3e50;
+        }
+        .section {
+            background: white;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .formula {
+            margin: 8px 0;
+            padding: 6px 10px;
+            background: #f8f9fa;
+            border-left: 2px solid #3498db;
+            font-size: 0.95em;
+        }
+        .note {
+            background: #fff3cd;
+            padding: 6px 10px;
+            border-radius: 3px;
+            margin: 8px 0;
+            border-left: 2px solid #ffc107;
+            font-size: 0.95em;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>高等数学(经管类)13125 公式集</h1>
+<p style="text-align: center;">基于扈志明主编《高等数学(经管类)》2023年版</p>
+
+<div class="section">
+    <h2>第一章 函数</h2>
+    
+    <h3>1.1 基本初等函数</h3>
+    
+    <h4>幂函数</h4>
+    <div class="formula">$$y = x^\alpha \quad (\alpha \in \mathbb{R})$$</div>
+    
+    <h4>指数函数</h4>
+    <div class="formula">$$y = a^x \quad (a > 0, a \neq 1)$$</div>
+    <div class="formula">$$y = e^x$$</div>
+    
+    <h4>对数函数</h4>
+    <div class="formula">$$y = \log_a x \quad (a > 0, a \neq 1)$$</div>
+    <div class="formula">$$y = \ln x = \log_e x$$</div>
+    
+    <h4>三角函数</h4>
+    <div class="formula">$$y = \sin x, \quad y = \cos x, \quad y = \tan x = \frac{\sin x}{\cos x}$$</div>
+    <div class="formula">$$y = \cot x = \frac{\cos x}{\sin x}, \quad y = \sec x = \frac{1}{\cos x}, \quad y = \csc x = \frac{1}{\sin x}$$</div>
+    
+    <h4>反三角函数</h4>
+    <div class="formula">$$y = \arcsin x, \quad y = \arccos x, \quad y = \arctan x$$</div>
+    
+    <h3>1.2 经济学中的常用函数</h3>
+    
+    <h4>需求函数</h4>
+    <div class="formula">$$Q_d = f(P) \quad \text{（需求量与价格的反函数关系）}$$</div>
+    
+    <h4>供给函数</h4>
+    <div class="formula">$$Q_s = g(P) \quad \text{（供给量与价格的正函数关系）}$$</div>
+    
+    <h4>总成本函数</h4>
+    <div class="formula">$$C(Q) = C_0 + C_1(Q)$$</div>
+    <div class="note">其中 $C_0$ 为固定成本，$C_1(Q)$ 为可变成本</div>
+    
+    <h4>平均成本函数</h4>
+    <div class="formula">$$\overline{C}(Q) = \frac{C(Q)}{Q}$$</div>
+    
+    <h4>收益函数</h4>
+    <div class="formula">$$R(Q) = P \cdot Q$$</div>
+    
+    <h4>利润函数</h4>
+    <div class="formula">$$L(Q) = R(Q) - C(Q)$$</div>
+    
+    <h4>弹性函数</h4>
+    <div class="formula">$$E_d = \frac{P}{Q} \cdot \frac{dQ}{dP} \quad \text{（需求价格弹性）}$$</div>
+</div>
+
+<div class="section">
+    <h2>第二章 极限与连续</h2>
+    
+    <h3>2.1 重要极限</h3>
+    
+    <div class="formula">$$\lim_{x \to 0} \frac{\sin x}{x} = 1$$</div>
+    
+    <div class="formula">$$\lim_{x \to \infty} \left(1 + \frac{1}{x}\right)^x = e$$</div>
+    
+    <div class="formula">$$\lim_{x \to 0} (1 + x)^{\frac{1}{x}} = e$$</div>
+    
+    <div class="formula">$$\lim_{n \to \infty} \left(1 + \frac{1}{n}\right)^n = e$$</div>
+    
+    <h3>2.2 无穷小的比较</h3>
+    
+    <div class="formula">$$\lim \frac{\beta}{\alpha} = 0 \Rightarrow \beta = o(\alpha) \quad \text{（$\beta$是$\alpha$的高阶无穷小）}$$</div>
+    
+    <div class="formula">$$\lim \frac{\beta}{\alpha} = \infty \Rightarrow \alpha = o(\beta) \quad \text{（$\beta$是$\alpha$的低阶无穷小）}$$</div>
+    
+    <div class="formula">$$\lim \frac{\beta}{\alpha} = c \neq 0 \Rightarrow \beta \sim c\alpha \quad \text{（同阶无穷小）}$$</div>
+    
+    <div class="formula">$$\lim \frac{\beta}{\alpha} = 1 \Rightarrow \beta \sim \alpha \quad \text{（等价无穷小）}$$</div>
+    
+    <h3>2.3 等价无穷小替换（当 $x \to 0$ 时）</h3>
+    
+    <div class="formula">$$\sin x \sim x, \quad \tan x \sim x, \quad \arcsin x \sim x, \quad \arctan x \sim x$$</div>
+    
+    <div class="formula">$$\ln(1+x) \sim x, \quad e^x - 1 \sim x, \quad a^x - 1 \sim x\ln a$$</div>
+    
+    <div class="formula">$$1 - \cos x \sim \frac{1}{2}x^2, \quad (1+x)^\alpha - 1 \sim \alpha x$$</div>
+</div>
+
+<div class="section">
+    <h2>第三章 导数与微分</h2>
+    
+    <h3>3.1 导数的定义</h3>
+    
+    <div class="formula">$$f'(x_0) = \lim_{\Delta x \to 0} \frac{f(x_0 + \Delta x) - f(x_0)}{\Delta x}$$</div>
+    
+    <div class="formula">$$f'(x_0) = \lim_{x \to x_0} \frac{f(x) - f(x_0)}{x - x_0}$$</div>
+    
+    <h3>3.2 基本导数公式表</h3>
+    
+    <table>
+        <tr>
+            <th>函数 $f(x)$</th>
+            <th>导数 $f'(x)$</th>
+        </tr>
+        <tr>
+            <td>$C$ (常数)</td>
+            <td>$0$</td>
+        </tr>
+        <tr>
+            <td>$x^\alpha$</td>
+            <td>$\alpha x^{\alpha-1}$</td>
+        </tr>
+        <tr>
+            <td>$a^x$</td>
+            <td>$a^x \ln a$</td>
+        </tr>
+        <tr>
+            <td>$e^x$</td>
+            <td>$e^x$</td>
+        </tr>
+        <tr>
+            <td>$\log_a x$</td>
+            <td>$\frac{1}{x \ln a}$</td>
+        </tr>
+        <tr>
+            <td>$\ln x$</td>
+            <td>$\frac{1}{x}$</td>
+        </tr>
+        <tr>
+            <td>$\sin x$</td>
+            <td>$\cos x$</td>
+        </tr>
+        <tr>
+            <td>$\cos x$</td>
+            <td>$-\sin x$</td>
+        </tr>
+        <tr>
+            <td>$\tan x$</td>
+            <td>$\sec^2 x = \frac{1}{\cos^2 x}$</td>
+        </tr>
+        <tr>
+            <td>$\cot x$</td>
+            <td>$-\csc^2 x = -\frac{1}{\sin^2 x}$</td>
+        </tr>
+        <tr>
+            <td>$\arcsin x$</td>
+            <td>$\frac{1}{\sqrt{1-x^2}}$</td>
+        </tr>
+        <tr>
+            <td>$\arccos x$</td>
+            <td>$-\frac{1}{\sqrt{1-x^2}}$</td>
+        </tr>
+        <tr>
+            <td>$\arctan x$</td>
+            <td>$\frac{1}{1+x^2}$</td>
+        </tr>
+    </table>
+    
+    <h3>3.3 求导法则</h3>
+    
+    <h4>四则运算法则</h4>
+    <div class="formula">$$(u \pm v)' = u' \pm v'$$</div>
+    <div class="formula">$$(uv)' = u'v + uv'$$</div>
+    <div class="formula">$$\left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2} \quad (v \neq 0)$$</div>
+    
+    <h4>复合函数求导法则（链式法则）</h4>
+    <div class="formula">$$\frac{dy}{dx} = \frac{dy}{du} \cdot \frac{du}{dx}$$</div>
+    <div class="formula">$$[f(g(x))]' = f'(g(x)) \cdot g'(x)$$</div>
+    
+    <h4>反函数求导法则</h4>
+    <div class="formula">$$\frac{dy}{dx} = \frac{1}{\frac{dx}{dy}} \quad \text{或} \quad f'(x) = \frac{1}{\varphi'(y)}$$</div>
+    
+    <h3>3.4 高阶导数</h3>
+    
+    <div class="formula">$$f''(x) = [f'(x)]', \quad f'''(x) = [f''(x)]', \quad \cdots, \quad f^{(n)}(x) = [f^{(n-1)}(x)]'$$</div>
+    
+    <div class="formula">$$(e^x)^{(n)} = e^x$$</div>
+    <div class="formula">$$(\sin x)^{(n)} = \sin\left(x + \frac{n\pi}{2}\right)$$</div>
+    <div class="formula">$$(\cos x)^{(n)} = \cos\left(x + \frac{n\pi}{2}\right)$$</div>
+    <div class="formula">$$(x^\alpha)^{(n)} = \alpha(\alpha-1)\cdots(\alpha-n+1)x^{\alpha-n}$$</div>
+    
+    <h3>3.5 微分</h3>
+    
+    <div class="formula">$$dy = f'(x)dx$$</div>
+    
+    <div class="formula">$$d(u \pm v) = du \pm dv$$</div>
+    <div class="formula">$$d(uv) = vdu + udv$$</div>
+    <div class="formula">$$d\left(\frac{u}{v}\right) = \frac{vdu - udv}{v^2}$$</div>
+    
+    <div class="formula">$$d[f(\varphi(x))] = f'(\varphi(x))\varphi'(x)dx$$</div>
+</div>
+
+<div class="section">
+    <h2>第四章 微分中值定理和导数的应用</h2>
+    
+    <h3>4.1 微分中值定理</h3>
+    
+    <h4>罗尔定理 (Rolle's Theorem)</h4>
+    <div class="note">若 $f(x)$ 满足：(1) 在 $[a,b]$ 上连续；(2) 在 $(a,b)$ 内可导；(3) $f(a)=f(b)$，则存在 $\xi \in (a,b)$ 使得：</div>
+    <div class="formula">$$f'(\xi) = 0$$</div>
+    
+    <h4>拉格朗日中值定理 (Lagrange's Mean Value Theorem)</h4>
+    <div class="note">若 $f(x)$ 满足：(1) 在 $[a,b]$ 上连续；(2) 在 $(a,b)$ 内可导，则存在 $\xi \in (a,b)$ 使得：</div>
+    <div class="formula">$$f(b) - f(a) = f'(\xi)(b - a)$$</div>
+    <div class="formula">$$f(x) = f(x_0) + f'(\xi)(x - x_0)$$</div>
+    
+    <h4>柯西中值定理 (Cauchy's Mean Value Theorem)</h4>
+    <div class="note">若 $f(x), g(x)$ 满足：(1) 在 $[a,b]$ 上连续；(2) 在 $(a,b)$ 内可导；(3) $g'(x) \neq 0$，则存在 $\xi \in (a,b)$ 使得：</div>
+    <div class="formula">$$\frac{f(b) - f(a)}{g(b) - g(a)} = \frac{f'(\xi)}{g'(\xi)}$$</div>
+    
+    <h3>4.2 洛必达法则 (L'Hôpital's Rule)</h3>
+    
+    <div class="formula">$$\lim \frac{f(x)}{g(x)} = \lim \frac{f'(x)}{g'(x)} \quad \left(\text{当} \frac{0}{0} \text{或} \frac{\infty}{\infty} \text{型}\right)$$</div>
+    
+    <div class="note">其他未定式：$0 \cdot \infty$, $\infty - \infty$, $0^0$, $1^\infty$, $\infty^0$ 需先化为 $\frac{0}{0}$ 或 $\frac{\infty}{\infty}$ 型</div>
+    
+    <h3>4.3 函数单调性的判定</h3>
+    
+    <div class="note">若 $f'(x) > 0$ 在 $(a,b)$ 内成立，则 $f(x)$ 在 $[a,b]$ 上单调增加</div>
+    <div class="note">若 $f'(x) < 0$ 在 $(a,b)$ 内成立，则 $f(x)$ 在 $[a,b]$ 上单调减少</div>
+    
+    <h3>4.4 函数的极值及其求法</h3>
+    
+    <div class="note">必要条件：若 $f(x)$ 在 $x_0$ 处可导且取极值，则 $f'(x_0) = 0$</div>
+    
+    <div class="note">第一充分条件：设 $f(x)$ 在 $x_0$ 处连续，在 $x_0$ 某去心邻域内可导</div>
+    <div class="formula">$$f'(x) \text{ 左正右负} \Rightarrow f(x_0) \text{ 为极大值}$$</div>
+    <div class="formula">$$f'(x) \text{ 左负右正} \Rightarrow f(x_0) \text{ 为极小值}$$</div>
+    
+    <div class="note">第二充分条件：设 $f(x)$ 在 $x_0$ 处二阶可导且 $f'(x_0) = 0$</div>
+    <div class="formula">$$f''(x_0) < 0 \Rightarrow f(x_0) \text{ 为极大值}$$</div>
+    <div class="formula">$$f''(x_0) > 0 \Rightarrow f(x_0) \text{ 为极小值}$$</div>
+    
+    <h3>4.5 函数的最值及其应用</h3>
+    
+    <div class="note">求闭区间 $[a,b]$ 上连续函数 $f(x)$ 最值的步骤：</div>
+    <div class="formula">$$1. \text{求 } f'(x) = 0 \text{ 的点（驻点）}$$</div>
+    <div class="formula">$$2. \text{求不可导点}$$</div>
+    <div class="formula">$$3. \text{比较 } f(a), f(b) \text{ 及所有驻点和不可导点的函数值}$$</div>
+    
+    <h3>4.6 曲线的凹凸性和拐点</h3>
+    
+    <div class="note">若 $f''(x) > 0$ 在 $(a,b)$ 内成立，则曲线 $y=f(x)$ 在 $[a,b]$ 上是凹的</div>
+    <div class="note">若 $f''(x) < 0$ 在 $(a,b)$ 内成立，则曲线 $y=f(x)$ 在 $[a,b]$ 上是凸的</div>
+    
+    <div class="note">拐点：曲线凹凸性发生改变的点 $(x_0, f(x_0))$，且 $f''(x_0) = 0$ 或 $f''(x_0)$ 不存在</div>
+    
+    <h3>4.7 曲线的渐近线</h3>
+    
+    <div class="formula">$$\text{水平渐近线：} y = b, \text{ 其中 } \lim_{x \to \infty} f(x) = b$$</div>
+    <div class="formula">$$\text{垂直渐近线：} x = x_0, \text{ 其中 } \lim_{x \to x_0} f(x) = \infty$$</div>
+    <div class="formula">$$\text{斜渐近线：} y = kx + b, \text{ 其中 } k = \lim_{x \to \infty} \frac{f(x)}{x}, b = \lim_{x \to \infty} [f(x) - kx]$$</div>
+    
+    <h3>4.8 导数在经济分析中的应用</h3>
+    
+    <h4>边际分析</h4>
+    <div class="formula">$$\text{边际成本：} MC = C'(Q)$$</div>
+    <div class="formula">$$\text{边际收益：} MR = R'(Q)$$</div>
+    <div class="formula">$$\text{边际利润：} ML = L'(Q)$$</div>
+    
+    <h4>弹性分析</h4>
+    <div class="formula">$$E_d = \frac{P}{Q} \cdot \frac{dQ}{dP} \quad \text{（需求价格弹性）}$$</div>
+    <div class="note">$|E_d| > 1$：富有弹性（降价增加收益）</div>
+    <div class="note">$|E_d| < 1$：缺乏弹性（涨价增加收益）</div>
+    <div class="note">$|E_d| = 1$：单位弹性</div>
+</div>
+
+<div class="section">
+    <h2>第五章 一元函数积分学</h2>
+    
+    <h3>5.1 原函数与不定积分的概念</h3>
+    
+    <div class="formula">$$\int f(x)dx = F(x) + C \quad \text{其中 } F'(x) = f(x)$$</div>
+    
+    <h3>5.2 基本积分公式表</h3>
+    
+    <table>
+        <tr>
+            <th>被积函数 $f(x)$</th>
+            <th>不定积分 $\int f(x)dx$</th>
+        </tr>
+        <tr>
+            <td>$k$ (常数)</td>
+            <td>$kx + C$</td>
+        </tr>
+        <tr>
+            <td>$x^\alpha \quad (\alpha \neq -1)$</td>
+            <td>$\frac{x^{\alpha+1}}{\alpha+1} + C$</td>
+        </tr>
+        <tr>
+            <td>$\frac{1}{x}$</td>
+            <td>$\ln|x| + C$</td>
+        </tr>
+        <tr>
+            <td>$e^x$</td>
+            <td>$e^x + C$</td>
+        </tr>
+        <tr>
+            <td>$a^x$</td>
+            <td>$\frac{a^x}{\ln a} + C$</td>
+        </tr>
+        <tr>
+            <td>$\sin x$</td>
+            <td>$-\cos x + C$</td>
+        </tr>
+        <tr>
+            <td>$\cos x$</td>
+            <td>$\sin x + C$</td>
+        </tr>
+        <tr>
+            <td>$\frac{1}{\cos^2 x} = \sec^2 x$</td>
+            <td>$\tan x + C$</td>
+        </tr>
+        <tr>
+            <td>$\frac{1}{\sin^2 x} = \csc^2 x$</td>
+            <td>$-\cot x + C$</td>
+        </tr>
+        <tr>
+            <td>$\frac{1}{\sqrt{1-x^2}}$</td>
+            <td>$\arcsin x + C$</td>
+        </tr>
+        <tr>
+            <td>$\frac{1}{1+x^2}$</td>
+            <td>$\arctan x + C$</td>
+        </tr>
+    </table>
+    
+    <h3>5.3 积分运算法则</h3>
+    
+    <div class="formula">$$\int [f(x) \pm g(x)]dx = \int f(x)dx \pm \int g(x)dx$$</div>
+    <div class="formula">$$\int kf(x)dx = k\int f(x)dx \quad (k \text{ 为常数})$$</div>
+    
+    <h3>5.4 换元积分法</h3>
+    
+    <h4>第一类换元法（凑微分法）</h4>
+    <div class="formula">$$\int f[\varphi(x)]\varphi'(x)dx = \int f(u)du = F(u) + C = F[\varphi(x)] + C$$</div>
+    
+    <h4>第二类换元法</h4>
+    <div class="formula">$$\int f(x)dx = \int f[\psi(t)]\psi'(t)dt = F(t) + C = F[\psi^{-1}(x)] + C$$</div>
+    
+    <div class="note">常用换元：</div>
+    <div class="formula">$$\sqrt{a^2 - x^2}: x = a\sin t \text{ 或 } x = a\cos t$$</div>
+    <div class="formula">$$\sqrt{a^2 + x^2}: x = a\tan t \text{ 或 } x = a\cot t$$</div>
+    <div class="formula">$$\sqrt{x^2 - a^2}: x = a\sec t \text{ 或 } x = a\csc t$$</div>
+    
+    <h3>5.5 分部积分法</h3>
+    
+    <div class="formula">$$\int u dv = uv - \int v du$$</div>
+    
+    <div class="note">选择 $u$ 的优先级（LIATE法则）：对数(Logarithmic) > 反三角(Inverse trig) > 代数(Algebraic) > 三角(Trigonometric) > 指数(Exponential)</div>
+    
+    <h3>5.6 微分方程初步</h3>
+    
+    <h4>可分离变量的微分方程</h4>
+    <div class="formula">$$\frac{dy}{dx} = f(x)g(y) \Rightarrow \int \frac{dy}{g(y)} = \int f(x)dx$$</div>
+    
+    <h4>一阶线性微分方程</h4>
+    <div class="formula">$$\frac{dy}{dx} + P(x)y = Q(x)$$</div>
+    <div class="formula">$$y = e^{-\int P(x)dx}\left[\int Q(x)e^{\int P(x)dx}dx + C\right]$$</div>
+    
+    <h3>5.7 定积分的概念及其基本性质</h3>
+    
+    <div class="formula">$$\int_a^b f(x)dx = \lim_{\lambda \to 0} \sum_{i=1}^n f(\xi_i)\Delta x_i$$</div>
+    
+    <h4>定积分的性质</h4>
+    <div class="formula">$$\int_a^b f(x)dx = -\int_b^a f(x)dx$$</div>
+    <div class="formula">$$\int_a^a f(x)dx = 0$$</div>
+    <div class="formula">$$\int_a^b [f(x) \pm g(x)]dx = \int_a^b f(x)dx \pm \int_a^b g(x)dx$$</div>
+    <div class="formula">$$\int_a^b kf(x)dx = k\int_a^b f(x)dx$$</div>
+    <div class="formula">$$\int_a^b f(x)dx = \int_a^c f(x)dx + \int_c^b f(x)dx$$</div>
+    <div class="formula">$$\text{若 } f(x) \geq 0, \text{ 则 } \int_a^b f(x)dx \geq 0$$</div>
+    <div class="formula">$$\left|\int_a^b f(x)dx\right| \leq \int_a^b |f(x)|dx$$</div>
+    
+    <h3>5.8 微积分基本定理</h3>
+    
+    <h4>变上限积分函数</h4>
+    <div class="formula">$$\Phi(x) = \int_a^x f(t)dt \Rightarrow \Phi'(x) = f(x)$$</div>
+    
+    <h4>牛顿-莱布尼茨公式 (Newton-Leibniz Formula)</h4>
+    <div class="formula">$$\int_a^b f(x)dx = F(b) - F(a) = F(x)\big|_a^b$$</div>
+    <div class="note">其中 $F(x)$ 是 $f(x)$ 的一个原函数</div>
+    
+    <h3>5.9 定积分的换元积分法和分部积分法</h3>
+    
+    <div class="formula">$$\int_a^b f(x)dx = \int_{\alpha}^{\beta} f[\varphi(t)]\varphi'(t)dt$$</div>
+    <div class="note">注意：换元时积分限也要相应改变</div>
+    
+    <div class="formula">$$\int_a^b u dv = uv\big|_a^b - \int_a^b v du$$</div>
+    
+    <h3>5.10 反常积分</h3>
+    
+    <h4>无穷限的反常积分</h4>
+    <div class="formula">$$\int_a^{+\infty} f(x)dx = \lim_{b \to +\infty} \int_a^b f(x)dx$$</div>
+    <div class="formula">$$\int_{-\infty}^b f(x)dx = \lim_{a \to -\infty} \int_a^b f(x)dx$$</div>
+    <div class="formula">$$\int_{-\infty}^{+\infty} f(x)dx = \int_{-\infty}^c f(x)dx + \int_c^{+\infty} f(x)dx$$</div>
+    
+    <h4>无界函数的反常积分</h4>
+    <div class="formula">$$\int_a^b f(x)dx = \lim_{\varepsilon \to 0^+} \int_a^{b-\varepsilon} f(x)dx \quad (f(x) \text{ 在 } b \text{ 点无界})$$</div>
+    
+    <h3>5.11 定积分的应用</h3>
+    
+    <h4>平面图形的面积</h4>
+    <div class="formula">$$S = \int_a^b [f(x) - g(x)]dx \quad (f(x) \geq g(x))$$</div>
+    
+    <h4>旋转体的体积</h4>
+    <div class="formula">$$V_x = \pi \int_a^b [f(x)]^2 dx \quad \text{（绕x轴旋转）}$$</div>
+    <div class="formula">$$V_y = 2\pi \int_a^b x f(x) dx \quad \text{（绕y轴旋转，柱壳法）}$$</div>
+    
+    <h4>经济效益的应用</h4>
+    <div class="formula">$$\text{总收益：} R(Q) = \int_0^Q MR(q)dq$$</div>
+    <div class="formula">$$\text{总成本：} C(Q) = C(0) + \int_0^Q MC(q)dq$$</div>
+</div>
+
+<div class="section">
+    <h2>第六章 多元函数微积分</h2>
+    
+    <h3>6.1 多元函数的基本概念</h3>
+    
+    <div class="formula">$$z = f(x, y) \quad \text{（二元函数）}$$</div>
+    
+    <h4>二元函数的极限</h4>
+    <div class="formula">$$\lim_{(x,y) \to (x_0,y_0)} f(x,y) = A$$</div>
+    
+    <h4>二元函数的连续性</h4>
+    <div class="note">若 $\lim_{(x,y) \to (x_0,y_0)} f(x,y) = f(x_0, y_0)$，则 $f(x,y)$ 在 $(x_0,y_0)$ 处连续</div>
+    
+    <h3>6.2 偏导数</h3>
+    
+    <div class="formula">$$\frac{\partial z}{\partial x} = f_x(x,y) = \lim_{\Delta x \to 0} \frac{f(x+\Delta x, y) - f(x,y)}{\Delta x}$$</div>
+    <div class="formula">$$\frac{\partial z}{\partial y} = f_y(x,y) = \lim_{\Delta y \to 0} \frac{f(x, y+\Delta y) - f(x,y)}{\Delta y}$$</div>
+    
+    <h4>二阶偏导数</h4>
+    <div class="formula">$$\frac{\partial^2 z}{\partial x^2} = f_{xx}, \quad \frac{\partial^2 z}{\partial y^2} = f_{yy}$$</div>
+    <div class="formula">$$\frac{\partial^2 z}{\partial x \partial y} = f_{xy} = \frac{\partial}{\partial y}\left(\frac{\partial z}{\partial x}\right)$$</div>
+    <div class="formula">$$\frac{\partial^2 z}{\partial y \partial x} = f_{yx} = \frac{\partial}{\partial x}\left(\frac{\partial z}{\partial y}\right)$$</div>
+    <div class="note">若 $f_{xy}$ 和 $f_{yx}$ 连续，则 $f_{xy} = f_{yx}$</div>
+    
+    <h3>6.3 全微分</h3>
+    
+    <div class="formula">$$dz = \frac{\partial z}{\partial x}dx + \frac{\partial z}{\partial y}dy$$</div>
+    
+    <div class="formula">$$\Delta z \approx dz = f_x(x,y)\Delta x + f_y(x,y)\Delta y$$</div>
+    
+    <h3>6.4 多元复合函数的求导法则</h3>
+    
+    <div class="formula">$$\frac{dz}{dt} = \frac{\partial z}{\partial x}\frac{dx}{dt} + \frac{\partial z}{\partial y}\frac{dy}{dt} \quad (z=f(x,y), x=x(t), y=y(t))$$</div>
+    
+    <div class="formula">$$\frac{\partial z}{\partial u} = \frac{\partial z}{\partial x}\frac{\partial x}{\partial u} + \frac{\partial z}{\partial y}\frac{\partial y}{\partial u} \quad (z=f(x,y), x=x(u,v), y=y(u,v))$$</div>
+    <div class="formula">$$\frac{\partial z}{\partial v} = \frac{\partial z}{\partial x}\frac{\partial x}{\partial v} + \frac{\partial z}{\partial y}\frac{\partial y}{\partial v}$$</div>
+    
+    <h3>6.5 隐函数的求导法则</h3>
+    
+    <div class="formula">$$\text{若 } F(x,y) = 0 \text{ 确定 } y=y(x), \text{ 则 } \frac{dy}{dx} = -\frac{F_x}{F_y}$$</div>
+    
+    <div class="formula">$$\text{若 } F(x,y,z) = 0 \text{ 确定 } z=z(x,y), \text{ 则 } \frac{\partial z}{\partial x} = -\frac{F_x}{F_z}, \quad \frac{\partial z}{\partial y} = -\frac{F_y}{F_z}$$</div>
+    
+    <h3>6.6 二元函数的极值</h3>
+    
+    <div class="note">必要条件：若 $f(x,y)$ 在 $(x_0,y_0)$ 处可微且取极值，则：</div>
+    <div class="formula">$$f_x(x_0, y_0) = 0, \quad f_y(x_0, y_0) = 0$$</div>
+    
+    <div class="note">充分条件：设 $f_x(x_0, y_0) = 0, f_y(x_0, y_0) = 0$，记：</div>
+    <div class="formula">$$A = f_{xx}(x_0, y_0), \quad B = f_{xy}(x_0, y_0), \quad C = f_{yy}(x_0, y_0), \quad \Delta = AC - B^2$$</div>
+    <div class="formula">$$\Delta > 0 \text{ 且 } A < 0 \Rightarrow \text{极大值}$$</div>
+    <div class="formula">$$\Delta > 0 \text{ 且 } A > 0 \Rightarrow \text{极小值}$$</div>
+    <div class="formula">$$\Delta < 0 \Rightarrow \text{不是极值}$$</div>
+    <div class="formula">$$\Delta = 0 \Rightarrow \text{需进一步判断}$$</div>
+    
+    <h4>条件极值——拉格朗日乘数法</h4>
+    <div class="note">求 $z = f(x,y)$ 在条件 $\varphi(x,y) = 0$ 下的极值：</div>
+    <div class="formula">$$\mathcal{L}(x,y,\lambda) = f(x,y) + \lambda \varphi(x,y)$$</div>
+    <div class="formula">$$\begin{cases} \frac{\partial \mathcal{L}}{\partial x} = f_x + \lambda \varphi_x = 0 \\ \frac{\partial \mathcal{L}}{\partial y} = f_y + \lambda \varphi_y = 0 \\ \frac{\partial \mathcal{L}}{\partial \lambda} = \varphi(x,y) = 0 \end{cases}$$</div>
+    
+    <h3>6.7 二重积分</h3>
+    
+    <h4>二重积分的定义</h4>
+    <div class="formula">$$\iint_D f(x,y)d\sigma = \lim_{\lambda \to 0} \sum_{i=1}^n f(\xi_i, \eta_i)\Delta \sigma_i$$</div>
+    
+    <h4>二重积分的性质</h4>
+    <div class="formula">$$\iint_D [f(x,y) \pm g(x,y)]d\sigma = \iint_D f(x,y)d\sigma \pm \iint_D g(x,y)d\sigma$$</div>
+    <div class="formula">$$\iint_D kf(x,y)d\sigma = k\iint_D f(x,y)d\sigma$$</div>
+    <div class="formula">$$\iint_D f(x,y)d\sigma = \iint_{D_1} f(x,y)d\sigma + \iint_{D_2} f(x,y)d\sigma \quad (D = D_1 \cup D_2)$$</div>
+    
+    <h4>直角坐标下的计算方法</h4>
+    <div class="formula">$$\iint_D f(x,y)dxdy = \int_a^b dx \int_{\varphi_1(x)}^{\varphi_2(x)} f(x,y)dy$$</div>
+    <div class="formula">$$\iint_D f(x,y)dxdy = \int_c^d dy \int_{\psi_1(y)}^{\psi_2(y)} f(x,y)dx$$</div>
+    
+    <h4>极坐标下的计算方法</h4>
+    <div class="formula">$$x = r\cos\theta, \quad y = r\sin\theta$$</div>
+    <div class="formula">$$\iint_D f(x,y)dxdy = \iint_D f(r\cos\theta, r\sin\theta) r dr d\theta$$</div>
+    <div class="formula">$$\iint_D f(x,y)dxdy = \int_{\alpha}^{\beta} d\theta \int_{r_1(\theta)}^{r_2(\theta)} f(r\cos\theta, r\sin\theta) r dr$$</div>
+</div>
+
+<div class="section">
+    <h2>附录：常用公式汇总</h2>
+    
+    <h3>三角函数公式</h3>
+    <div class="formula">$$\sin^2 x + \cos^2 x = 1$$</div>
+    <div class="formula">$$1 + \tan^2 x = \sec^2 x$$</div>
+    <div class="formula">$$1 + \cot^2 x = \csc^2 x$$</div>
+    <div class="formula">$$\sin 2x = 2\sin x \cos x$$</div>
+    <div class="formula">$$\cos 2x = \cos^2 x - \sin^2 x = 2\cos^2 x - 1 = 1 - 2\sin^2 x$$</div>
+    <div class="formula">$$\sin(A \pm B) = \sin A \cos B \pm \cos A \sin B$$</div>
+    <div class="formula">$$\cos(A \pm B) = \cos A \cos B \mp \sin A \sin B$$</div>
+    
+    <h3>对数公式</h3>
+    <div class="formula">$$\log_a(MN) = \log_a M + \log_a N$$</div>
+    <div class="formula">$$\log_a\left(\frac{M}{N}\right) = \log_a M - \log_a N$$</div>
+    <div class="formula">$$\log_a M^n = n\log_a M$$</div>
+    <div class="formula">$$\log_a M = \frac{\log_b M}{\log_b a}$$</div>
+    <div class="formula">$$a^{\log_a x} = x, \quad e^{\ln x} = x$$</div>
+    
+    <h3>数列极限</h3>
+    <div class="formula">$$\lim_{n \to \infty} \frac{1}{n} = 0$$</div>
+    <div class="formula">$$\lim_{n \to \infty} q^n = 0 \quad (|q| < 1)$$</div>
+    <div class="formula">$$\lim_{n \to \infty} \sqrt[n]{a} = 1 \quad (a > 0)$$</div>
+    <div class="formula">$$\lim_{n \to \infty} \sqrt[n]{n} = 1$$</div>
+</div>
+
+<p style="text-align: center; margin-top: 40px; color: #666;">
+    高等数学(经管类)13125 公式集<br>
+    基于扈志明主编 高等教育出版社 2023年版
+</p>
+
+</body>
+</html>
