@@ -165,23 +165,25 @@
 
         @media (max-width: 1200px) { .qr-container { grid-template-columns: repeat(4, 1fr); gap: 1rem; } }
         @media (max-width: 900px)  { .qr-container { grid-template-columns: repeat(3, 1fr); gap: 0.8rem; } }
-        @media (max-width: 600px)  { .qr-container { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; } }
-        @media (max-width: 380px)  { .qr-container { grid-template-columns: 1fr; gap: 0.6rem; } }
+        @media (max-width: 700px)  { .qr-container { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; } }
 
-        @media (max-width: 600px) {
-            body { padding: 0.6rem; }
-            .filter-bar { padding: 0.5rem 0.8rem; gap: 0.4rem; border-radius: 30px; }
-            .filter-label { font-size: 0.8rem; padding: 0.2rem 0.6rem; }
-            .reset-btn { font-size: 0.8rem; padding: 0.3rem 0.6rem; }
-            .period-select { font-size: 0.8rem; max-width: 6rem; padding-right: 1.2rem; }
-            .regex-wrapper { min-width: 80px; max-width: 180px; }
-            #regexInput { font-size: 0.8rem; }
-            .qr-card { padding: 0.7rem 0.4rem 0.6rem; border-radius: 16px; }
-            .qr-canvas-wrap { padding: 0.3rem; }
+        @media (max-width: 700px) {
+            body { padding: 0.5rem; }
+            .header { margin-bottom: 0.5rem; }
+            .filter-bar { padding: 0.4rem 0.6rem; gap: 0.3rem; }
+            .filter-label { font-size: 0.75rem; padding: 0.15rem 0.5rem; }
+            .reset-btn { font-size: 0.75rem; padding: 0.25rem 0.5rem; }
+            .period-select { font-size: 0.75rem; max-width: 5rem; }
+            .regex-wrapper { min-width: 60px; max-width: 160px; }
+            #regexInput { font-size: 0.75rem; min-width: 40px; }
+            .count-badge { font-size: 0.7rem; padding: 0.1rem 0.6rem; }
+            .qr-card { padding: 0.5rem 0.3rem 0.4rem; border-radius: 12px; }
+            .qr-canvas-wrap { padding: 0.2rem; border-radius: 10px; }
+            .card-title { font-size: clamp(0.7rem, 2.5vw, 0.9rem); }
+            .period-badge { font-size: 0.55rem; padding: 0.1rem 0.5rem; }
         }
-        @media (max-width: 380px) {
+        @media (max-width: 400px) {
             .filter-bar { flex-direction: column; align-items: stretch; width: 100%; }
-            .period-select-wrapper { justify-content: center; }
             .regex-wrapper { max-width: 100%; }
             .count-badge { text-align: center; }
         }
