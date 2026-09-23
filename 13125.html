@@ -90,6 +90,14 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 <p><b>除法：</b>$\left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2}$</p>
 <p><b>复合：</b>$y = f(g(x)) \Rightarrow y' = f'(g(x)) \cdot g'(x)$</p>
 </div>
+
+<h3>六、直线、切线、法线方程（新增！）</h3>
+<div class="grp">
+<p><b>直线点斜式：</b>$y - y_0 = k(x - x_0)$</p>
+<p><b>切线方程：</b>$y - y_0 = f'(x_0)(x - x_0)$</p>
+<p><b>法线方程：</b>$y - y_0 = -\frac{1}{f'(x_0)}(x - x_0)$</p>
+<p class="alert">注意：若 $f'(x_0)=0$（切线水平），法线为垂直直线 $x = x_0$；若 $f'(x_0)$ 不存在，法线为水平直线 $y = y_0$。</p>
+</div>
 </div>
 
 <!-- ==================== 第一章 函数 ==================== -->
@@ -185,11 +193,13 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 <!-- ==================== 第三章 导数与微分 ==================== -->
 <div class="sec"><h2>第三章 导数与微分</h2>
 
-<h3>3.1 导数概念</h3>
+<h3>3.1 导数概念与几何意义</h3>
 <div class="grp">
 <p>$f'(x_0)=\lim\limits_{\Delta x\to0}\dfrac{f(x_0+\Delta x)-f(x_0)}{\Delta x}=\lim\limits_{x\to x_0}\dfrac{f(x)-f(x_0)}{x-x_0}$</p>
 <p>左导数 $f'_-$，右导数 $f'_+$，可导 $\iff$ 左右导数存在且相等</p>
 <p>可导 ⇒ 连续（连续未必可导）</p>
+<p><b>切线方程：</b>$y-y_0=f'(x_0)(x-x_0)$</p>
+<p><b>法线方程：</b>$y-y_0=-\dfrac1{f'(x_0)}(x-x_0)$</p>
 </div>
 
 <h3>3.2 基本求导公式</h3>
