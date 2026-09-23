@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>自考高数 13125 公式速查</title>
+<title>自考高数 13125 公式速查与代数急救包</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
@@ -36,15 +36,61 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 .top:hover { background: #1e40af; }
 
 .note { break-inside: avoid; background: #dbeafe; border-left: 3px solid #1a56db; padding: 3px 8px; border-radius: 3px; margin: 4px 0; font-size: 0.8em; }
+.alert { break-inside: avoid; background: #fef3c7; border-left: 3px solid #d97706; padding: 3px 8px; border-radius: 3px; margin: 4px 0; font-size: 0.8em; color: #92400e; }
 </style>
 </head>
 <body>
 <div class="container">
 
-<h1>高等数学（经管类）13125 公式速查</h1>
+<h1>高等数学（经管类）13125 公式速查与代数急救包</h1>
 <p class="sub">扈志明 2023年版 · ISBN 9787040616378 · 使用 KaTeX 渲染</p>
 
 <div class="content">
+
+<!-- ==================== 考前代数急救包 ==================== -->
+<div class="sec"><h2>⚠️ 考前代数急救包（必背！）</h2>
+<div class="alert">口诀：根号变分数，分母变负号。求导看幂函数，指数减1。</div>
+
+<h3>一、根号与分数指数幂</h3>
+<div class="grp">
+<p>$\sqrt{x} = x^{\frac{1}{2}},\quad \sqrt[3]{x} = x^{\frac{1}{3}},\quad \sqrt[4]{x} = x^{\frac{1}{4}}$</p>
+<p>$\sqrt{x^3} = x^{\frac{3}{2}},\quad \sqrt[3]{x^2} = x^{\frac{2}{3}},\quad \frac{1}{\sqrt{x}} = x^{-\frac{1}{2}}$</p>
+<p><b>核心规则：</b>$\sqrt[n]{x^m} = x^{\frac{m}{n}}$</p>
+</div>
+
+<h3>二、负指数幂（分式变幂函数）</h3>
+<div class="grp">
+<p>$\frac{1}{x} = x^{-1},\quad \frac{1}{x^2} = x^{-2},\quad \frac{1}{x^3} = x^{-3}$</p>
+<p>$\frac{4}{x} = 4x^{-1},\quad \frac{5}{x^2} = 5x^{-2},\quad \frac{2}{\sqrt{x}} = 2x^{-\frac{1}{2}}$</p>
+<p><b>核心规则：</b>$\frac{1}{x^n} = x^{-n}$（系数留在原地，指数加负号）</p>
+</div>
+
+<h3>三、指数运算法则</h3>
+<div class="grp">
+<p>$a^m \cdot a^n = a^{m+n}$，$\quad \frac{a^m}{a^n} = a^{m-n}$</p>
+<p>$(a^m)^n = a^{mn}$，$\quad (ab)^n = a^n b^n$，$\quad a^0 = 1\ (a \neq 0)$</p>
+</div>
+
+<h3>四、基本求导公式总表</h3>
+<div class="grp">
+<table><tr><th>原函数 $f(x)$</th><th>导函数 $f'(x)$</th></tr>
+<tr><td>常数 $C$</td><td>$0$</td></tr>
+<tr><td>$x^n$</td><td>$n x^{n-1}$</td></tr>
+<tr><td>$e^x$</td><td>$e^x$</td></tr>
+<tr><td>$a^x$</td><td>$a^x \ln a$</td></tr>
+<tr><td>$\ln x$</td><td>$\frac{1}{x}$</td></tr>
+<tr><td>$\sin x$</td><td>$\cos x$</td></tr>
+<tr><td>$\cos x$</td><td>$-\sin x$</td></tr>
+</table></div>
+
+<h3>五、求导法则</h3>
+<div class="grp">
+<p><b>加减：</b>$(u \pm v)' = u' \pm v'$</p>
+<p><b>乘法：</b>$(uv)' = u'v + uv'$</p>
+<p><b>除法：</b>$\left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2}$</p>
+<p><b>复合：</b>$y = f(g(x)) \Rightarrow y' = f'(g(x)) \cdot g'(x)$</p>
+</div>
+</div>
 
 <!-- ==================== 第一章 函数 ==================== -->
 <div class="sec"><h2>第一章 函数</h2>
