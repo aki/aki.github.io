@@ -3,100 +3,88 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>自考高数 13125 公式速查与代数急救包</title>
+<title>13125 高等数学（经管类）公式速查</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; background: #f5f6f8; color: #1f2937; line-height: 1.5; font-size: 18px; }
-.container { max-width: 1500px; margin: 0 auto; padding: 6px; }
-h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; font-weight: 700; letter-spacing: 1px; }
-.sub { text-align: center; color: #6b7280; font-size: 0.85em; margin-bottom: 6px; }
-.content { column-count: 3; column-gap: 12px; }
+body { font-family: "Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; background: #f5f6f8; color: #1f2937; line-height: 1.6; font-size: 17px; }
+.container { max-width: 1500px; margin: 0 auto; padding: 8px; }
+h1 { text-align: center; font-size: 1.35em; color: #1a56db; margin: 6px 0 2px; font-weight: 700; }
+.sub { text-align: center; color: #6b7280; font-size: 0.82em; margin-bottom: 10px; }
+.content { column-count: 3; column-gap: 14px; }
 @media (max-width: 1100px) { .content { column-count: 2; } }
-@media (max-width: 700px) { .content { column-count: 1; } .container { padding: 4px; } }
+@media (max-width: 700px) { .content { column-count: 1; } }
 
-.sec { break-inside: avoid; margin-bottom: 8px; }
-.sec h2 { font-size: 0.95em; color: #1a56db; border-bottom: 1.5px solid #1a56db; padding-bottom: 2px; margin-bottom: 4px; font-weight: 700; }
-.sec h3 { font-size: 0.88em; color: #374151; margin: 5px 0 3px; padding-left: 6px; border-left: 3px solid #1a56db; font-weight: 600; }
+.sec { break-inside: avoid; margin-bottom: 10px; }
+.sec h2 { font-size: 0.95em; color: #1a56db; border-bottom: 2px solid #1a56db; padding-bottom: 3px; margin-bottom: 6px; font-weight: 700; }
+.sec h3 { font-size: 0.88em; color: #374151; margin: 6px 0 3px; padding-left: 7px; border-left: 3px solid #1a56db; font-weight: 600; }
 
-.grp { break-inside: avoid; background: #fff; border-radius: 4px; padding: 4px 8px; margin: 3px 0 5px; border: 1px solid #e5e7eb; }
-.grp p { margin: 2px 0; font-size: 0.9em; }
-.grp table { width: 100%; border-collapse: collapse; font-size: 0.85em; margin: 2px 0; }
-.grp th, .grp td { border: 1px solid #d1d5db; padding: 2px 5px; text-align: left; }
+.grp { break-inside: avoid; background: #fff; border-radius: 5px; padding: 5px 10px; margin: 4px 0 6px; border: 1px solid #e5e7eb; }
+.grp p { margin: 3px 0; font-size: 0.9em; }
+.grp table { width: 100%; border-collapse: collapse; font-size: 0.85em; margin: 3px 0; }
+.grp th, .grp td { border: 1px solid #d1d5db; padding: 3px 6px; text-align: left; }
 .grp th { background: #1a56db; color: #fff; font-weight: 600; }
 .grp tr:nth-child(even) { background: #f3f4f6; }
 
 .katex { font-size: 1em; }
-.katex-display { margin: 3px 0; text-align: left; }
+.katex-display { margin: 4px 0; text-align: left; }
 .katex-display > .katex { text-align: left; }
 
-.top { position: fixed; bottom: 12px; right: 12px; width: 28px; height: 28px; background: #1a56db; color: #fff; border: none; border-radius: 50%; font-size: 13px; cursor: pointer; display: none; line-height: 28px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.top { position: fixed; bottom: 14px; right: 14px; width: 30px; height: 30px; background: #1a56db; color: #fff; border: none; border-radius: 50%; font-size: 14px; cursor: pointer; display: none; line-height: 30px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.25); }
 .top:hover { background: #1e40af; }
 
-.note { break-inside: avoid; background: #dbeafe; border-left: 3px solid #1a56db; padding: 3px 8px; border-radius: 3px; margin: 4px 0; font-size: 0.8em; }
-.alert { break-inside: avoid; background: #fef3c7; border-left: 3px solid #d97706; padding: 3px 8px; border-radius: 3px; margin: 4px 0; font-size: 0.8em; color: #92400e; }
+.note { break-inside: avoid; background: #dbeafe; border-left: 3px solid #1a56db; padding: 5px 10px; border-radius: 3px; margin: 6px 0; font-size: 0.82em; }
+.alert { break-inside: avoid; background: #fef3c7; border-left: 3px solid #d97706; padding: 5px 10px; border-radius: 3px; margin: 6px 0; font-size: 0.82em; color: #92400e; }
 </style>
 </head>
 <body>
 <div class="container">
 
-<h1>高等数学（经管类）13125 公式速查与代数急救包</h1>
-<p class="sub">扈志明 2023年版 · ISBN 9787040616378 · 使用 KaTeX 渲染</p>
+<h1>高等数学（经管类）13125 公式速查</h1>
+<p class="sub">扈志明 2023年版 · 高等教育出版社 · ISBN 9787040616378 · 课程代码 13125</p>
 
 <div class="content">
 
 <!-- ==================== 考前代数急救包 ==================== -->
-<div class="sec"><h2>⚠️ 考前代数急救包（必背！）</h2>
-<div class="alert">口诀：根号变分数，分母变负号。求导看幂函数，指数减1。</div>
+<div class="sec"><h2>⚠️ 考前代数急救包</h2>
+<div class="alert">口诀：根号变分数，分母变负号。求导指数提前面，指数减1别忘记。</div>
 
-<h3>一、根号与分数指数幂</h3>
+<h3>一、根号 ↔ 分数指数幂</h3>
 <div class="grp">
-<p>$\sqrt{x} = x^{\frac{1}{2}},\quad \sqrt[3]{x} = x^{\frac{1}{3}},\quad \sqrt[4]{x} = x^{\frac{1}{4}}$</p>
-<p>$\sqrt{x^3} = x^{\frac{3}{2}},\quad \sqrt[3]{x^2} = x^{\frac{2}{3}},\quad \frac{1}{\sqrt{x}} = x^{-\frac{1}{2}}$</p>
-<p><b>核心规则：</b>$\sqrt[n]{x^m} = x^{\frac{m}{n}}$</p>
+<p>$\sqrt{x}=x^{\frac{1}{2}}$，$\sqrt[3]{x}=x^{\frac{1}{3}}$，$\sqrt[4]{x}=x^{\frac{1}{4}}$</p>
+<p>$\sqrt{x^3}=x^{\frac{3}{2}}$，$\sqrt[3]{x^2}=x^{\frac{2}{3}}$，$\dfrac{1}{\sqrt{x}}=x^{-\frac{1}{2}}$</p>
+<p><b>规则：</b>$\sqrt[n]{x^m}=x^{\frac{m}{n}}$</p>
 </div>
 
-<h3>二、负指数幂（分式变幂函数）</h3>
+<h3>二、分式 ↔ 负指数幂</h3>
 <div class="grp">
-<p>$\frac{1}{x} = x^{-1},\quad \frac{1}{x^2} = x^{-2},\quad \frac{1}{x^3} = x^{-3}$</p>
-<p>$\frac{4}{x} = 4x^{-1},\quad \frac{5}{x^2} = 5x^{-2},\quad \frac{2}{\sqrt{x}} = 2x^{-\frac{1}{2}}$</p>
-<p><b>核心规则：</b>$\frac{1}{x^n} = x^{-n}$（系数留在原地，指数加负号）</p>
+<p>$\dfrac{1}{x}=x^{-1}$，$\dfrac{1}{x^2}=x^{-2}$，$\dfrac{1}{x^3}=x^{-3}$</p>
+<p>$\dfrac{4}{x}=4x^{-1}$，$\dfrac{5}{x^2}=5x^{-2}$，$\dfrac{2}{\sqrt{x}}=2x^{-\frac{1}{2}}$</p>
+<p><b>规则：</b>$\dfrac{1}{x^n}=x^{-n}$（系数不动，分母翻上去加负号）</p>
 </div>
 
 <h3>三、指数运算法则</h3>
 <div class="grp">
-<p>$a^m \cdot a^n = a^{m+n}$，$\quad \frac{a^m}{a^n} = a^{m-n}$</p>
-<p>$(a^m)^n = a^{mn}$，$\quad (ab)^n = a^n b^n$，$\quad a^0 = 1\ (a \neq 0)$</p>
+<p>$a^m\cdot a^n=a^{m+n}$，$\dfrac{a^m}{a^n}=a^{m-n}$，$(a^m)^n=a^{mn}$</p>
+<p>$(ab)^n=a^nb^n$，$a^0=1\ (a\neq0)$，$a^{-n}=\dfrac{1}{a^n}$</p>
 </div>
 
-<h3>四、基本求导公式总表</h3>
+<h3>四、因式分解与乘法公式</h3>
 <div class="grp">
-<table><tr><th>原函数 $f(x)$</th><th>导函数 $f'(x)$</th></tr>
-<tr><td>常数 $C$</td><td>$0$</td></tr>
-<tr><td>$x^n$</td><td>$n x^{n-1}$</td></tr>
-<tr><td>$e^x$</td><td>$e^x$</td></tr>
-<tr><td>$a^x$</td><td>$a^x \ln a$</td></tr>
-<tr><td>$\ln x$</td><td>$\frac{1}{x}$</td></tr>
-<tr><td>$\sin x$</td><td>$\cos x$</td></tr>
-<tr><td>$\cos x$</td><td>$-\sin x$</td></tr>
-</table></div>
-
-<h3>五、求导法则</h3>
-<div class="grp">
-<p><b>加减：</b>$(u \pm v)' = u' \pm v'$</p>
-<p><b>乘法：</b>$(uv)' = u'v + uv'$</p>
-<p><b>除法：</b>$\left(\frac{u}{v}\right)' = \frac{u'v - uv'}{v^2}$</p>
-<p><b>复合：</b>$y = f(g(x)) \Rightarrow y' = f'(g(x)) \cdot g'(x)$</p>
+<p>$a^2-b^2=(a-b)(a+b)$</p>
+<p>$a^3\pm b^3=(a\pm b)(a^2\mp ab+b^2)$</p>
+<p>$(a\pm b)^2=a^2\pm2ab+b^2$</p>
+<p>十字相乘：$x^2+(p+q)x+pq=(x+p)(x+q)$</p>
 </div>
 
-<h3>六、直线、切线、法线方程（新增！）</h3>
+<h3>五、切线、法线方程</h3>
 <div class="grp">
-<p><b>直线点斜式：</b>$y - y_0 = k(x - x_0)$</p>
-<p><b>切线方程：</b>$y - y_0 = f'(x_0)(x - x_0)$</p>
-<p><b>法线方程：</b>$y - y_0 = -\frac{1}{f'(x_0)}(x - x_0)$</p>
-<p class="alert">注意：若 $f'(x_0)=0$（切线水平），法线为垂直直线 $x = x_0$；若 $f'(x_0)$ 不存在，法线为水平直线 $y = y_0$。</p>
+<p><b>点斜式：</b>$y-y_0=k(x-x_0)$</p>
+<p><b>切线：</b>$y-y_0=f'(x_0)(x-x_0)$，斜率$k=f'(x_0)$</p>
+<p><b>法线：</b>$y-y_0=-\dfrac{1}{f'(x_0)}(x-x_0)$，斜率$k_n=-\dfrac{1}{f'(x_0)}$</p>
+<p>若$f'(x_0)=0$，法线为$x=x_0$；若$f'(x_0)$不存在，法线为$y=y_0$</p>
 </div>
 </div>
 
@@ -105,42 +93,39 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 
 <h3>1.1 预备知识</h3>
 <div class="grp">
-<p>$|a|\ge0,\;|a|\ge\pm a,\;|ab|=|a||b|,\;\left|\frac a b\right|=\frac{|a|}{|b|}$</p>
-<p>$|a+b|\le|a|+|b|,\;||a|-|b||\le|a-b|$</p>
-<p>$a^2-b^2=(a-b)(a+b),\;a^3\pm b^3=(a\pm b)(a^2\mp ab+b^2)$</p>
-<p>$(a+b)^2=a^2+2ab+b^2,\;(a-b)^2=a^2-2ab+b^2$</p>
+<p>$|a|\ge0$，$|a|\ge\pm a$，$|ab|=|a||b|$，$\left|\dfrac{a}{b}\right|=\dfrac{|a|}{|b|}$</p>
+<p>$|a+b|\le|a|+|b|$，$||a|-|b||\le|a-b|$</p>
 </div>
 
-<h3>1.2 函数的概念与性质</h3>
+<h3>1.2 函数概念与性质</h3>
 <div class="grp">
-<p>函数 $y=f(x)$：定义域 $D$，值域 $R$</p>
-<p><b>奇偶：</b>$f(-x)=f(x)$ 偶；$f(-x)=-f(x)$ 奇</p>
-<p><b>周期：</b>$f(x+T)=f(x)$，最小正周期 $T$</p>
-<p><b>有界：</b>$\exists M>0$ 使 $|f(x)|\le M,\;\forall x\in D$</p>
+<p><b>奇偶：</b>$f(-x)=f(x)$为偶；$f(-x)=-f(x)$为奇</p>
+<p><b>周期：</b>$f(x+T)=f(x)$，最小正周期$T$</p>
+<p><b>有界：</b>$\exists M>0$，$|f(x)|\le M$，$\forall x\in D$</p>
 </div>
 
 <h3>1.3 基本初等函数</h3>
 <div class="grp">
-<p><b>幂：</b>$y=x^a$；<b>指数：</b>$y=a^x\,(a>0,a\neq1)$</p>
-<p><b>对数：</b>$y=\log_a x\,(a>0,a\neq1)$，$\ln x=\log_e x$</p>
-<p><b>三角：</b>$y=\sin x,\cos x,\tan x,\cot x,\sec x,\csc x$</p>
-<p><b>反三角：</b>$y=\arcsin x,\arccos x,\arctan x,\operatorname{arccot} x$</p>
+<p><b>幂函数：</b>$y=x^a$</p>
+<p><b>指数函数：</b>$y=a^x\ (a>0,a\neq1)$</p>
+<p><b>对数函数：</b>$y=\log_a x\ (a>0,a\neq1)$，$\ln x=\log_e x$</p>
+<p><b>三角函数：</b>$\sin x,\cos x,\tan x,\cot x,\sec x,\csc x$</p>
+<p><b>反三角函数：</b>$\arcsin x,\arccos x,\arctan x,\operatorname{arccot}x$</p>
 </div>
 
 <h3>1.4 复合函数与初等函数</h3>
 <div class="grp">
-<p>$y=f[\varphi(x)]$，由基本初等函数经有限次四则运算和复合构成的函数称为初等函数</p>
+<p>$y=f[\varphi(x)]$，由基本初等函数经有限次四则运算和复合构成</p>
 </div>
 
-<h3>1.5 经济学中常用函数</h3>
+<h3>1.5 经济学常用函数</h3>
 <div class="grp">
-<p><b>需求函数：</b>$Q=Q(p)$（$p$ 价格），一般 $Q'(p)<0$</p>
-<p><b>供给函数：</b>$S=S(p)$，一般 $S'(p)>0$</p>
-<p><b>成本函数：</b>$C=C(x)=C_0+C_1(x)$（固定成本+可变成本）</p>
-<p><b>收益函数：</b>$R=R(x)=p\cdot x$</p>
-<p><b>利润函数：</b>$L=L(x)=R(x)-C(x)$</p>
+<p><b>需求函数：</b>$Q=Q(p)$，一般$Q'(p)<0$</p>
+<p><b>供给函数：</b>$S=S(p)$，一般$S'(p)>0$</p>
+<p><b>成本函数：</b>$C(x)=C_0+C_1(x)$</p>
+<p><b>收益函数：</b>$R(x)=p\cdot x$</p>
+<p><b>利润函数：</b>$L(x)=R(x)-C(x)$</p>
 </div>
-
 </div>
 
 <!-- ==================== 第二章 极限与连续 ==================== -->
@@ -148,46 +133,42 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 
 <h3>2.1 函数极限的概念</h3>
 <div class="grp">
-<p>$\lim\limits_{x\to x_0}f(x)=A\iff\forall\varepsilon>0,\exists\delta>0$，当 $0<|x-x_0|<\delta$ 时 $|f(x)-A|<\varepsilon$</p>
-<p>左极限 $f(x_0^-)=\lim\limits_{x\to x_0^-}f(x)$，右极限 $f(x_0^+)=\lim\limits_{x\to x_0^+}f(x)$</p>
-<p>$\lim\limits_{x\to\infty}f(x)=A$，$\lim\limits_{x\to+\infty}f(x)=A$，$\lim\limits_{x\to-\infty}f(x)=A$</p>
-<p>数列极限：$\lim\limits_{n\to\infty}x_n=A$</p>
+<p>$\lim\limits_{x\to x_0}f(x)=A\iff\forall\varepsilon>0,\exists\delta>0$，当$0<|x-x_0|<\delta$时$|f(x)-A|<\varepsilon$</p>
+<p>左极限$f(x_0^-)$，右极限$f(x_0^+)$，$\lim f=A\iff f(x_0^-)=f(x_0^+)=A$</p>
 </div>
 
 <h3>2.2 极限的性质与运算</h3>
 <div class="grp">
 <p><b>唯一性：</b>极限若存在则唯一</p>
-<p><b>有界性：</b>收敛数列/函数在邻域内有界</p>
-<p><b>保号性：</b>$\lim f=A>0\Rightarrow f(x)>0$ 在邻域内</p>
-<p><b>四则运算：</b>$\lim(f\pm g)=\lim f\pm\lim g$</p>
-<p>$\lim(f\cdot g)=\lim f\cdot\lim g,\;\lim\frac fg=\frac{\lim f}{\lim g}\;(\lim g\neq0)$</p>
-<p><b>复合函数极限：</b>$\lim\limits_{x\to x_0}f[\varphi(x)]=f[\lim\limits_{x\to x_0}\varphi(x)]$（$f$ 连续时）</p>
+<p><b>有界性：</b>收敛函数在邻域内有界</p>
+<p><b>保号性：</b>$\lim f=A>0\Rightarrow f(x)>0$在邻域内</p>
+<p>$\lim(f\pm g)=\lim f\pm\lim g$</p>
+<p>$\lim(f\cdot g)=\lim f\cdot\lim g$，$\lim\dfrac{f}{g}=\dfrac{\lim f}{\lim g}\ (\lim g\neq0)$</p>
 </div>
 
 <h3>2.3 两个重要极限</h3>
 <div class="grp">
 <p>$\lim\limits_{x\to0}\dfrac{\sin x}{x}=1$</p>
-<p>$\lim\limits_{x\to\infty}\left(1+\dfrac1x\right)^x=e$，$\lim\limits_{x\to0}(1+x)^{\frac1x}=e$</p>
+<p>$\lim\limits_{x\to\infty}\left(1+\dfrac{1}{x}\right)^x=e$，$\lim\limits_{x\to0}(1+x)^{\frac{1}{x}}=e$</p>
 </div>
 
-<h3>2.4 无穷小量与无穷大量</h3>
+<h3>2.4 无穷小量与等价替换</h3>
 <div class="grp">
-<p>$\lim\alpha=0$，则 $\alpha$ 为无穷小量；$\lim f=\infty$，则 $f$ 为无穷大量</p>
-<p><b>无穷小比较（$x\to0$）：</b></p>
-<p>$\sin x\sim x,\;\tan x\sim x,\;\arcsin x\sim x,\;\arctan x\sim x$</p>
-<p>$1-\cos x\sim\frac12x^2,\;e^x-1\sim x,\;\ln(1+x)\sim x$</p>
-<p>$a^x-1\sim x\ln a,\;(1+x)^a-1\sim ax$</p>
-<p><b>等价无穷小替换：</b>$\lim\frac{\alpha}{\beta}=\lim\frac{\alpha'}{\beta'}$（$\alpha\sim\alpha',\beta\sim\beta'$）</p>
+<p><b>常用等价（$x\to0$）：</b></p>
+<p>$\sin x\sim x$，$\tan x\sim x$，$\arcsin x\sim x$，$\arctan x\sim x$</p>
+<p>$1-\cos x\sim\dfrac{1}{2}x^2$，$e^x-1\sim x$，$\ln(1+x)\sim x$</p>
+<p>$a^x-1\sim x\ln a$，$(1+x)^a-1\sim ax$</p>
+<p><b>替换定理：</b>$\alpha\sim\alpha'$，$\beta\sim\beta'\Rightarrow\lim\dfrac{\alpha}{\beta}=\lim\dfrac{\alpha'}{\beta'}$</p>
 </div>
 
 <h3>2.5 函数的连续性</h3>
 <div class="grp">
-<p>$f$ 在 $x_0$ 连续 $\iff\lim\limits_{x\to x_0}f(x)=f(x_0)$</p>
-<p>$f$ 在 $[a,b]$ 连续 ⇒ 有界、有最值、介值定理、零点定理</p>
-<p><b>间断点分类：</b>可去（极限存在）、跳跃（左右极限存在不等）、</p>
-<p>无穷（极限为 $\infty$）、振荡</p>
+<p>$f$在$x_0$连续$\iff\lim\limits_{x\to x_0}f(x)=f(x_0)$</p>
+<p>$f$在$[a,b]$连续$\Rightarrow$有界、有最值、介值定理、零点定理</p>
+<p><b>间断点分类：</b></p>
+<p>第一类：可去（极限存在），跳跃（左右极限存在不等）</p>
+<p>第二类：无穷（极限为$\infty$），振荡</p>
 </div>
-
 </div>
 
 <!-- ==================== 第三章 导数与微分 ==================== -->
@@ -196,54 +177,49 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 <h3>3.1 导数概念与几何意义</h3>
 <div class="grp">
 <p>$f'(x_0)=\lim\limits_{\Delta x\to0}\dfrac{f(x_0+\Delta x)-f(x_0)}{\Delta x}=\lim\limits_{x\to x_0}\dfrac{f(x)-f(x_0)}{x-x_0}$</p>
-<p>左导数 $f'_-$，右导数 $f'_+$，可导 $\iff$ 左右导数存在且相等</p>
-<p>可导 ⇒ 连续（连续未必可导）</p>
-<p><b>切线方程：</b>$y-y_0=f'(x_0)(x-x_0)$</p>
-<p><b>法线方程：</b>$y-y_0=-\dfrac1{f'(x_0)}(x-x_0)$</p>
+<p>可导$\Rightarrow$连续（连续未必可导）</p>
+<p><b>切线：</b>$y-y_0=f'(x_0)(x-x_0)$</p>
+<p><b>法线：</b>$y-y_0=-\dfrac{1}{f'(x_0)}(x-x_0)$</p>
 </div>
 
-<h3>3.2 基本求导公式</h3>
+<h3>3.2 基本求导公式表</h3>
 <div class="grp">
 <table><tr><th>$f(x)$</th><th>$f'(x)$</th></tr>
-<tr><td>$C$</td><td>$0$</td></tr>
+<tr><td>$C$（常数）</td><td>$0$</td></tr>
 <tr><td>$x^n$</td><td>$nx^{n-1}$</td></tr>
-<tr><td>$a^x$</td><td>$a^x\ln a$</td></tr>
 <tr><td>$e^x$</td><td>$e^x$</td></tr>
-<tr><td>$\log_a x$</td><td>$\dfrac1{x\ln a}$</td></tr>
-<tr><td>$\ln x$</td><td>$\dfrac1x$</td></tr>
+<tr><td>$a^x$</td><td>$a^x\ln a$</td></tr>
+<tr><td>$\ln x$</td><td>$\dfrac{1}{x}$</td></tr>
+<tr><td>$\log_a x$</td><td>$\dfrac{1}{x\ln a}$</td></tr>
 <tr><td>$\sin x$</td><td>$\cos x$</td></tr>
 <tr><td>$\cos x$</td><td>$-\sin x$</td></tr>
 <tr><td>$\tan x$</td><td>$\sec^2x$</td></tr>
 <tr><td>$\cot x$</td><td>$-\csc^2x$</td></tr>
 <tr><td>$\sec x$</td><td>$\sec x\tan x$</td></tr>
 <tr><td>$\csc x$</td><td>$-\csc x\cot x$</td></tr>
-<tr><td>$\arcsin x$</td><td>$\dfrac1{\sqrt{1-x^2}}$</td></tr>
-<tr><td>$\arccos x$</td><td>$-\dfrac1{\sqrt{1-x^2}}$</td></tr>
-<tr><td>$\arctan x$</td><td>$\dfrac1{1+x^2}$</td></tr>
-</table></div>
+<tr><td>$\arcsin x$</td><td>$\dfrac{1}{\sqrt{1-x^2}}$</td></tr>
+<tr><td>$\arccos x$</td><td>$-\dfrac{1}{\sqrt{1-x^2}}$</td></tr>
+<tr><td>$\arctan x$</td><td>$\dfrac{1}{1+x^2}$</td></tr>
+<tr><td>$\operatorname{arccot}x$</td><td>$-\dfrac{1}{1+x^2}$</td></tr>
+</table>
+</div>
 
 <h3>3.3 求导法则</h3>
 <div class="grp">
-<p><b>四则：</b>$(u\pm v)'=u'\pm v'$，$(uv)'=u'v+uv'$，$\left(\dfrac uv\right)'=\dfrac{u'v-uv'}{v^2}$</p>
-<p><b>链式法则：</b>$[f(g(x))]'=f'(g(x))\cdot g'(x)$</p>
-<p><b>反函数：</b>$[f^{-1}(x)]'=\dfrac1{f'(y)}$（$y=f^{-1}(x)$）</p>
-<p><b>隐函数：</b>$F(x,y)=0$ 两边对 $x$ 求导，解出 $y'$</p>
-<p><b>对数求导：</b>先取对数再求导，用于幂指函数 $y=u(x)^{v(x)}$</p>
+<p><b>四则：</b>$(u\pm v)'=u'\pm v'$</p>
+<p>$(uv)'=u'v+uv'$，$\left(\dfrac{u}{v}\right)'=\dfrac{u'v-uv'}{v^2}$</p>
+<p><b>链式：</b>$[f(g(x))]'=f'(g(x))\cdot g'(x)$</p>
+<p><b>反函数：</b>$[f^{-1}(x)]'=\dfrac{1}{f'(y)}\ (y=f^{-1}(x))$</p>
+<p><b>隐函数：</b>$F(x,y)=0$两边对$x$求导，解出$y'$</p>
+<p><b>对数求导：</b>用于$y=u(x)^{v(x)}$，先取对数再求导</p>
 </div>
 
-<h3>3.4 高阶导数</h3>
+<h3>3.4 高阶导数与微分</h3>
 <div class="grp">
-<p>$(x^n)^{(n)}=n!,\;(e^{ax})^{(n)}=a^ne^{ax}$</p>
-<p>$(\sin x)^{(n)}=\sin\!\left(x+\dfrac{n\pi}{2}\right),\;(\cos x)^{(n)}=\cos\!\left(x+\dfrac{n\pi}{2}\right)$</p>
-<p><b>莱布尼茨公式：</b>$(uv)^{(n)}=\sum_{k=0}^n\binom nk u^{(n-k)}v^{(k)}$</p>
+<p>$(e^{ax})^{(n)}=a^ne^{ax}$，$(\sin x)^{(n)}=\sin\left(x+\dfrac{n\pi}{2}\right)$</p>
+<p>$(\cos x)^{(n)}=\cos\left(x+\dfrac{n\pi}{2}\right)$</p>
+<p>$dy=f'(x)dx$，一阶微分形式不变性：$dy=f'(u)du$</p>
 </div>
-
-<h3>3.5 微分</h3>
-<div class="grp">
-<p>$dy=f'(x)\,dx$，微分 $dy$ 是函数增量的线性主部</p>
-<p>一阶微分形式不变性：$dy=f'(u)\,du$</p>
-</div>
-
 </div>
 
 <!-- ==================== 第四章 微分中值定理和导数的应用 ==================== -->
@@ -251,24 +227,23 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 
 <h3>4.1 微分中值定理</h3>
 <div class="grp">
-<p><b>罗尔：</b>$f(a)=f(b)\Rightarrow\exists\xi\in(a,b),\;f'(\xi)=0$</p>
+<p><b>罗尔：</b>$f(a)=f(b)\Rightarrow\exists\xi\in(a,b),f'(\xi)=0$</p>
 <p><b>拉格朗日：</b>$f(b)-f(a)=f'(\xi)(b-a)$</p>
 <p><b>柯西：</b>$\dfrac{f(b)-f(a)}{g(b)-g(a)}=\dfrac{f'(\xi)}{g'(\xi)}$</p>
 </div>
 
 <h3>4.2 洛必达法则</h3>
 <div class="grp">
-<p>$\lim\limits_{x\to a}\dfrac{f(x)}{g(x)}=\lim\limits_{x\to a}\dfrac{f'(x)}{g'(x)}$（$\frac00$ 或 $\frac\infty\infty$ 型）</p>
-<p>可反复使用，适用于 $0\cdot\infty,\;\infty-\infty,\;0^0,\;1^\infty,\;\infty^0$ 等未定式</p>
+<p>$\lim\limits_{x\to a}\dfrac{f(x)}{g(x)}=\lim\limits_{x\to a}\dfrac{f'(x)}{g'(x)}$（$\dfrac{0}{0}$或$\dfrac{\infty}{\infty}$型）</p>
+<p>可反复使用，适用于$0\cdot\infty$，$\infty-\infty$，$0^0$，$1^\infty$，$\infty^0$等未定式</p>
 </div>
 
 <h3>4.3 函数性态</h3>
 <div class="grp">
-<p><b>单调性：</b>$f'(x)>0$ ⇒ $f$ 单调增；$f'(x)<0$ ⇒ $f$ 单调减</p>
-<p><b>极值必要条件：</b>$f'(x_0)=0$（驻点）或 $f'(x_0)$ 不存在</p>
-<p><b>极值充分条件：</b>$f'(x_0)=0,\;f''(x_0)<0$ ⇒ 极大值；$f''(x_0)>0$ ⇒ 极小值</p>
-<p><b>凹凸性：</b>$f''(x)>0$ ⇒ 凹（下凸）；$f''(x)<0$ ⇒ 凸（上凸）</p>
-<p>$f''(x)$ 变号 ⇒ $(x_0,f(x_0))$ 为拐点</p>
+<p><b>单调性：</b>$f'(x)>0\Rightarrow$增；$f'(x)<0\Rightarrow$减</p>
+<p><b>极值：</b>$f'(x_0)=0$，$f''(x_0)<0\Rightarrow$极大；$f''(x_0)>0\Rightarrow$极小</p>
+<p><b>凹凸性：</b>$f''(x)>0\Rightarrow$凹；$f''(x)<0\Rightarrow$凸</p>
+<p>$f''(x)$变号$\Rightarrow(x_0,f(x_0))$为拐点</p>
 </div>
 
 <h3>4.4 最大值与最小值</h3>
@@ -278,72 +253,81 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 
 <h3>4.5 导数在经济分析中的应用</h3>
 <div class="grp">
-<p><b>边际分析：</b>边际成本 $C'(x)$、边际收益 $R'(x)$、边际利润 $L'(x)$</p>
-<p>边际函数值表示增加一单位产量时成本的增量</p>
-<p><b>弹性分析：</b>需求弹性 $\eta(p)=\dfrac{p}{Q(p)}\cdot Q'(p)$</p>
-<p>$\eta$ 为需求对价格的弹性，表示价格变动1%时需求变动的百分比</p>
-<p>$\eta<0$ 一般商品，$|\eta|>1$ 富有弹性，$|\eta|<1$ 缺乏弹性</p>
-<p><b>最值应用：</b>利润最大 $L'(x)=0$ ⇒ $R'(x)=C'(x)$（边际收益=边际成本）</p>
+<p><b>边际分析：</b>边际成本$C'(x)$，边际收益$R'(x)$，边际利润$L'(x)$</p>
+<p><b>弹性：</b>$\eta(p)=\dfrac{p}{Q(p)}\cdot Q'(p)$</p>
+<p>$|\eta|>1$富有弹性，$|\eta|<1$缺乏弹性，$|\eta|=1$单位弹性</p>
+<p><b>利润最大：</b>$L'(x)=0\Rightarrow R'(x)=C'(x)$</p>
 </div>
-
 </div>
 
 <!-- ==================== 第五章 一元函数积分学 ==================== -->
 <div class="sec"><h2>第五章 一元函数积分学</h2>
 
 <h3>5.1 不定积分概念</h3>
-<div class="grp"><p>$\int f(x)\,dx=F(x)+C$，其中 $F'(x)=f(x)$</p></div>
-
-<h3>5.2 基本积分公式</h3>
 <div class="grp">
-<table><tr><th>$\int f(x)\,dx$</th><th>$=$</th></tr>
-<tr><td>$\int x^n\,dx$</td><td>$\dfrac{x^{n+1}}{n+1}+C\;(n\neq-1)$</td></tr>
-<tr><td>$\int\frac1x\,dx$</td><td>$\ln|x|+C$</td></tr>
-<tr><td>$\int a^x\,dx$</td><td>$\dfrac{a^x}{\ln a}+C$</td></tr>
-<tr><td>$\int e^x\,dx$</td><td>$e^x+C$</td></tr>
-<tr><td>$\int\sin x\,dx$</td><td>$-\cos x+C$</td></tr>
-<tr><td>$\int\cos x\,dx$</td><td>$\sin x+C$</td></tr>
-<tr><td>$\int\tan x\,dx$</td><td>$-\ln|\cos x|+C$</td></tr>
-<tr><td>$\int\cot x\,dx$</td><td>$\ln|\sin x|+C$</td></tr>
-<tr><td>$\int\sec^2x\,dx$</td><td>$\tan x+C$</td></tr>
-<tr><td>$\int\csc^2x\,dx$</td><td>$-\cot x+C$</td></tr>
+<p>$\int f(x)dx=F(x)+C$，其中$F'(x)=f(x)$</p>
+</div>
+
+<h3>5.2 基本积分公式表</h3>
+<div class="grp">
+<table><tr><th>$\int f(x)dx$</th><th>结果</th></tr>
+<tr><td>$\int x^n dx$</td><td>$\dfrac{x^{n+1}}{n+1}+C\ (n\neq-1)$</td></tr>
+<tr><td>$\int\dfrac{1}{x}dx$</td><td>$\ln|x|+C$</td></tr>
+<tr><td>$\int e^x dx$</td><td>$e^x+C$</td></tr>
+<tr><td>$\int a^x dx$</td><td>$\dfrac{a^x}{\ln a}+C$</td></tr>
+<tr><td>$\int\sin x dx$</td><td>$-\cos x+C$</td></tr>
+<tr><td>$\int\cos x dx$</td><td>$\sin x+C$</td></tr>
+<tr><td>$\int\sec^2x dx$</td><td>$\tan x+C$</td></tr>
+<tr><td>$\int\csc^2x dx$</td><td>$-\cot x+C$</td></tr>
 <tr><td>$\int\dfrac{dx}{1+x^2}$</td><td>$\arctan x+C$</td></tr>
 <tr><td>$\int\dfrac{dx}{\sqrt{1-x^2}}$</td><td>$\arcsin x+C$</td></tr>
-<tr><td>$\int\dfrac{dx}{a^2+x^2}$</td><td>$\dfrac1a\arctan\dfrac xa+C$</td></tr>
-<tr><td>$\int\dfrac{dx}{\sqrt{a^2-x^2}}$</td><td>$\arcsin\dfrac xa+C$</td></tr>
-</table></div>
+<tr><td>$\int\dfrac{dx}{a^2+x^2}$</td><td>$\dfrac{1}{a}\arctan\dfrac{x}{a}+C$</td></tr>
+<tr><td>$\int\dfrac{dx}{\sqrt{a^2-x^2}}$</td><td>$\arcsin\dfrac{x}{a}+C$</td></tr>
+<tr><td>$\int\tan x dx$</td><td>$-\ln|\cos x|+C$</td></tr>
+<tr><td>$\int\cot x dx$</td><td>$\ln|\sin x|+C$</td></tr>
+<tr><td>$\int\sec x dx$</td><td>$\ln|\sec x+\tan x|+C$</td></tr>
+<tr><td>$\int\csc x dx$</td><td>$\ln|\csc x-\cot x|+C$</td></tr>
+</table>
+</div>
 
 <h3>5.3 换元积分法</h3>
 <div class="grp">
-<p><b>第一换元（凑微分）：</b>$\int f[\varphi(x)]\varphi'(x)\,dx=\int f(u)\,du$</p>
-<p><b>第二换元（三角代换）：</b>$\sqrt{a^2-x^2}\Rightarrow x=a\sin t$</p>
-<p>$\sqrt{a^2+x^2}\Rightarrow x=a\tan t,\;\sqrt{x^2-a^2}\Rightarrow x=a\sec t$</p>
+<p><b>第一换元（凑微分）：</b>$\int f[\varphi(x)]\varphi'(x)dx=\int f(u)du$</p>
+<p><b>第二换元（三角代换）：</b></p>
+<p>$\sqrt{a^2-x^2}\Rightarrow x=a\sin t$</p>
+<p>$\sqrt{a^2+x^2}\Rightarrow x=a\tan t$</p>
+<p>$\sqrt{x^2-a^2}\Rightarrow x=a\sec t$</p>
 </div>
 
 <h3>5.4 分部积分法</h3>
-<div class="grp"><p>$\int u\,dv=uv-\int v\,du$</p></div>
-
-<h3>5.5 定积分概念与性质</h3>
 <div class="grp">
-<p>$\int_a^b f(x)\,dx=\lim\limits_{\lambda\to0}\sum_{i=1}^n f(\xi_i)\Delta x_i$</p>
-<p>$\int_a^b f=-\int_b^a f$，$\int_a^a f=0$，$\int_a^b kf=k\int_a^b f$</p>
-<p>$\int_a^b(f\pm g)=\int_a^b f\pm\int_a^b g$，$\int_a^b f=\int_a^c f+\int_c^b f$</p>
+<p>$\int u\,dv=uv-\int v\,du$</p>
+<p><b>口诀：</b>反对幂指三，前者为$u$，后者为$v$</p>
+</div>
+
+<h3>5.5 定积分性质</h3>
+<div class="grp">
+<p>$\int_a^b f=-\int_b^a f$，$\int_a^a f=0$</p>
+<p>$\int_a^b kf=k\int_a^b f$，$\int_a^b(f\pm g)=\int_a^b f\pm\int_a^b g$</p>
+<p>$\int_a^b f=\int_a^c f+\int_c^b f$</p>
 </div>
 
 <h3>5.6 牛顿-莱布尼茨公式</h3>
-<div class="grp"><p>$\int_a^b f(x)\,dx=F(b)-F(a)$，其中 $F'(x)=f(x)$</p></div>
-
-<h3>5.7 变限积分求导</h3>
-<div class="grp"><p>$\dfrac d{dx}\int_{\alpha(x)}^{\beta(x)} f(t)\,dt=f(\beta)\beta'-f(\alpha)\alpha'$</p></div>
-
-<h3>5.8 定积分的应用</h3>
 <div class="grp">
-<p><b>面积：</b>$A=\int_a^b|f(x)-g(x)|\,dx$</p>
-<p><b>旋转体体积：</b>$V_x=\pi\int_a^b[f(x)]^2\,dx$</p>
-<p><b>经济应用：</b>已知边际函数求总量</p>
-<p>$R(x)=\int_0^x R'(t)\,dt,\;C(x)=C_0+\int_0^x C'(t)\,dt$</p>
+<p>$\int_a^b f(x)dx=F(b)-F(a)$，其中$F'(x)=f(x)$</p>
 </div>
 
+<h3>5.7 变限积分求导</h3>
+<div class="grp">
+<p>$\dfrac{d}{dx}\int_{\alpha(x)}^{\beta(x)}f(t)dt=f(\beta)\beta'-f(\alpha)\alpha'$</p>
+</div>
+
+<h3>5.8 定积分应用</h3>
+<div class="grp">
+<p><b>面积：</b>$A=\int_a^b|f(x)-g(x)|dx$</p>
+<p><b>旋转体体积：</b>$V_x=\pi\int_a^b[f(x)]^2dx$</p>
+<p><b>经济应用：</b>$R(x)=\int_0^x R'(t)dt$，$C(x)=C_0+\int_0^x C'(t)dt$</p>
+</div>
 </div>
 
 <!-- ==================== 第六章 多元函数微积分 ==================== -->
@@ -356,7 +340,9 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 </div>
 
 <h3>6.2 全微分</h3>
-<div class="grp"><p>$dz=\dfrac{\partial z}{\partial x}dx+\dfrac{\partial z}{\partial y}dy$</p></div>
+<div class="grp">
+<p>$dz=\dfrac{\partial z}{\partial x}dx+\dfrac{\partial z}{\partial y}dy$</p>
+</div>
 
 <h3>6.3 复合函数求导（链式法则）</h3>
 <div class="grp">
@@ -366,36 +352,37 @@ h1 { text-align: center; font-size: 1.3em; color: #1a56db; margin: 4px 0 2px; fo
 <h3>6.4 隐函数求导</h3>
 <div class="grp">
 <p>$F(x,y)=0\Rightarrow\dfrac{dy}{dx}=-\dfrac{F_x}{F_y}$</p>
-<p>$F(x,y,z)=0\Rightarrow\dfrac{\partial z}{\partial x}=-\dfrac{F_x}{F_z},\;\dfrac{\partial z}{\partial y}=-\dfrac{F_y}{F_z}$</p>
+<p>$F(x,y,z)=0\Rightarrow\dfrac{\partial z}{\partial x}=-\dfrac{F_x}{F_z}$，$\dfrac{\partial z}{\partial y}=-\dfrac{F_y}{F_z}$</p>
 </div>
 
-<h3>6.5 多元函数的极值</h3>
+<h3>6.5 多元函数极值</h3>
 <div class="grp">
-<p>$f_x=f_y=0$（驻点），$A=f_{xx},\;B=f_{xy},\;C=f_{yy}$</p>
-<p>$AC-B^2>0,A<0$ 极大值；$AC-B^2>0,A>0$ 极小值</p>
-<p>$AC-B^2<0$ 非极值；$AC-B^2=0$ 不确定</p>
+<p>驻点：$f_x=f_y=0$，令$A=f_{xx}$，$B=f_{xy}$，$C=f_{yy}$</p>
+<p>$AC-B^2>0,A<0\Rightarrow$极大值</p>
+<p>$AC-B^2>0,A>0\Rightarrow$极小值</p>
+<p>$AC-B^2<0\Rightarrow$非极值；$AC-B^2=0\Rightarrow$不确定</p>
 </div>
 
 <h3>6.6 二重积分</h3>
 <div class="grp">
-<p><b>直角坐标：</b>$\iint_D f(x,y)\,dxdy=\int_a^b dx\int_{\varphi_1(x)}^{\varphi_2(x)}f\,dy$</p>
-<p><b>极坐标：</b>$x=r\cos\theta,\;y=r\sin\theta$，$\iint_D f\,dxdy=\iint_D f\,r\,dr\,d\theta$</p>
+<p><b>直角坐标（X型）：</b>$\iint_D f(x,y)dxdy=\int_a^b dx\int_{\varphi_1(x)}^{\varphi_2(x)}f\,dy$</p>
+<p><b>极坐标：</b>$x=r\cos\theta$，$y=r\sin\theta$</p>
+<p>$\iint_D f\,dxdy=\iint_D f\,r\,dr\,d\theta$</p>
 </div>
 
 <h3>6.7 经济应用</h3>
 <div class="grp">
-<p>二元函数的最值、条件极值（约束优化）</p>
-<p><b>拉格朗日乘数法：</b>$L(x,y,\lambda)=f(x,y)+\lambda\,\varphi(x,y)$</p>
-<p>解 $L_x=0,\;L_y=0,\;L_\lambda=0$</p>
+<p><b>拉格朗日乘数法：</b>$L(x,y,\lambda)=f(x,y)+\lambda\varphi(x,y)$</p>
+<p>解$L_x=0$，$L_y=0$，$L_\lambda=0$</p>
 </div>
-
 </div>
 
 </div><!-- /content -->
 
 <div class="note">
-<p>教材：扈志明《高等数学（经管类）》高等教育出版社 2023年版 ISBN 9787040616378</p>
-<p>课程代码 13125 · 全国高等教育自学考试经济管理类公共课</p>
+<p><b>教材：</b>扈志明《高等数学（经管类）》高等教育出版社 2023年版 · ISBN 9787040616378</p>
+<p><b>课程代码：</b>13125 · 全国高等教育自学考试经济管理类公共课</p>
+<p><b>考试题型参考：</b>单项选择10题×3分，简单计算5题×4分，计算题若干，综合题若干</p>
 </div>
 </div><!-- /container -->
 
