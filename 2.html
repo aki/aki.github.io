@@ -28,16 +28,16 @@
   /* ===== 底部单排工具栏 ===== */
   .toolbar {
     position: fixed;
-    bottom: 14px;
+    bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex-wrap: nowrap;              /* 强制一排 */
-    overflow-x: auto;               /* 太窄时可以横向滑动 */
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     max-width: calc(100vw - 16px);
-    padding: 7px 12px;
+    padding: 7px 10px;
     background: rgba(255,255,255,.85);
     -webkit-backdrop-filter: blur(14px);
     backdrop-filter: blur(14px);
@@ -50,51 +50,87 @@
   }
   .toolbar::-webkit-scrollbar { display: none; }
 
+  /* 图标按钮 */
   .btn {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 7px 12px; font-size: 14px; line-height: 1;
-    color: #374151; background: transparent;
-    border: none; border-radius: 999px; cursor: pointer;
-    white-space: nowrap; flex: none;
-    transition: background .15s, color .15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    font-size: 19px;
+    line-height: 1;
+    color: #374151;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .15s, transform .1s, color .15s;
   }
-  .btn:hover { background: rgba(0,0,0,.06); }
-  .btn.active { background: #3b82f6; color: #fff; }
+  .btn:hover { background: rgba(0,0,0,.07); }
+  .btn:active { transform: scale(.9); }
+  .btn.active {
+    background: #3b82f6;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(59,130,246,.45);
+  }
   .btn.active:hover { background: #2563eb; }
 
-  .divider { flex: none; width: 1px; height: 22px; background: rgba(0,0,0,.12); margin: 0 2px; }
+  .divider {
+    flex: none;
+    width: 1px; height: 22px;
+    background: rgba(0,0,0,.12);
+    margin: 0 4px;
+  }
 
-  /* 颜色选择 */
+  /* 颜色选择（做成圆形色块） */
   input[type="color"] {
     -webkit-appearance: none; appearance: none;
     flex: none;
-    width: 30px; height: 30px; padding: 0;
-    border: none; border-radius: 50%; background: none; cursor: pointer;
+    width: 30px; height: 30px;
+    margin: 0 4px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
   }
   input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
   input[type="color"]::-webkit-color-swatch {
-    border: 3px solid #fff; border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(0,0,0,.18);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1.5px rgba(0,0,0,.18);
   }
   input[type="color"]::-moz-color-swatch {
-    border: 3px solid #fff; border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(0,0,0,.18);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1.5px rgba(0,0,0,.18);
   }
 
   /* 粗细滑块 */
   input[type="range"] {
-    flex: none; width: 84px; accent-color: #3b82f6; cursor: pointer;
+    flex: none;
+    width: 84px;
+    margin: 0 4px;
+    accent-color: #3b82f6;
+    cursor: pointer;
   }
   #sizeLabel {
     flex: none;
-    font-size: 13px; color: #6b7280; width: 24px;
-    text-align: center; font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: #6b7280;
+    width: 22px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
   }
 
+  /* 小屏适配 */
   @media (max-width: 480px) {
-    .btn { padding: 7px 9px; font-size: 13px; }
-    input[type="range"] { width: 64px; }
-    .toolbar { gap: 4px; padding: 6px 9px; }
+    .btn { width: 34px; height: 34px; font-size: 17px; }
+    input[type="range"] { width: 62px; }
+    .toolbar { gap: 3px; padding: 6px 8px; }
+    #sizeLabel { width: 20px; font-size: 12px; }
   }
 </style>
 </head>
@@ -104,16 +140,16 @@
 <canvas id="preview"></canvas>
 
 <div class="toolbar">
-  <button id="pen"    class="btn active" title="画笔 (B)">✏️ 画笔</button>
-  <button id="eraser" class="btn"        title="圈选擦除 (E)：圈住一块区域，松手即擦掉">⭕ 圈选擦除</button>
+  <button id="pen"    class="btn active" title="画笔 (B)">✏️</button>
+  <button id="eraser" class="btn"        title="圈选擦除 (E)：圈住一块区域，松手即擦掉">⭕</button>
   <span class="divider"></span>
   <input type="color" id="color" value="#1f2937" title="画笔颜色">
   <input type="range" id="size" min="1" max="60" value="4" title="粗细">
   <span id="sizeLabel">4</span>
   <span class="divider"></span>
-  <button id="undo"  class="btn" title="撤销 (Ctrl+Z)">↶ 撤销</button>
-  <button id="clear" class="btn" title="清空画布">🗑 清空</button>
-  <button id="save"  class="btn" title="保存为 PNG">💾 保存</button>
+  <button id="undo"  class="btn" title="撤销 (Ctrl+Z)">↶</button>
+  <button id="clear" class="btn" title="清空画布">🗑</button>
+  <button id="save"  class="btn" title="保存为 PNG">💾</button>
 </div>
 
 <script>
@@ -130,9 +166,9 @@
   let tool        = 'pen';     // 'pen' | 'eraser'(圈选擦除)
   let color       = '#1f2937';
   let size        = 4;         // CSS 像素
-  let drawing     = false;     // 画笔是否正在画
+  let drawing     = false;
   let lastPoint   = null;
-  let activeId    = null;      // 当前指针 id，避免多指乱入
+  let activeId    = null;
   let lasso       = null;      // { points: [{x,y}, ...] }
   let initialized = false;
 
@@ -141,7 +177,6 @@
 
   /* ================= 画布尺寸 / 高清适配 ================= */
   function setupCanvas(keepContent = true) {
-    // 备份旧内容
     let backup = null;
     if (initialized && keepContent && canvas.width > 0) {
       backup = document.createElement('canvas');
@@ -154,7 +189,6 @@
     const w = window.innerWidth;
     const h = window.innerHeight;
 
-    // 主画布
     canvas.width  = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     canvas.style.width  = w + 'px';
@@ -163,14 +197,12 @@
     ctx.lineCap  = 'round';
     ctx.lineJoin = 'round';
 
-    // 预览层
     preview.width  = canvas.width;
     preview.height = canvas.height;
     preview.style.width  = w + 'px';
     preview.style.height = h + 'px';
     pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // 还原内容
     if (backup) {
       ctx.save();
       ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -179,7 +211,6 @@
       ctx.restore();
     }
 
-    // 尺寸变了，进行中的套索作废
     lasso = null;
     drawing = false;
     lastPoint = null;
@@ -190,7 +221,6 @@
 
   /* ================= 工具状态 ================= */
   function applyTool() {
-    // 画笔永远是正常合成
     ctx.globalCompositeOperation = 'source-over';
     ctx.strokeStyle = color;
     ctx.fillStyle   = color;
@@ -202,7 +232,6 @@
     tool = t;
     document.getElementById('pen').classList.toggle('active', t === 'pen');
     document.getElementById('eraser').classList.toggle('active', t === 'eraser');
-    // 切工具时丢弃未完成的套索
     lasso = null;
     clearPreview();
     drawing = false;
@@ -260,8 +289,6 @@
   }
 
   /* ================= 圈选擦除 ================= */
-
-  // 在预览层画套索虚线圈
   function drawLassoPreview() {
     clearPreview();
     if (!lasso) return;
@@ -281,11 +308,9 @@
     for (let i = 1; i < pts.length; i++) pctx.lineTo(pts[i].x, pts[i].y);
     pctx.closePath();
 
-    // 半透明填充，让用户看清选中范围
     pctx.fillStyle = 'rgba(59,130,246,.12)';
     pctx.fill();
 
-    // 虚线描边
     pctx.setLineDash([6, 5]);
     pctx.lineWidth = 1.5;
     pctx.strokeStyle = 'rgba(59,130,246,.9)';
@@ -300,7 +325,6 @@
     pctx.restore();
   }
 
-  // 真正擦除：用 destination-out 把闭合区域内的像素抠掉
   function eraseRegion(pts) {
     ctx.save();
     ctx.globalCompositeOperation = 'destination-out';
@@ -312,7 +336,6 @@
     ctx.restore();
   }
 
-  // 只点了一下（点太少）时，擦一个小圆点，给点反馈
   function eraseDot(p) {
     ctx.save();
     ctx.globalCompositeOperation = 'destination-out';
@@ -324,21 +347,19 @@
 
   /* ================= 指针事件 ================= */
   canvas.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse' && e.button !== 0) return; // 仅鼠标左键
-    if (activeId !== null) return;                            // 已经有手指在操作
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (activeId !== null) return;
     e.preventDefault();
 
     activeId = e.pointerId;
     try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
 
     if (tool === 'eraser') {
-      // ---- 开始圈选 ----
       lasso = { points: [getPoint(e)] };
       drawLassoPreview();
       return;
     }
 
-    // ---- 画笔 ----
     pushHistory();
     drawing   = true;
     lastPoint = getPoint(e);
@@ -374,7 +395,6 @@
     activeId = null;
     try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
 
-    // ---- 圈选擦除：松手即擦 ----
     if (tool === 'eraser') {
       if (!lasso) return;
       const pts = lasso.points;
@@ -391,7 +411,6 @@
       return;
     }
 
-    // ---- 画笔收笔 ----
     drawing   = false;
     lastPoint = null;
   }
@@ -430,7 +449,6 @@
   });
 
   $('save').addEventListener('click', () => {
-    // 合成白底再导出，避免透明区域发黑
     const tmp = document.createElement('canvas');
     tmp.width  = canvas.width;
     tmp.height = canvas.height;
