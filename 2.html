@@ -84,7 +84,7 @@
     margin: 0 4px;
   }
 
-  /* 颜色选择（做成圆形色块） */
+  /* 颜色选择（圆形色块） */
   input[type="color"] {
     -webkit-appearance: none; appearance: none;
     flex: none;
@@ -144,8 +144,8 @@
   <button id="eraser" class="btn"        title="圈选擦除 (E)：圈住一块区域，松手即擦掉">⭕</button>
   <span class="divider"></span>
   <input type="color" id="color" value="#1f2937" title="画笔颜色">
-  <input type="range" id="size" min="1" max="60" value="4" title="粗细">
-  <span id="sizeLabel">4</span>
+  <input type="range" id="size" min="1" max="60" value="2" title="粗细">
+  <span id="sizeLabel">2</span>
   <span class="divider"></span>
   <button id="undo"  class="btn" title="撤销 (Ctrl+Z)">↶</button>
   <button id="clear" class="btn" title="清空画布">🗑</button>
@@ -165,7 +165,7 @@
   let dpr         = 1;
   let tool        = 'pen';     // 'pen' | 'eraser'(圈选擦除)
   let color       = '#1f2937';
-  let size        = 4;         // CSS 像素
+  let size        = 2;         // 默认笔号 2（CSS 像素）
   let drawing     = false;
   let lastPoint   = null;
   let activeId    = null;
