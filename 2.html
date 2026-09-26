@@ -158,4 +158,322 @@
     canvas.width  = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     canvas.style.width  = w + 'px';
- 
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineCap  = 'round';
+    ctx.lineJoin = 'round';
+
+    // 预览层
+    preview.width  = canvas.width;
+    preview.height = canvas.height;
+    preview.style.width  = w + 'px';
+    preview.style.height = h + 'px';
+    pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // 还原内容
+    if (backup) {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.drawImage(backup, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+    }
+
+    // 尺寸变了，进行中的套索作废
+    lasso = null;
+    drawing = false;
+    lastPoint = null;
+
+    initialized = true;
+    applyTool();
+  }
+
+  /* ================= 工具状态 ================= */
+  function applyTool() {
+    // 画笔永远是正常合成
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = color;
+    ctx.fillStyle   = color;
+    ctx.lineWidth   = size;
+    canvas.style.cursor = 'crosshair';
+  }
+
+  function setTool(t) {
+    tool = t;
+    document.getElementById('pen').classList.toggle('active', t === 'pen');
+    document.getElementById('eraser').classList.toggle('active', t === 'eraser');
+    // 切工具时丢弃未完成的套索
+    lasso = null;
+    clearPreview();
+    drawing = false;
+    lastPoint = null;
+    applyTool();
+  }
+
+  /* ================= 撤销 ================= */
+  function pushHistory() {
+    try {
+      history.push(canvas.toDataURL('image/png'));
+      if (history.length > MAX_HISTORY) history.shift();
+    } catch (e) { /* ignore */ }
+  }
+
+  function undo() {
+    if (!history.length) return;
+    const url = history.pop();
+    const img = new Image();
+    img.onload = () => {
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      ctx.restore();
+      applyTool();
+    };
+    img.src = url;
+  }
+
+  /* ================= 坐标 ================= */
+  function getPoint(e) {
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  /* ================= 画笔绘制 ================= */
+  function drawDot(p) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, Math.max(size / 2, 0.5), 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  function drawLine(from, to) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size;
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(to.x, to.y);
+    ctx.stroke();
+  }
+
+  /* ================= 圈选擦除 ================= */
+
+  // 在预览层画套索虚线圈
+  function drawLassoPreview() {
+    clearPreview();
+    if (!lasso) return;
+    const pts = lasso.points;
+
+    if (pts.length < 2) {
+      pctx.beginPath();
+      pctx.arc(pts[0].x, pts[0].y, 3, 0, Math.PI * 2);
+      pctx.fillStyle = 'rgba(59,130,246,.65)';
+      pctx.fill();
+      return;
+    }
+
+    pctx.save();
+    pctx.beginPath();
+    pctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) pctx.lineTo(pts[i].x, pts[i].y);
+    pctx.closePath();
+
+    // 半透明填充，让用户看清选中范围
+    pctx.fillStyle = 'rgba(59,130,246,.12)';
+    pctx.fill();
+
+    // 虚线描边
+    pctx.setLineDash([6, 5]);
+    pctx.lineWidth = 1.5;
+    pctx.strokeStyle = 'rgba(59,130,246,.9)';
+    pctx.stroke();
+    pctx.restore();
+  }
+
+  function clearPreview() {
+    pctx.save();
+    pctx.setTransform(1, 0, 0, 1, 0, 0);
+    pctx.clearRect(0, 0, preview.width, preview.height);
+    pctx.restore();
+  }
+
+  // 真正擦除：用 destination-out 把闭合区域内的像素抠掉
+  function eraseRegion(pts) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 只点了一下（点太少）时，擦一个小圆点，给点反馈
+  function eraseDot(p) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, Math.max(size / 2, 3), 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  /* ================= 指针事件 ================= */
+  canvas.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return; // 仅鼠标左键
+    if (activeId !== null) return;                            // 已经有手指在操作
+    e.preventDefault();
+
+    activeId = e.pointerId;
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+
+    if (tool === 'eraser') {
+      // ---- 开始圈选 ----
+      lasso = { points: [getPoint(e)] };
+      drawLassoPreview();
+      return;
+    }
+
+    // ---- 画笔 ----
+    pushHistory();
+    drawing   = true;
+    lastPoint = getPoint(e);
+    drawDot(lastPoint);
+  });
+
+  canvas.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== activeId) return;
+
+    if (tool === 'eraser') {
+      if (!lasso) return;
+      e.preventDefault();
+      const evts = (typeof e.getCoalescedEvents === 'function')
+        ? e.getCoalescedEvents() : [e];
+      for (const ev of evts) lasso.points.push(getPoint(ev));
+      drawLassoPreview();
+      return;
+    }
+
+    if (!drawing) return;
+    e.preventDefault();
+    const evts = (typeof e.getCoalescedEvents === 'function')
+      ? e.getCoalescedEvents() : [e];
+    for (const ev of evts) {
+      const p = getPoint(ev);
+      if (lastPoint) drawLine(lastPoint, p);
+      lastPoint = p;
+    }
+  });
+
+  function endStroke(e) {
+    if (e.pointerId !== activeId) return;
+    activeId = null;
+    try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+
+    // ---- 圈选擦除：松手即擦 ----
+    if (tool === 'eraser') {
+      if (!lasso) return;
+      const pts = lasso.points;
+      lasso = null;
+      clearPreview();
+
+      if (pts.length >= 3) {
+        pushHistory();
+        eraseRegion(pts);
+      } else if (pts.length === 1) {
+        pushHistory();
+        eraseDot(pts[0]);
+      }
+      return;
+    }
+
+    // ---- 画笔收笔 ----
+    drawing   = false;
+    lastPoint = null;
+  }
+
+  canvas.addEventListener('pointerup', endStroke);
+  canvas.addEventListener('pointercancel', endStroke);
+
+  /* ================= 工具栏交互 ================= */
+  const $ = (id) => document.getElementById(id);
+
+  $('pen').addEventListener('click',    () => setTool('pen'));
+  $('eraser').addEventListener('click', () => setTool('eraser'));
+
+  $('color').addEventListener('input', (e) => {
+    color = e.target.value;
+    if (tool !== 'pen') setTool('pen');
+    applyTool();
+  });
+
+  $('size').addEventListener('input', (e) => {
+    size = Number(e.target.value);
+    $('sizeLabel').textContent = size;
+    applyTool();
+  });
+
+  $('undo').addEventListener('click', undo);
+
+  $('clear').addEventListener('click', () => {
+    pushHistory();
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    applyTool();
+  });
+
+  $('save').addEventListener('click', () => {
+    // 合成白底再导出，避免透明区域发黑
+    const tmp = document.createElement('canvas');
+    tmp.width  = canvas.width;
+    tmp.height = canvas.height;
+    const tctx = tmp.getContext('2d');
+    tctx.fillStyle = '#fff';
+    tctx.fillRect(0, 0, tmp.width, tmp.height);
+    tctx.drawImage(canvas, 0, 0);
+
+    const a = document.createElement('a');
+    a.download = 'whiteboard-' + Date.now() + '.png';
+    a.href = tmp.toDataURL('image/png');
+    a.click();
+  });
+
+  /* ================= 快捷键 ================= */
+  window.addEventListener('keydown', (e) => {
+    const tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+
+    const k = e.key.toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && k === 'z') {
+      e.preventDefault();
+      undo();
+    } else if (k === 'e') {
+      setTool('eraser');
+    } else if (k === 'b') {
+      setTool('pen');
+    } else if (k === 'escape') {
+      lasso = null;
+      clearPreview();
+    }
+  });
+
+  /* ================= 窗口尺寸变化 ================= */
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => setupCanvas(true), 180);
+  });
+
+  /* ================= 启动 ================= */
+  setupCanvas(false);
+})();
+</script>
+</body>
+</html>
