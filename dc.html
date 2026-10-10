@@ -140,31 +140,41 @@
         for (const file of files) {
             if (!file.type.startsWith('image/')) continue;
 
-            // 显示原图
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(file);
-            img.style.maxWidth = '100%';
-            display.appendChild(img);
-
             isProcessing = true;
-            updateStatus('正在预处理图片...');
+            updateStatus(`正在处理 ${file.name}...`);
             
             try {
-                // 1. OpenCV 预处理
+                // 1. 创建图片元素并显示
+                const img = document.createElement('img');
+                img.style.maxWidth = '100%';
+                img.style.marginBottom = '15px';
+                img.style.borderRadius = '4px';
+                img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                display.appendChild(img);
+
+                // 2. 核心修复：必须等待图片完全加载，否则宽高为0
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                    img.src = URL.createObjectURL(file);
+                });
+
+                // 3. OpenCV 预处理
                 const processedCanvas = await preprocessImage(img);
                 
-                // 可选：显示处理后的图片（用于调试，可注释掉）
+                // 可选：显示处理后的图片用于调试（可注释掉）
                 // const debugImg = document.createElement('img');
                 // debugImg.src = processedCanvas.toDataURL();
                 // debugImg.style.maxWidth = '50%';
+                // debugImg.style.marginBottom = '15px';
                 // display.appendChild(debugImg);
 
-                // 2. Tesseract 识别
+                // 4. Tesseract 识别
                 updateStatus('正在进行 OCR 识别...');
                 const { data: { text } } = await tesseractWorker.recognize(processedCanvas);
                 console.log('OCR 原始输出:\n', text);
 
-                // 3. 解析文本并填入表格
+                // 5. 解析文本并填入表格
                 parseAndFillTable(text);
                 updateStatus('✅ 识别完成，请核对数据');
             } catch (e) {
@@ -179,45 +189,52 @@
 
     // ---------- OpenCV 预处理核心 ----------
     function preprocessImage(imgElement) {
-        return new Promise((resolve) => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            // 限制最大宽度，避免性能问题
-            const maxW = 1200;
-            let w = imgElement.naturalWidth;
-            let h = imgElement.naturalHeight;
-            if (w > maxW) {
-                h = h * (maxW / w);
-                w = maxW;
+        return new Promise((resolve, reject) => {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 限制最大宽度，避免性能问题
+                const maxW = 1200;
+                let w = imgElement.naturalWidth || imgElement.width;
+                let h = imgElement.naturalHeight || imgElement.height;
+
+                // 防御性编程：如果宽高依然为0，抛出明确错误
+                if (!w || !h) {
+                    return reject(new Error('图片尺寸为0，可能未加载完成'));
+                }
+
+                if (w > maxW) {
+                    h = h * (maxW / w);
+                    w = maxW;
+                }
+                canvas.width = w;
+                canvas.height = h;
+                ctx.drawImage(imgElement, 0, 0, w, h);
+
+                const src = cv.imread(canvas);
+                const dst = new cv.Mat();
+                const gray = new cv.Mat();
+
+                // 1. 转灰度
+                cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+                
+                // 2. 高斯模糊去噪
+                const ksize = new cv.Size(3, 3);
+                cv.GaussianBlur(gray, gray, ksize, 0, 0, cv.BORDER_DEFAULT);
+                
+                // 3. 自适应阈值二值化（适合光照不均的屏幕照片）
+                cv.adaptiveThreshold(gray, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 15, 8);
+
+                // 4. 把处理后的 Mat 写回 Canvas 供 Tesseract 识别
+                cv.imshow(canvas, dst);
+
+                // 释放内存
+                src.delete(); gray.delete(); dst.delete();
+                resolve(canvas);
+            } catch (err) {
+                reject(err);
             }
-            canvas.width = w;
-            canvas.height = h;
-            ctx.drawImage(imgElement, 0, 0, w, h);
-
-            const src = cv.imread(canvas);
-            const dst = new cv.Mat();
-            const gray = new cv.Mat();
-
-            // 1. 转灰度
-            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-            
-            // 2. 高斯模糊去噪
-            const ksize = new cv.Size(3, 3);
-            cv.GaussianBlur(gray, gray, ksize, 0, 0, cv.BORDER_DEFAULT);
-            
-            // 3. 自适应阈值二值化（适合光照不均的屏幕照片）
-            // 参数 blockSize 和 C 可根据实际效果微调
-            cv.adaptiveThreshold(gray, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 15, 8);
-
-            // 4. 可选：去噪
-            // cv.fastNlMeansDenoising(dst, dst, 10, 7, 21);
-
-            // 把处理后的 Mat 写回 Canvas 供 Tesseract 识别
-            cv.imshow(canvas, dst);
-
-            src.delete(); gray.delete(); dst.delete();
-            resolve(canvas);
         });
     }
 
@@ -226,11 +243,8 @@
         const lines = ocrText.split('\n');
         const cabinet = document.getElementById('batchCabinetName').value.trim() || '电池柜1';
         
-        // 状态机解析：寻找 "电池模块X" 作为锚点，然后收集后续的数值
         let currentModule = null;
-        let moduleData = {
-            module: '', volt: '', maxV: '', minV: '', temp: ''
-        };
+        let moduleData = { module: '', volt: '', maxV: '', minV: '', temp: '' };
         const results = [];
 
         for (let line of lines) {
@@ -240,7 +254,6 @@
             // 匹配模块号，如 "电池模块8" 或 "模块 8"
             const moduleMatch = line.match(/(?:电池)?模块\s*(\d+)/);
             if (moduleMatch) {
-                // 如果之前有收集到的模块数据，先保存
                 if (currentModule && (moduleData.volt || moduleData.maxV || moduleData.temp)) {
                     results.push({ ...moduleData });
                 }
@@ -255,7 +268,7 @@
             const numbers = line.match(/\d+\.\d+/g);
             if (!numbers) continue;
 
-            const num = numbers[0]; // 取该行第一个数值
+            const num = numbers[0];
             
             // 根据关键词判断数值归属
             if (line.includes('电压') && !line.includes('最高') && !line.includes('最低')) {
@@ -269,12 +282,10 @@
             }
         }
 
-        // 保存最后一个模块
         if (currentModule && (moduleData.volt || moduleData.maxV || moduleData.temp)) {
             results.push({ ...moduleData });
         }
 
-        // 清空并填充表格
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
 
@@ -288,7 +299,7 @@
         });
     }
 
-    // ---------- 表格操作 (与之前版本一致) ----------
+    // ---------- 表格操作 ----------
     function addRow(cabinet, module, volt = "", maxV = "", minV = "", temp = "") {
         const tbody = document.getElementById("tableBody");
         const tr = document.createElement("tr");
