@@ -3,162 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>图片对照录入 - 电池数据转换工具</title>
+    <title>电池数据 OCR 自动录入 (OpenCV.js + Tesseract.js)</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            box-sizing: border-box;
-        }
-        header {
-            background: #fff;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
+        header { background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; }
         h1 { margin: 0; font-size: 20px; color: #2c3e50; }
+        .main-content { display: flex; flex: 1; gap: 20px; height: calc(100% - 80px); }
         
-        .main-content {
-            display: flex;
-            flex: 1;
-            gap: 20px;
-            height: calc(100% - 80px);
-        }
+        .left-panel { flex: 1; min-width: 350px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow: hidden; }
+        .upload-area { padding: 15px; text-align: center; border-bottom: 1px solid #eee; background: #fafafa; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; color: white; transition: background 0.3s; }
+        .btn-primary { background: #3498db; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-export { background: #27ae60; }
+        .btn-export:hover { background: #219653; }
+        .btn-clear { background: #e74c3c; }
+        .btn-clear:hover { background: #c0392b; }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
 
-        /* 左侧图片区 */
-        .left-panel {
-            flex: 1;
-            min-width: 350px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .upload-area {
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-            background: #fafafa;
-        }
-        .upload-btn {
-            background: #3498db;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .upload-btn:hover { background: #2980b9; }
-        .image-display {
-            flex: 1;
-            overflow: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px;
-            background: #eaeff2;
-        }
-        .image-display img {
-            max-width: 100%;
-            margin-bottom: 15px;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        .image-display { flex: 1; overflow: auto; display: flex; flex-direction: column; align-items: center; padding: 10px; background: #eaeff2; }
+        .image-display img { max-width: 100%; margin-bottom: 15px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .empty-tip { color: #95a5a6; margin-top: 50px; text-align: center; }
 
-        /* 右侧表格区 */
-        .right-panel {
-            flex: 1.5;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            overflow: hidden;
-        }
-        
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 15px;
-            align-items: center;
-        }
-        .toolbar input {
-            padding: 6px 10px;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            width: 80px;
-        }
-        .btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 13px;
-            color: white;
-        }
-        .btn-add { background-color: #3498db; }
-        .btn-export { background-color: #27ae60; margin-left: auto; }
-        .btn-clear { background-color: #e74c3c; }
+        .right-panel { flex: 1.5; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; flex-direction: column; padding: 15px; overflow: hidden; }
+        .toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; align-items: center; }
+        .toolbar input { padding: 6px 10px; border: 1px solid #bdc3c7; border-radius: 4px; width: 70px; }
+        .status { font-size: 13px; color: #e67e22; margin-left: 10px; }
 
-        .table-wrapper {
-            flex: 1;
-            overflow: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
+        .table-wrapper { flex: 1; overflow: auto; border: 1px solid #ddd; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 13px; }
         th { background-color: #f8f9fa; font-weight: 600; color: #555; position: sticky; top: 0; z-index: 10; }
         td[contenteditable="true"]:focus { background-color: #e8f4fd; border-color: #3498db; outline: none; }
         .row-del { background-color: #ff7675; color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer; }
+        .row-del:hover { background-color: #d63031; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>🔋 电池数据 图片对照录入工具</h1>
-    <p style="margin:0; font-size:13px; color:#7f8c8d;">提示：纯前端无法精准识别图片文字，请对照左侧图片，在右侧表格快速录入</p>
+    <h1>🔋 电池数据 OCR 自动录入 (OpenCV.js + Tesseract.js)</h1>
+    <span class="status" id="statusText">正在加载核心库...</span>
 </header>
 
 <div class="main-content">
-    <!-- 左侧图片显示区 -->
     <div class="left-panel">
         <div class="upload-area">
             <input type="file" id="imageInput" accept="image/*" multiple style="display: none;" onchange="handleFiles(this.files)">
-            <button class="upload-btn" onclick="document.getElementById('imageInput').click()">📸 选择并上传图片 (支持多选)</button>
-            <button class="upload-btn" style="background:#e74c3c; margin-left:10px;" onclick="clearImages()">清空图片</button>
+            <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">📸 上传图片并识别</button>
+            <button class="btn btn-clear" style="margin-left:10px;" onclick="clearImages()">清空图片</button>
         </div>
         <div class="image-display" id="imageDisplay">
-            <div class="empty-tip">上传图片后，图片将显示在这里<br>你可以滚动查看，对照填写右侧表格</div>
+            <div class="empty-tip">上传图片后，图片将显示在这里<br>系统会自动进行预处理和识别</div>
         </div>
     </div>
 
-    <!-- 右侧表格区 -->
     <div class="right-panel">
         <div class="toolbar">
             <span>快捷生成行：</span>
             <input type="text" id="batchCabinetName" value="电池柜1" placeholder="柜号" style="width:70px;">
             <span>模块数：</span>
             <input type="number" id="batchCount" value="8" min="1" style="width:50px;">
-            <button class="btn btn-add" onclick="batchGenerate()">⚡ 生成</button>
+            <button class="btn btn-primary" onclick="batchGenerate()">⚡ 生成</button>
             <button class="btn btn-clear" onclick="clearTable()">清空表格</button>
             <button class="btn btn-export" onclick="exportToCSV()">📥 导出 CSV</button>
         </div>
@@ -176,52 +82,213 @@
                         <th>操作</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
-                    <!-- 数据行 -->
-                </tbody>
+                <tbody id="tableBody"></tbody>
             </table>
         </div>
     </div>
 </div>
 
+<!-- 引入库 -->
+<script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+<script async src="https://docs.opencv.org/4.5.5/opencv.js" onload="onOpenCvReady();" type="text/javascript"></script>
+
 <script>
-    // ---------- 图片处理逻辑 ----------
-    function handleFiles(files) {
-        const display = document.getElementById('imageDisplay');
-        // 第一次上传时清空提示语
-        if(display.querySelector('.empty-tip')) {
-            display.innerHTML = '';
+    let openCvReady = false;
+    let tesseractWorker = null;
+    let isProcessing = false;
+
+    // ---------- 初始化 ----------
+    async function onOpenCvReady() {
+        openCvReady = true;
+        updateStatus('OpenCV.js 已加载，正在初始化 OCR 引擎...');
+        try {
+            tesseractWorker = await Tesseract.createWorker('chi_sim+eng', 1, {
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        updateStatus(`识别中... ${Math.round(m.progress * 100)}%`);
+                    }
+                }
+            });
+            await tesseractWorker.setParameters({
+                tessedit_char_whitelist: '0123456789.ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz电池柜模块电压流温度',
+                preserve_interword_spaces: '1'
+            });
+            updateStatus('✅ 所有引擎就绪，可以上传图片了');
+        } catch (e) {
+            updateStatus('❌ OCR 引擎初始化失败：' + e.message);
+        }
+    }
+
+    function updateStatus(msg) {
+        document.getElementById('statusText').innerText = msg;
+    }
+
+    // ---------- 图片上传与处理 ----------
+    async function handleFiles(files) {
+        if (!openCvReady || !tesseractWorker) {
+            alert('引擎还在加载，请稍候...');
+            return;
+        }
+        if (isProcessing) {
+            alert('正在处理中，请等待当前图片完成...');
+            return;
         }
 
-        Array.from(files).forEach(file => {
-            if (!file.type.startsWith('image/')) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                // 点击图片可以放大查看
-                img.onclick = function() {
-                    if(this.style.maxWidth === '100%') {
-                        this.style.maxWidth = '300%';
-                        this.style.cursor = 'zoom-out';
-                    } else {
-                        this.style.maxWidth = '100%';
-                        this.style.cursor = 'zoom-in';
-                    }
-                };
-                display.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        });
-        // 清空input，允许重复上传同一张图
+        const display = document.getElementById('imageDisplay');
+        if (display.querySelector('.empty-tip')) display.innerHTML = '';
+
+        for (const file of files) {
+            if (!file.type.startsWith('image/')) continue;
+
+            // 显示原图
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.style.maxWidth = '100%';
+            display.appendChild(img);
+
+            isProcessing = true;
+            updateStatus('正在预处理图片...');
+            
+            try {
+                // 1. OpenCV 预处理
+                const processedCanvas = await preprocessImage(img);
+                
+                // 可选：显示处理后的图片（用于调试，可注释掉）
+                // const debugImg = document.createElement('img');
+                // debugImg.src = processedCanvas.toDataURL();
+                // debugImg.style.maxWidth = '50%';
+                // display.appendChild(debugImg);
+
+                // 2. Tesseract 识别
+                updateStatus('正在进行 OCR 识别...');
+                const { data: { text } } = await tesseractWorker.recognize(processedCanvas);
+                console.log('OCR 原始输出:\n', text);
+
+                // 3. 解析文本并填入表格
+                parseAndFillTable(text);
+                updateStatus('✅ 识别完成，请核对数据');
+            } catch (e) {
+                console.error(e);
+                updateStatus('❌ 处理出错：' + e.message);
+            } finally {
+                isProcessing = false;
+            }
+        }
         document.getElementById('imageInput').value = '';
     }
 
-    function clearImages() {
-        document.getElementById('imageDisplay').innerHTML = '<div class="empty-tip">上传图片后，图片将显示在这里<br>你可以滚动查看，对照填写右侧表格</div>';
+    // ---------- OpenCV 预处理核心 ----------
+    function preprocessImage(imgElement) {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 限制最大宽度，避免性能问题
+            const maxW = 1200;
+            let w = imgElement.naturalWidth;
+            let h = imgElement.naturalHeight;
+            if (w > maxW) {
+                h = h * (maxW / w);
+                w = maxW;
+            }
+            canvas.width = w;
+            canvas.height = h;
+            ctx.drawImage(imgElement, 0, 0, w, h);
+
+            const src = cv.imread(canvas);
+            const dst = new cv.Mat();
+            const gray = new cv.Mat();
+
+            // 1. 转灰度
+            cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+            
+            // 2. 高斯模糊去噪
+            const ksize = new cv.Size(3, 3);
+            cv.GaussianBlur(gray, gray, ksize, 0, 0, cv.BORDER_DEFAULT);
+            
+            // 3. 自适应阈值二值化（适合光照不均的屏幕照片）
+            // 参数 blockSize 和 C 可根据实际效果微调
+            cv.adaptiveThreshold(gray, dst, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 15, 8);
+
+            // 4. 可选：去噪
+            // cv.fastNlMeansDenoising(dst, dst, 10, 7, 21);
+
+            // 把处理后的 Mat 写回 Canvas 供 Tesseract 识别
+            cv.imshow(canvas, dst);
+
+            src.delete(); gray.delete(); dst.delete();
+            resolve(canvas);
+        });
     }
 
-    // ---------- 表格处理逻辑 ----------
+    // ---------- 文本解析与填表 ----------
+    function parseAndFillTable(ocrText) {
+        const lines = ocrText.split('\n');
+        const cabinet = document.getElementById('batchCabinetName').value.trim() || '电池柜1';
+        
+        // 状态机解析：寻找 "电池模块X" 作为锚点，然后收集后续的数值
+        let currentModule = null;
+        let moduleData = {
+            module: '', volt: '', maxV: '', minV: '', temp: ''
+        };
+        const results = [];
+
+        for (let line of lines) {
+            line = line.trim();
+            if (!line) continue;
+
+            // 匹配模块号，如 "电池模块8" 或 "模块 8"
+            const moduleMatch = line.match(/(?:电池)?模块\s*(\d+)/);
+            if (moduleMatch) {
+                // 如果之前有收集到的模块数据，先保存
+                if (currentModule && (moduleData.volt || moduleData.maxV || moduleData.temp)) {
+                    results.push({ ...moduleData });
+                }
+                currentModule = moduleMatch[1];
+                moduleData = { module: `电池模块${currentModule}`, volt: '', maxV: '', minV: '', temp: '' };
+                continue;
+            }
+
+            if (!currentModule) continue;
+
+            // 匹配数值，提取所有小数
+            const numbers = line.match(/\d+\.\d+/g);
+            if (!numbers) continue;
+
+            const num = numbers[0]; // 取该行第一个数值
+            
+            // 根据关键词判断数值归属
+            if (line.includes('电压') && !line.includes('最高') && !line.includes('最低')) {
+                moduleData.volt = num;
+            } else if (line.includes('最高电压') || line.includes('最高')) {
+                moduleData.maxV = num;
+            } else if (line.includes('最低电压') || line.includes('最低')) {
+                moduleData.minV = num;
+            } else if (line.includes('温度') || line.includes('最高温度')) {
+                moduleData.temp = num;
+            }
+        }
+
+        // 保存最后一个模块
+        if (currentModule && (moduleData.volt || moduleData.maxV || moduleData.temp)) {
+            results.push({ ...moduleData });
+        }
+
+        // 清空并填充表格
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+
+        if (results.length === 0) {
+            alert('未能从图片中解析出有效数据，请尝试手动录入或调整图片。');
+            return;
+        }
+
+        results.forEach(r => {
+            addRow(cabinet, r.module, r.volt, r.maxV, r.minV, r.temp);
+        });
+    }
+
+    // ---------- 表格操作 (与之前版本一致) ----------
     function addRow(cabinet, module, volt = "", maxV = "", minV = "", temp = "") {
         const tbody = document.getElementById("tableBody");
         const tr = document.createElement("tr");
@@ -240,7 +307,7 @@
     function batchGenerate() {
         const cabinet = document.getElementById("batchCabinetName").value.trim() || "电池柜1";
         const count = parseInt(document.getElementById("batchCount").value) || 8;
-
+        if (count <= 0 || count > 50) { alert("生成数量请输入 1-50 之间的数字"); return; }
         for (let i = 1; i <= count; i++) {
             addRow(cabinet, `电池模块${i}`, "", "", "", "");
         }
@@ -251,20 +318,19 @@
     }
 
     function clearTable() {
-        if(confirm("确定清空右侧所有表格数据吗？")) {
+        if (confirm("确定清空右侧所有表格数据吗？")) {
             document.getElementById("tableBody").innerHTML = "";
         }
     }
 
+    function clearImages() {
+        document.getElementById('imageDisplay').innerHTML = '<div class="empty-tip">上传图片后，图片将显示在这里<br>系统会自动进行预处理和识别</div>';
+    }
+
     function exportToCSV() {
         const rows = document.querySelectorAll("#dataTable tbody tr");
-        if (rows.length === 0) {
-            alert("表格为空，没有可导出的数据。");
-            return;
-        }
-
+        if (rows.length === 0) { alert("表格为空，没有可导出的数据。"); return; }
         let csvContent = "柜号,模块号,模块电压,电芯最高电压,电芯最低电压,电芯最高温度\n";
-
         rows.forEach(row => {
             const cells = row.querySelectorAll("td");
             const rowData = [];
@@ -275,8 +341,6 @@
             }
             csvContent += rowData.join(",") + "\n";
         });
-
-        // 添加 BOM 头防止中文乱码
         const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
