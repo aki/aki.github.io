@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电池运行数据转换工具 (多柜多模块版)</title>
+    <title>图片对照录入 - 电池数据转换工具</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -11,132 +11,217 @@
             color: #333;
             margin: 0;
             padding: 20px;
-        }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 10px; }
-        .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 20px; font-size: 14px; }
-        
-        /* 快捷操作区 */
-        .batch-tools {
-            background: #eaf2f8;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
             display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        header {
+            background: #fff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
             flex-wrap: wrap;
             gap: 15px;
-            align-items: center;
-            border-left: 5px solid #3498db;
         }
-        .batch-tools label { font-weight: bold; font-size: 14px; }
-        .batch-tools input {
-            padding: 6px 10px;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            width: 100px;
+        h1 { margin: 0; font-size: 20px; color: #2c3e50; }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            height: calc(100% - 80px);
         }
-        .btn {
+
+        /* 左侧图片区 */
+        .left-panel {
+            flex: 1;
+            min-width: 350px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .upload-area {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            background: #fafafa;
+        }
+        .upload-btn {
+            background: #3498db;
+            color: white;
             padding: 8px 16px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 14px;
-            color: white;
-            transition: background 0.3s;
         }
-        .btn-generate { background-color: #3498db; }
-        .btn-generate:hover { background-color: #2980b9; }
-        .btn-export { background-color: #27ae60; float: right; }
-        .btn-export:hover { background-color: #219653; }
+        .upload-btn:hover { background: #2980b9; }
+        .image-display {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            background: #eaeff2;
+        }
+        .image-display img {
+            max-width: 100%;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .empty-tip { color: #95a5a6; margin-top: 50px; text-align: center; }
+
+        /* 右侧表格区 */
+        .right-panel {
+            flex: 1.5;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            overflow: hidden;
+        }
+        
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .toolbar input {
+            padding: 6px 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            width: 80px;
+        }
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: white;
+        }
+        .btn-add { background-color: #3498db; }
+        .btn-export { background-color: #27ae60; margin-left: auto; }
         .btn-clear { background-color: #e74c3c; }
-        .btn-clear:hover { background-color: #c0392b; }
-        
-        /* 表格样式 */
-        .table-wrapper { overflow-x: auto; margin-top: 10px; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        th { background-color: #f8f9fa; font-weight: 600; color: #555; }
-        td[contenteditable="true"]:hover { background-color: #f1f2f6; }
+
+        .table-wrapper {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; font-size: 13px; }
+        th { background-color: #f8f9fa; font-weight: 600; color: #555; position: sticky; top: 0; z-index: 10; }
         td[contenteditable="true"]:focus { background-color: #e8f4fd; border-color: #3498db; outline: none; }
-        .row-del { background-color: #ff7675; color: white; padding: 4px 8px; border-radius: 3px; font-size: 12px; cursor: pointer; }
-        .row-del:hover { background-color: #d63031; }
-        
-        .header-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .excel-note { font-size: 12px; color: #888; margin-top: 15px; text-align: center; }
+        .row-del { background-color: #ff7675; color: white; padding: 4px 8px; border-radius: 3px; font-size: 11px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>🔋 电池运行数据录入与导出</h1>
-    <p class="subtitle">支持多电池柜、多模块。录入数据后，一键导出为 212R 格式的 Excel 表格</p>
+<header>
+    <h1>🔋 电池数据 图片对照录入工具</h1>
+    <p style="margin:0; font-size:13px; color:#7f8c8d;">提示：纯前端无法精准识别图片文字，请对照左侧图片，在右侧表格快速录入</p>
+</header>
 
-    <!-- 批量生成区 -->
-    <div class="batch-tools">
-        <label>快捷批量生成：</label>
-        <span>柜号：</span>
-        <input type="text" id="batchCabinetName" value="电池柜1" placeholder="如: 电池柜1">
-        <span>起始模块号：</span>
-        <input type="number" id="batchStartModule" value="1" min="1">
-        <span>生成数量：</span>
-        <input type="number" id="batchCount" value="16" min="1">
-        <button class="btn btn-generate" onclick="batchGenerate()">⚡ 批量生成表格行</button>
-        <button class="btn btn-clear" onclick="clearTable()">🗑️ 清空全表</button>
+<div class="main-content">
+    <!-- 左侧图片显示区 -->
+    <div class="left-panel">
+        <div class="upload-area">
+            <input type="file" id="imageInput" accept="image/*" multiple style="display: none;" onchange="handleFiles(this.files)">
+            <button class="upload-btn" onclick="document.getElementById('imageInput').click()">📸 选择并上传图片 (支持多选)</button>
+            <button class="upload-btn" style="background:#e74c3c; margin-left:10px;" onclick="clearImages()">清空图片</button>
+        </div>
+        <div class="image-display" id="imageDisplay">
+            <div class="empty-tip">上传图片后，图片将显示在这里<br>你可以滚动查看，对照填写右侧表格</div>
+        </div>
     </div>
 
-    <div class="header-actions">
-        <span style="font-size: 14px; color: #555;">双击单元格可编辑数据</span>
-        <button class="btn btn-export" onclick="exportToCSV()">📥 导出为 CSV (Excel格式)</button>
-    </div>
+    <!-- 右侧表格区 -->
+    <div class="right-panel">
+        <div class="toolbar">
+            <span>快捷生成行：</span>
+            <input type="text" id="batchCabinetName" value="电池柜1" placeholder="柜号" style="width:70px;">
+            <span>模块数：</span>
+            <input type="number" id="batchCount" value="8" min="1" style="width:50px;">
+            <button class="btn btn-add" onclick="batchGenerate()">⚡ 生成</button>
+            <button class="btn btn-clear" onclick="clearTable()">清空表格</button>
+            <button class="btn btn-export" onclick="exportToCSV()">📥 导出 CSV</button>
+        </div>
 
-    <div class="table-wrapper">
-        <table id="dataTable">
-            <thead>
-                <tr>
-                    <th width="15%">柜号</th>
-                    <th width="15%">模块号</th>
-                    <th width="15%">模块电压(V)</th>
-                    <th width="18%">电芯最高电压(V)</th>
-                    <th width="18%">电芯最低电压(V)</th>
-                    <th width="15%">电芯最高温度(°C)</th>
-                    <th width="10%">操作</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                <!-- 默认预填 212R 的 8 个模块作为示例 -->
-            </tbody>
-        </table>
+        <div class="table-wrapper">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>柜号</th>
+                        <th>模块号</th>
+                        <th>模块电压(V)</th>
+                        <th>电芯最高电压(V)</th>
+                        <th>电芯最低电压(V)</th>
+                        <th>电芯最高温度(°C)</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- 数据行 -->
+                </tbody>
+            </table>
+        </div>
     </div>
-    <p class="excel-note">导出后，可直接用 Excel 打开，表头与“212R”表格完全一致。若导入现有Excel，只需全选复制粘贴即可。</p>
 </div>
 
 <script>
-    // 初始化预填 212R 的数据作为示例，你可以点击“清空全表”开始新的数据录入
-    const initialData = [
-        { cabinet: "电池柜1", module: "电池模块1", volt: "68.20", maxV: "3.413", minV: "3.412", temp: "29.2" },
-        { cabinet: "电池柜1", module: "电池模块2", volt: "68.20", maxV: "3.413", minV: "3.412", temp: "28.9" },
-        { cabinet: "电池柜1", module: "电池模块3", volt: "68.30", maxV: "3.413", minV: "3.412", temp: "28.7" },
-        { cabinet: "电池柜1", module: "电池模块4", volt: "68.20", maxV: "3.413", minV: "3.412", temp: "28.4" },
-        { cabinet: "电池柜1", module: "电池模块5", volt: "68.30", maxV: "3.413", minV: "3.412", temp: "28.4" },
-        { cabinet: "电池柜1", module: "电池模块6", volt: "68.20", maxV: "3.413", minV: "3.393", temp: "27.9" },
-        { cabinet: "电池柜1", module: "电池模块7", volt: "68.10", maxV: "3.413", minV: "3.412", temp: "27.4" },
-        { cabinet: "电池柜1", module: "电池模块8", volt: "68.30", maxV: "3.413", minV: "3.412", temp: "26.5" }
-    ];
+    // ---------- 图片处理逻辑 ----------
+    function handleFiles(files) {
+        const display = document.getElementById('imageDisplay');
+        // 第一次上传时清空提示语
+        if(display.querySelector('.empty-tip')) {
+            display.innerHTML = '';
+        }
 
-    window.onload = function() {
-        initialData.forEach(data => {
-            addRow(data.cabinet, data.module, data.volt, data.maxV, data.minV, data.temp);
+        Array.from(files).forEach(file => {
+            if (!file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                // 点击图片可以放大查看
+                img.onclick = function() {
+                    if(this.style.maxWidth === '100%') {
+                        this.style.maxWidth = '300%';
+                        this.style.cursor = 'zoom-out';
+                    } else {
+                        this.style.maxWidth = '100%';
+                        this.style.cursor = 'zoom-in';
+                    }
+                };
+                display.appendChild(img);
+            };
+            reader.readAsDataURL(file);
         });
-    };
+        // 清空input，允许重复上传同一张图
+        document.getElementById('imageInput').value = '';
+    }
 
-    // 添加单行
+    function clearImages() {
+        document.getElementById('imageDisplay').innerHTML = '<div class="empty-tip">上传图片后，图片将显示在这里<br>你可以滚动查看，对照填写右侧表格</div>';
+    }
+
+    // ---------- 表格处理逻辑 ----------
     function addRow(cabinet, module, volt = "", maxV = "", minV = "", temp = "") {
         const tbody = document.getElementById("tableBody");
         const tr = document.createElement("tr");
@@ -152,41 +237,25 @@
         tbody.appendChild(tr);
     }
 
-    // 批量生成行（解决多柜、多模块录入繁琐的问题）
     function batchGenerate() {
         const cabinet = document.getElementById("batchCabinetName").value.trim() || "电池柜1";
-        const startNum = parseInt(document.getElementById("batchStartModule").value) || 1;
         const count = parseInt(document.getElementById("batchCount").value) || 8;
 
-        if (count <= 0 || count > 100) {
-            alert("生成数量请输入 1-100 之间的数字");
-            return;
+        for (let i = 1; i <= count; i++) {
+            addRow(cabinet, `电池模块${i}`, "", "", "", "");
         }
-
-        for (let i = 0; i < count; i++) {
-            const moduleName = `电池模块${startNum + i}`;
-            // 批量生成时，电压、温度等留空，方便后续对照图片填写
-            addRow(cabinet, moduleName, "", "", "", "");
-        }
-        
-        // 自动滚动到底部
-        window.scrollTo(0, document.body.scrollHeight);
     }
 
-    // 删除行
     function deleteRow(element) {
-        const tr = element.parentElement.parentElement;
-        tr.remove();
+        element.parentElement.parentElement.remove();
     }
 
-    // 清空表格
     function clearTable() {
-        if (confirm("确定要清空所有数据吗？清空后无法恢复。")) {
+        if(confirm("确定清空右侧所有表格数据吗？")) {
             document.getElementById("tableBody").innerHTML = "";
         }
     }
 
-    // 导出为 CSV
     function exportToCSV() {
         const rows = document.querySelectorAll("#dataTable tbody tr");
         if (rows.length === 0) {
@@ -194,44 +263,33 @@
             return;
         }
 
-        // 表头严格对应 212R 表格
         let csvContent = "柜号,模块号,模块电压,电芯最高电压,电芯最低电压,电芯最高温度\n";
 
         rows.forEach(row => {
             const cells = row.querySelectorAll("td");
             const rowData = [];
-            for (let i = 0; i < 6; i++) { // 只取前6列，忽略“操作”列
+            for (let i = 0; i < 6; i++) {
                 let cellText = cells[i].innerText.trim();
-                // 处理文本中的逗号，防止破坏 CSV 结构
-                if (cellText.includes(',')) {
-                    cellText = `"${cellText}"`;
-                }
+                if (cellText.includes(',')) cellText = `"${cellText}"`;
                 rowData.push(cellText);
             }
             csvContent += rowData.join(",") + "\n";
         });
 
-        // 创建 Blob 并添加 BOM 头（防止 Excel 打开中文乱码）
+        // 添加 BOM 头防止中文乱码
         const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
-        
         const link = document.createElement("a");
         link.setAttribute("href", url);
         link.setAttribute("download", `电池运行数据_${getCurrentTime()}.csv`);
-        link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
     function getCurrentTime() {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const hour = String(now.getHours()).padStart(2, '0');
-        const minute = String(now.getMinutes()).padStart(2, '0');
-        return `${year}${month}${day}_${hour}${minute}`;
+        const d = new Date();
+        return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
     }
 </script>
 
