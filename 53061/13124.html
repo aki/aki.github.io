@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sounds of English</title>
+    <title>Sounds of English - BBC 英式音标发音</title>
     <style>
         * {
             box-sizing: border-box;
@@ -29,7 +29,7 @@
             border-radius: 24px;
             padding: 30px 35px 25px 35px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            position: relative; /* 为内部绝对定位提供参考 */
+            position: relative;
             margin-bottom: 50px;
         }
 
@@ -141,11 +141,10 @@
             transform: translateY(-10px);
             pointer-events: none;
             transition: opacity 0.2s, transform 0.2s;
-            min-width: 260px;
-            max-width: 320px;
+            min-width: 280px;
+            max-width: 340px;
         }
 
-        /* 指向下方的小三角 */
         .floating-card::before {
             content: '';
             position: absolute;
@@ -171,6 +170,16 @@
             margin-bottom: 10px;
             border-bottom: 1px dashed #e0e9f0;
             padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header span {
+            font-size: 0.9rem;
+            color: #6c7a8a;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: normal;
         }
 
         /* 单词列表 */
@@ -178,12 +187,11 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 280px;
+            max-height: 300px;
             overflow-y: auto;
             padding-right: 5px;
         }
 
-        /* 滚动条美化 */
         .word-list::-webkit-scrollbar {
             width: 5px;
         }
@@ -231,14 +239,15 @@
             border: 1px solid #5bc0de;
             color: #46b8da;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            flex-shrink: 0;
         }
 
         .play-btn:hover {
@@ -262,7 +271,7 @@
             .row-label { min-width: 70px; font-size: 0.9rem; }
             .tag { display: none; }
             .floating-card {
-                position: fixed; /* 手机端改为屏幕居中弹出 */
+                position: fixed;
                 left: 50% !important;
                 top: 50% !important;
                 transform: translate(-50%, -50%) scale(0.9) !important;
@@ -272,7 +281,7 @@
             .floating-card.active {
                 transform: translate(-50%, -50%) scale(1) !important;
             }
-            .floating-card::before { display: none; } /* 手机端隐藏小三角 */
+            .floating-card::before { display: none; }
         }
     </style>
 </head>
@@ -281,18 +290,18 @@
 <div class="container" id="mainContainer">
     <h1>Sounds of English</h1>
 
-    <!-- 跟随音标位置的浮动卡片 -->
+    <!-- 浮动单词卡片 -->
     <div id="floatingCard" class="floating-card">
-        <div class="card-header" id="cardHeader"></div>
-        <div class="word-list" id="wordList">
-            <!-- 单词将由 JS 动态生成 -->
+        <div class="card-header">
+            <span id="cardSymbol"></span>
+            <span>点击单词发音</span>
         </div>
+        <div class="word-list" id="wordList"></div>
     </div>
 
     <!-- 元音部分 -->
     <div class="section">
         <h2>VOWELS</h2>
-        <!-- 短元音 -->
         <div class="row">
             <span class="row-label">短元音</span>
             <div class="subgroup">
@@ -306,7 +315,6 @@
             </div>
             <span class="tag">‘short’</span>
         </div>
-        <!-- 长元音 -->
         <div class="row">
             <span class="row-label">长元音</span>
             <div class="subgroup">
@@ -318,7 +326,6 @@
             </div>
             <span class="tag">‘long’</span>
         </div>
-        <!-- 双元音 -->
         <div class="row">
             <span class="row-label">双元音</span>
             <div class="subgroup">
@@ -338,7 +345,6 @@
     <!-- 辅音部分 -->
     <div class="section">
         <h2>CONSONANTS</h2>
-        <!-- 清辅音 -->
         <div class="row">
             <span class="row-label">清辅音</span>
             <div class="subgroup">
@@ -353,7 +359,6 @@
             </div>
             <span class="tag">voiceless</span>
         </div>
-        <!-- 浊辅音 -->
         <div class="row">
             <span class="row-label">浊辅音</span>
             <div class="subgroup">
@@ -368,7 +373,6 @@
             </div>
             <span class="tag">voiced</span>
         </div>
-        <!-- 其他辅音 -->
         <div class="row">
             <span class="row-label">其他辅音</span>
             <div class="subgroup">
@@ -384,113 +388,90 @@
             <span class="tag">other</span>
         </div>
     </div>
-    <div class="footer">点击音标听纯音，点击列表内单词听完整发音</div>
+    <div class="footer">发音源：百度翻译（英式）· 示例单词参考 BBC Learning English</div>
 </div>
 
 <script>
     (function() {
-        // 核心数据升级：每个音标对应多个单词及音标，以及用于模拟纯音的 TTS 拼写
+        // 核心数据：严格按照 BBC 官方示例词整理，并增加丰富度
         const wordData = {
             // 短元音
-            'ɪ': { pure: 'ih', words: [{ w: 'sit', p: '/sɪt/' }, { w: 'big', p: '/bɪɡ/' }, { w: 'fish', p: '/fɪʃ/' }, { w: 'happy', p: '/ˈhæpi/' }, { w: 'village', p: '/ˈvɪlɪdʒ/' }] },
-            'ʊ': { pure: 'oo', words: [{ w: 'put', p: '/pʊt/' }, { w: 'book', p: '/bʊk/' }, { w: 'good', p: '/ɡʊd/' }, { w: 'could', p: '/kʊd/' }, { w: 'woman', p: '/ˈwʊmən/' }] },
-            'ʌ': { pure: 'uh', words: [{ w: 'cup', p: '/kʌp/' }, { w: 'bus', p: '/bʌs/' }, { w: 'love', p: '/lʌv/' }, { w: 'money', p: '/ˈmʌni/' }, { w: 'country', p: '/ˈkʌntri/' }] },
-            'ɒ': { pure: 'aw', words: [{ w: 'hot', p: '/hɒt/' }, { w: 'dog', p: '/dɒɡ/' }, { w: 'stop', p: '/stɒp/' }, { w: 'box', p: '/bɒks/' }, { w: 'watch', p: '/wɒtʃ/' }] },
-            'ə': { pure: 'uh', words: [{ w: 'about', p: '/əˈbaʊt/' }, { w: 'teacher', p: '/ˈtiːtʃə/' }, { w: 'sofa', p: '/ˈsəʊfə/' }, { w: 'banana', p: '/bəˈnɑːnə/' }, { w: 'support', p: '/səˈpɔːt/' }] },
-            'e': { pure: 'eh', words: [{ w: 'bed', p: '/bed/' }, { w: 'pen', p: '/pen/' }, { w: 'head', p: '/hed/' }, { w: 'said', p: '/sed/' }, { w: 'friend', p: '/frend/' }] },
-            'æ': { pure: 'a', words: [{ w: 'cat', p: '/kæt/' }, { w: 'hat', p: '/hæt/' }, { w: 'man', p: '/mæn/' }, { w: 'apple', p: '/ˈæpl/' }, { w: 'family', p: '/ˈfæməli/' }] },
+            'ɪ': { words: [{ w: 'kit', p: '/kɪt/' }, { w: 'bid', p: '/bɪd/' }, { w: 'hymn', p: '/hɪm/' }, { w: 'minute', p: '/ˈmɪnɪt/' }, { w: 'busy', p: '/ˈbɪzi/' }] },
+            'ʊ': { words: [{ w: 'foot', p: '/fʊt/' }, { w: 'put', p: '/pʊt/' }, { w: 'good', p: '/ɡʊd/' }, { w: 'book', p: '/bʊk/' }, { w: 'woman', p: '/ˈwʊmən/' }] },
+            'ʌ': { words: [{ w: 'strut', p: '/strʌt/' }, { w: 'mud', p: '/mʌd/' }, { w: 'love', p: '/lʌv/' }, { w: 'money', p: '/ˈmʌni/' }, { w: 'country', p: '/ˈkʌntri/' }] },
+            'ɒ': { words: [{ w: 'lot', p: '/lɒt/' }, { w: 'odd', p: '/ɒd/' }, { w: 'wash', p: '/wɒʃ/' }, { w: 'dog', p: '/dɒɡ/' }, { w: 'watch', p: '/wɒtʃ/' }] },
+            'ə': { words: [{ w: 'the', p: '/ðə/' }, { w: 'of', p: '/əv/' }, { w: 'butter', p: '/ˈbʌtə/' }, { w: 'about', p: '/əˈbaʊt/' }, { w: 'teacher', p: '/ˈtiːtʃə/' }] },
+            'e': { words: [{ w: 'dress', p: '/dres/' }, { w: 'head', p: '/hed/' }, { w: 'bed', p: '/bed/' }, { w: 'pen', p: '/pen/' }, { w: 'said', p: '/sed/' }] },
+            'æ': { words: [{ w: 'trap', p: '/træp/' }, { w: 'stamp', p: '/stæmp/' }, { w: 'back', p: '/bæk/' }, { w: 'cat', p: '/kæt/' }, { w: 'apple', p: '/ˈæpl/' }] },
             // 长元音
-            'iː': { pure: 'ee', words: [{ w: 'see', p: '/siː/' }, { w: 'tea', p: '/tiː/' }, { w: 'meet', p: '/miːt/' }, { w: 'people', p: '/ˈpiːpl/' }, { w: 'police', p: '/pəˈliːs/' }] },
-            'uː': { pure: 'oo', words: [{ w: 'food', p: '/fuːd/' }, { w: 'blue', p: '/bluː/' }, { w: 'room', p: '/ruːm/' }, { w: 'school', p: '/skuːl/' }, { w: 'fruit', p: '/fruːt/' }] },
-            'ɑː': { pure: 'ah', words: [{ w: 'car', p: '/kɑː/' }, { w: 'star', p: '/stɑː/' }, { w: 'heart', p: '/hɑːt/' }, { w: 'father', p: '/ˈfɑːðə/' }, { w: 'laugh', p: '/lɑːf/' }] },
-            'ɔː': { pure: 'aw', words: [{ w: 'ball', p: '/bɔːl/' }, { w: 'door', p: '/dɔː/' }, { w: 'four', p: '/fɔː/' }, { w: 'thought', p: '/θɔːt/' }, { w: 'morning', p: '/ˈmɔːnɪŋ/' }] },
-            'ɜː': { pure: 'ur', words: [{ w: 'bird', p: '/bɜːd/' }, { w: 'girl', p: '/ɡɜːl/' }, { w: 'work', p: '/wɜːk/' }, { w: 'learn', p: '/lɜːn/' }, { w: 'nurse', p: '/nɜːs/' }] },
+            'iː': { words: [{ w: 'fleece', p: '/fliːs/' }, { w: 'sea', p: '/siː/' }, { w: 'machine', p: '/məˈʃiːn/' }, { w: 'see', p: '/siː/' }, { w: 'people', p: '/ˈpiːpl/' }] },
+            'uː': { words: [{ w: 'blue', p: '/bluː/' }, { w: 'two', p: '/tuː/' }, { w: 'goose', p: '/ɡuːs/' }, { w: 'food', p: '/fuːd/' }, { w: 'school', p: '/skuːl/' }] },
+            'ɑː': { words: [{ w: 'father', p: '/ˈfɑːðə/' }, { w: 'start', p: '/stɑːt/' }, { w: 'hard', p: '/hɑːd/' }, { w: 'car', p: '/kɑː/' }, { w: 'heart', p: '/hɑːt/' }] },
+            'ɔː': { words: [{ w: 'law', p: '/lɔː/' }, { w: 'north', p: '/nɔːθ/' }, { w: 'war', p: '/wɔː/' }, { w: 'ball', p: '/bɔːl/' }, { w: 'door', p: '/dɔː/' }] },
+            'ɜː': { words: [{ w: 'nurse', p: '/nɜːs/' }, { w: 'stir', p: '/stɜː/' }, { w: 'learn', p: '/lɜːn/' }, { w: 'bird', p: '/bɜːd/' }, { w: 'work', p: '/wɜːk/' }] },
             // 双元音
-            'ɪə': { pure: 'ear', words: [{ w: 'near', p: '/nɪə/' }, { w: 'here', p: '/hɪə/' }, { w: 'beer', p: '/bɪə/' }, { w: 'idea', p: '/aɪˈdɪə/' }, { w: 'serious', p: '/ˈsɪəriəs/' }] },
-            'ʊə': { pure: 'oor', words: [{ w: 'tour', p: '/tʊə/' }, { w: 'pure', p: '/pjʊə/' }, { w: 'cure', p: '/kjʊə/' }, { w: 'sure', p: '/ʃʊə/' }, { w: 'tourist', p: '/ˈtʊərɪst/' }] },
-            'aɪ': { pure: 'eye', words: [{ w: 'time', p: '/taɪm/' }, { w: 'my', p: '/maɪ/' }, { w: 'five', p: '/faɪv/' }, { w: 'like', p: '/laɪk/' }, { w: 'night', p: '/naɪt/' }] },
-            'ɔɪ': { pure: 'oy', words: [{ w: 'boy', p: '/bɔɪ/' }, { w: 'toy', p: '/tɔɪ/' }, { w: 'voice', p: '/vɔɪs/' }, { w: 'enjoy', p: '/ɪnˈdʒɔɪ/' }, { w: 'choice', p: '/tʃɔɪs/' }] },
-            'əʊ': { pure: 'oh', words: [{ w: 'go', p: '/ɡəʊ/' }, { w: 'no', p: '/nəʊ/' }, { w: 'home', p: '/həʊm/' }, { w: 'open', p: '/ˈəʊpən/' }, { w: 'window', p: '/ˈwɪndəʊ/' }] },
-            'eə': { pure: 'air', words: [{ w: 'hair', p: '/heə/' }, { w: 'care', p: '/keə/' }, { w: 'where', p: '/weə/' }, { w: 'chair', p: '/tʃeə/' }, { w: 'parent', p: '/ˈpeərənt/' }] },
-            'aʊ': { pure: 'ow', words: [{ w: 'now', p: '/naʊ/' }, { w: 'how', p: '/haʊ/' }, { w: 'mouth', p: '/maʊθ/' }, { w: 'house', p: '/haʊs/' }, { w: 'flower', p: '/ˈflaʊə/' }] },
-            'eɪ': { pure: 'ay', words: [{ w: 'name', p: '/neɪm/' }, { w: 'day', p: '/deɪ/' }, { w: 'make', p: '/meɪk/' }, { w: 'face', p: '/feɪs/' }, { w: 'paper', p: '/ˈpeɪpə/' }] },
-            // 清辅音
-            'p': { pure: 'p', words: [{ w: 'pen', p: '/pen/' }, { w: 'apple', p: '/ˈæpl/' }, { w: 'stop', p: '/stɒp/' }, { w: 'happy', p: '/ˈhæpi/' }] },
-            't': { pure: 't', words: [{ w: 'tea', p: '/tiː/' }, { w: 'water', p: '/ˈwɔːtə/' }, { w: 'sit', p: '/sɪt/' }, { w: 'letter', p: '/ˈletə/' }] },
-            'tʃ': { pure: 'ch', words: [{ w: 'chair', p: '/tʃeə/' }, { w: 'watch', p: '/wɒtʃ/' }, { w: 'teacher', p: '/ˈtiːtʃə/' }, { w: 'rich', p: '/rɪtʃ/' }] },
-            'k': { pure: 'k', words: [{ w: 'key', p: '/kiː/' }, { w: 'book', p: '/bʊk/' }, { w: 'school', p: '/skuːl/' }, { w: 'cat', p: '/kæt/' }] },
-            'f': { pure: 'f', words: [{ w: 'fish', p: '/fɪʃ/' }, { w: 'coffee', p: '/ˈkɒfi/' }, { w: 'laugh', p: '/lɑːf/' }, { w: 'phone', p: '/fəʊn/' }] },
-            'θ': { pure: 'th', words: [{ w: 'think', p: '/θɪŋk/' }, { w: 'three', p: '/θriː/' }, { w: 'bath', p: '/bɑːθ/' }, { w: 'math', p: '/mæθ/' }] },
-            's': { pure: 's', words: [{ w: 'sun', p: '/sʌn/' }, { w: 'see', p: '/siː/' }, { w: 'bus', p: '/bʌs/' }, { w: 'class', p: '/klɑːs/' }] },
-            'ʃ': { pure: 'sh', words: [{ w: 'she', p: '/ʃiː/' }, { w: 'ship', p: '/ʃɪp/' }, { w: 'wash', p: '/wɒʃ/' }, { w: 'station', p: '/ˈsteɪʃn/' }] },
-            // 浊辅音
-            'b': { pure: 'b', words: [{ w: 'bag', p: '/bæɡ/' }, { w: 'boy', p: '/bɔɪ/' }, { w: 'job', p: '/dʒɒb/' }, { w: 'baby', p: '/ˈbeɪbi/' }] },
-            'd': { pure: 'd', words: [{ w: 'day', p: '/deɪ/' }, { w: 'dog', p: '/dɒɡ/' }, { w: 'red', p: '/red/' }, { w: 'ladder', p: '/ˈlædə/' }] },
-            'dʒ': { pure: 'j', words: [{ w: 'jump', p: '/dʒʌmp/' }, { w: 'job', p: '/dʒɒb/' }, { w: 'bridge', p: '/brɪdʒ/' }, { w: 'orange', p: '/ˈɒrɪndʒ/' }] },
-            'g': { pure: 'g', words: [{ w: 'girl', p: '/ɡɜːl/' }, { w: 'go', p: '/ɡəʊ/' }, { w: 'bag', p: '/bæɡ/' }, { w: 'bigger', p: '/ˈbɪɡə/' }] },
-            'v': { pure: 'v', words: [{ w: 'very', p: '/ˈveri/' }, { w: 'five', p: '/faɪv/' }, { w: 'love', p: '/lʌv/' }, { w: 'give', p: '/ɡɪv/' }] },
-            'ð': { pure: 'th', words: [{ w: 'this', p: '/ðɪs/' }, { w: 'mother', p: '/ˈmʌðə/' }, { w: 'they', p: '/ðeɪ/' }, { w: 'weather', p: '/ˈweðə/' }] },
-            'z': { pure: 'z', words: [{ w: 'zoo', p: '/zuː/' }, { w: 'is', p: '/ɪz/' }, { w: 'easy', p: '/ˈiːzi/' }, { w: 'music', p: '/ˈmjuːzɪk/' }] },
-            'ʒ': { pure: 'zh', words: [{ w: 'usually', p: '/ˈjuːʒuəli/' }, { w: 'vision', p: '/ˈvɪʒn/' }, { w: 'measure', p: '/ˈmeʒə/' }, { w: 'pleasure', p: '/ˈpleʒə/' }] },
-            // 其他辅音
-            'm': { pure: 'm', words: [{ w: 'mother', p: '/ˈmʌðə/' }, { w: 'man', p: '/mæn/' }, { w: 'time', p: '/taɪm/' }, { w: 'summer', p: '/ˈsʌmə/' }] },
-            'n': { pure: 'n', words: [{ w: 'nose', p: '/nəʊz/' }, { w: 'no', p: '/nəʊ/' }, { w: 'sun', p: '/sʌn/' }, { w: 'dinner', p: '/ˈdɪnə/' }] },
-            'ŋ': { pure: 'ng', words: [{ w: 'sing', p: '/sɪŋ/' }, { w: 'long', p: '/lɒŋ/' }, { w: 'think', p: '/θɪŋk/' }, { w: 'morning', p: '/ˈmɔːnɪŋ/' }] },
-            'h': { pure: 'h', words: [{ w: 'hand', p: '/hænd/' }, { w: 'hat', p: '/hæt/' }, { w: 'behind', p: '/bɪˈhaɪnd/' }, { w: 'who', p: '/huː/' }] },
-            'l': { pure: 'l', words: [{ w: 'look', p: '/lʊk/' }, { w: 'light', p: '/laɪt/' }, { w: 'ball', p: '/bɔːl/' }, { w: 'yellow', p: '/ˈjeləʊ/' }] },
-            'r': { pure: 'r', words: [{ w: 'red', p: '/red/' }, { w: 'run', p: '/rʌn/' }, { w: 'car', p: '/kɑː/' }, { w: 'sorry', p: '/ˈsɒri/' }] },
-            'w': { pure: 'w', words: [{ w: 'water', p: '/ˈwɔːtə/' }, { w: 'we', p: '/wiː/' }, { w: 'window', p: '/ˈwɪndəʊ/' }, { w: 'away', p: '/əˈweɪ/' }] },
-            'j': { pure: 'y', words: [{ w: 'yes', p: '/jes/' }, { w: 'you', p: '/juː/' }, { w: 'music', p: '/ˈmjuːzɪk/' }, { w: 'new', p: '/njuː/' }] }
+            'ɪə': { words: [{ w: 'near', p: '/nɪə/' }, { w: 'hear', p: '/hɪə/' }, { w: 'weary', p: '/ˈwɪəri/' }, { w: 'here', p: '/hɪə/' }, { w: 'idea', p: '/aɪˈdɪə/' }] },
+            'ʊə': { words: [{ w: 'tour', p: '/tʊə/' }, { w: 'pure', p: '/pjʊə/' }, { w: 'cure', p: '/kjʊə/' }, { w: 'sure', p: '/ʃʊə/' }, { w: 'tourist', p: '/ˈtʊərɪst/' }] },
+            'eɪ': { words: [{ w: 'face', p: '/feɪs/' }, { w: 'day', p: '/deɪ/' }, { w: 'break', p: '/breɪk/' }, { w: 'name', p: '/neɪm/' }, { w: 'make', p: '/meɪk/' }] },
+            'aɪ': { words: [{ w: 'price', p: '/praɪs/' }, { w: 'high', p: '/haɪ/' }, { w: 'try', p: '/traɪ/' }, { w: 'time', p: '/taɪm/' }, { w: 'my', p: '/maɪ/' }] },
+            'ɔɪ': { words: [{ w: 'choice', p: '/tʃɔɪs/' }, { w: 'noise', p: '/nɔɪz/' }, { w: 'boy', p: '/bɔɪ/' }, { w: 'toy', p: '/tɔɪ/' }, { w: 'enjoy', p: '/ɪnˈdʒɔɪ/' }] },
+            'əʊ': { words: [{ w: 'boat', p: '/bəʊt/' }, { w: 'show', p: '/ʃəʊ/' }, { w: 'know', p: '/nəʊ/' }, { w: 'go', p: '/ɡəʊ/' }, { w: 'home', p: '/həʊm/' }] },
+            'eə': { words: [{ w: 'square', p: '/skweə/' }, { w: 'fair', p: '/feə/' }, { w: 'pair', p: '/peə/' }, { w: 'hair', p: '/heə/' }, { w: 'care', p: '/keə/' }] },
+            'aʊ': { words: [{ w: 'mouth', p: '/maʊθ/' }, { w: 'now', p: '/naʊ/' }, { w: 'fowl', p: '/faʊl/' }, { w: 'how', p: '/haʊ/' }, { w: 'house', p: '/haʊs/' }] },
+            // 辅音
+            'p': { words: [{ w: 'pack', p: '/pæk/' }, { w: 'pan', p: '/pæn/' }, { w: 'pop', p: '/pɒp/' }, { w: 'pen', p: '/pen/' }, { w: 'happy', p: '/ˈhæpi/' }] },
+            'b': { words: [{ w: 'back', p: '/bæk/' }, { w: 'baby', p: '/ˈbeɪbi/' }, { w: 'job', p: '/dʒɒb/' }, { w: 'bag', p: '/bæɡ/' }, { w: 'boy', p: '/bɔɪ/' }] },
+            't': { words: [{ w: 'tin', p: '/tɪn/' }, { w: 'button', p: '/ˈbʌtn/' }, { w: 'get', p: '/ɡet/' }, { w: 'tea', p: '/tiː/' }, { w: 'water', p: '/ˈwɔːtə/' }] },
+            'd': { words: [{ w: 'odd', p: '/ɒd/' }, { w: 'did', p: '/dɪd/' }, { w: 'ladder', p: '/ˈlædə/' }, { w: 'day', p: '/deɪ/' }, { w: 'dog', p: '/dɒɡ/' }] },
+            'k': { words: [{ w: 'came', p: '/keɪm/' }, { w: 'lucky', p: '/ˈlʌki/' }, { w: 'sick', p: '/sɪk/' }, { w: 'key', p: '/kiː/' }, { w: 'book', p: '/bʊk/' }] },
+            'g': { words: [{ w: 'glue', p: '/ɡluː/' }, { w: 'struggle', p: '/ˈstrʌɡl/' }, { w: 'bag', p: '/bæɡ/' }, { w: 'girl', p: '/ɡɜːl/' }, { w: 'go', p: '/ɡəʊ/' }] },
+            'tʃ': { words: [{ w: 'teacher', p: '/ˈtiːtʃə/' }, { w: 'match', p: '/mætʃ/' }, { w: 'church', p: '/tʃɜːtʃ/' }, { w: 'chair', p: '/tʃeə/' }, { w: 'watch', p: '/wɒtʃ/' }] },
+            'dʒ': { words: [{ w: 'judge', p: '/dʒʌdʒ/' }, { w: 'age', p: '/eɪdʒ/' }, { w: 'soldier', p: '/ˈsəʊldʒə/' }, { w: 'jump', p: '/dʒʌmp/' }, { w: 'job', p: '/dʒɒb/' }] },
+            'f': { words: [{ w: 'fat', p: '/fæt/' }, { w: 'coffee', p: '/ˈkɒfi/' }, { w: 'fluff', p: '/flʌf/' }, { w: 'fish', p: '/fɪʃ/' }, { w: 'phone', p: '/fəʊn/' }] },
+            'v': { words: [{ w: 'very', p: '/ˈveri/' }, { w: 'heavy', p: '/ˈhevi/' }, { w: 'move', p: '/muːv/' }, { w: 'five', p: '/faɪv/' }, { w: 'love', p: '/lʌv/' }] },
+            'θ': { words: [{ w: 'thin', p: '/θɪn/' }, { w: 'throw', p: '/θrəʊ/' }, { w: 'thumb', p: '/θʌm/' }, { w: 'think', p: '/θɪŋk/' }, { w: 'three', p: '/θriː/' }] },
+            'ð': { words: [{ w: 'this', p: '/ðɪs/' }, { w: 'other', p: '/ˈʌðə/' }, { w: 'smooth', p: '/smuːð/' }, { w: 'mother', p: '/ˈmʌðə/' }, { w: 'they', p: '/ðeɪ/' }] },
+            's': { words: [{ w: 'soon', p: '/suːn/' }, { w: 'mister', p: '/ˈmɪstə/' }, { w: 'hiss', p: '/hɪs/' }, { w: 'sun', p: '/sʌn/' }, { w: 'see', p: '/siː/' }] },
+            'z': { words: [{ w: 'zero', p: '/ˈzɪərəʊ/' }, { w: 'music', p: '/ˈmjuːzɪk/' }, { w: 'buzz', p: '/bʌz/' }, { w: 'zoo', p: '/zuː/' }, { w: 'is', p: '/ɪz/' }] },
+            'ʃ': { words: [{ w: 'ship', p: '/ʃɪp/' }, { w: 'sure', p: '/ʃʊə/' }, { w: 'national', p: '/ˈnæʃnəl/' }, { w: 'she', p: '/ʃiː/' }, { w: 'wash', p: '/wɒʃ/' }] },
+            'ʒ': { words: [{ w: 'pleasure', p: '/ˈpleʒə/' }, { w: 'leisure', p: '/ˈleʒə/' }, { w: 'vision', p: '/ˈvɪʒn/' }, { w: 'usually', p: '/ˈjuːʒuəli/' }, { w: 'measure', p: '/ˈmeʒə/' }] },
+            'm': { words: [{ w: 'hammer', p: '/ˈhæmə/' }, { w: 'mime', p: '/maɪm/' }, { w: 'more', p: '/mɔː/' }, { w: 'mother', p: '/ˈmʌðə/' }, { w: 'man', p: '/mæn/' }] },
+            'n': { words: [{ w: 'nice', p: '/naɪs/' }, { w: 'funny', p: '/ˈfʌni/' }, { w: 'son', p: '/sʌn/' }, { w: 'nose', p: '/nəʊz/' }, { w: 'no', p: '/nəʊ/' }] },
+            'ŋ': { words: [{ w: 'rung', p: '/rʌŋ/' }, { w: 'anger', p: '/ˈæŋɡə/' }, { w: 'thanks', p: '/θæŋks/' }, { w: 'sing', p: '/sɪŋ/' }, { w: 'long', p: '/lɒŋ/' }] },
+            'h': { words: [{ w: 'hot', p: '/hɒt/' }, { w: 'whole', p: '/həʊl/' }, { w: 'ahead', p: '/əˈhed/' }, { w: 'hand', p: '/hænd/' }, { w: 'hat', p: '/hæt/' }] },
+            'l': { words: [{ w: 'light', p: '/laɪt/' }, { w: 'valley', p: '/ˈvæli/' }, { w: 'feel', p: '/fiːl/' }, { w: 'look', p: '/lʊk/' }, { w: 'ball', p: '/bɔːl/' }] },
+            'r': { words: [{ w: 'right', p: '/raɪt/' }, { w: 'wrong', p: '/rɒŋ/' }, { w: 'sorry', p: '/ˈsɒri/' }, { w: 'red', p: '/red/' }, { w: 'run', p: '/rʌn/' }] },
+            'w': { words: [{ w: 'wet', p: '/wet/' }, { w: 'one', p: '/wʌn/' }, { w: 'when', p: '/wen/' }, { w: 'water', p: '/ˈwɔːtə/' }, { w: 'we', p: '/wiː/' }] },
+            'j': { words: [{ w: 'yet', p: '/jet/' }, { w: 'use', p: '/juːz/' }, { w: 'beauty', p: '/ˈbjuːti/' }, { w: 'yes', p: '/jes/' }, { w: 'you', p: '/juː/' }] }
         };
 
         const container = document.getElementById('mainContainer');
         const floatingCard = document.getElementById('floatingCard');
-        const cardHeader = document.getElementById('cardHeader');
+        const cardSymbol = document.getElementById('cardSymbol');
         const wordList = document.getElementById('wordList');
         const allBtns = document.querySelectorAll('.symbol-btn');
 
         let currentActiveBtn = null;
 
-        // 语音合成函数
-        function speak(text, isPureSound = false) {
-            if (!window.speechSynthesis) {
-                alert('您的浏览器不支持语音合成，请使用 Chrome/Edge/Safari。');
-                return;
-            }
-            window.speechSynthesis.cancel(); // 停止当前发音
-
-            const utterance = new SpeechSynthesisUtterance();
-            
-            if (isPureSound) {
-                // 纯音模拟：读 TTS 拼写，略慢
-                utterance.text = text;
-                utterance.rate = 0.65; 
-            } else {
-                // 读完整单词
-                utterance.text = text;
-                utterance.rate = 0.85;
-            }
-
-            utterance.lang = 'en-GB'; // 英式发音
-            
-            const voices = window.speechSynthesis.getVoices();
-            const gbVoice = voices.find(v => v.lang === 'en-GB' || v.lang === 'en_GB');
-            if (gbVoice) {
-                utterance.voice = gbVoice;
-            }
-
-            window.speechSynthesis.speak(utterance);
+        // 百度翻译英式发音接口播放
+        function playBaiduAudio(word) {
+            if (!word) return;
+            // 构造百度翻译英式发音请求 (lan=uk 代表英音)
+            const url = `https://fanyi.baidu.com/gettts?lan=uk&text=${encodeURIComponent(word)}&spd=3&source=web`;
+            const audio = new Audio(url);
+            audio.play().catch(e => {
+                console.warn('百度发音播放失败，请检查网络或跨域限制:', e);
+            });
         }
 
-        // 渲染单词列表并定位卡片
+        // 渲染并定位卡片
         function showCard(btn, sound) {
             const data = wordData[sound];
             if (!data) return;
 
-            // 渲染头部音标
-            cardHeader.textContent = `/${sound}/`;
+            cardSymbol.textContent = `/${sound}/`;
             
-            // 渲染单词列表
+            // 渲染列表
             wordList.innerHTML = '';
             data.words.forEach(item => {
                 const div = document.createElement('div');
@@ -500,25 +481,23 @@
                         <span class="word-text">${item.w}</span>
                         <span class="word-phonetic">${item.p}</span>
                     </div>
-                    <button class="play-btn" data-word="${item.w}">▶</button>
+                    <button class="play-btn" data-word="${item.w}" title="点击发音">▶</button>
                 `;
-                // 绑定播放单词事件
+                // 点击单词发音
                 div.querySelector('.play-btn').addEventListener('click', function(e) {
                     e.stopPropagation();
-                    speak(item.w, false);
+                    playBaiduAudio(item.w);
                 });
                 wordList.appendChild(div);
             });
 
-            // 计算位置并显示卡片
+            // 定位计算
             const btnRect = btn.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
 
-            // 为了让卡片更好地对齐，我们可以让卡片位于按钮正下方
             const left = (btnRect.left - containerRect.left) + (btnRect.width / 2) - (floatingCard.offsetWidth / 2);
             const top = (btnRect.top - containerRect.top) + btnRect.height + 10;
 
-            // 防止卡片超出左右边界
             let finalLeft = left;
             if (finalLeft < 10) finalLeft = 10;
             if (finalLeft + floatingCard.offsetWidth > containerRect.width - 10) {
@@ -528,7 +507,6 @@
             floatingCard.style.left = `${finalLeft}px`;
             floatingCard.style.top = `${top}px`;
             
-            // 显示动画
             floatingCard.classList.add('active');
         }
 
@@ -540,47 +518,38 @@
             }
         }
 
-        // 绑定音标点击事件
+        // 绑定音标点击
         allBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
                 const sound = this.getAttribute('data-sound');
                 const data = wordData[sound];
 
-                // 如果点击的是同一个且卡片已展开，则收起
                 if (currentActiveBtn === this && floatingCard.classList.contains('active')) {
                     hideCard();
                     return;
                 }
 
                 if (currentActiveBtn) currentActiveBtn.classList.remove('active');
-                
                 this.classList.add('active');
                 currentActiveBtn = this;
 
-                // 1. 发纯音
-                if (data) speak(data.pure, true);
+                // 播放第一个单词作为该音标的示例
+                if (data && data.words.length > 0) {
+                    playBaiduAudio(data.words[0].w);
+                }
 
-                // 2. 显示卡片（由于卡片高度会根据单词数量变化，需在 DOM 渲染后计算位置）
                 requestAnimationFrame(() => {
                     showCard(this, sound);
                 });
             });
         });
 
-        // 点击空白处隐藏
+        // 点击空白关闭
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.symbol-btn') && !e.target.closest('.floating-card')) {
                 hideCard();
             }
         });
-
-        // 预加载语音
-        if (window.speechSynthesis) {
-            window.speechSynthesis.getVoices();
-            window.speechSynthesis.onvoiceschanged = function() {
-                window.speechSynthesis.getVoices();
-            };
-        }
     })();
 </script>
 </body>
