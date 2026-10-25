@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sounds of English - 交互式音标发音</title>
+    <title>Sounds of English</title>
     <style>
         * {
             box-sizing: border-box;
@@ -30,6 +30,7 @@
             padding: 30px 35px 25px 35px;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             position: relative; /* 为内部绝对定位提供参考 */
+            margin-bottom: 50px;
         }
 
         h1 {
@@ -95,7 +96,7 @@
             font-family: 'Times New Roman', 'Segoe UI', serif;
             line-height: 1;
             padding: 5px;
-            position: relative; /* 用于定位 */
+            position: relative;
         }
 
         .subgroup .symbol-btn {
@@ -131,17 +132,17 @@
             z-index: 100;
             background: #fff;
             border: 2px solid #5bc0de;
-            border-radius: 12px;
-            padding: 12px 18px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            padding: 15px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
             display: flex;
-            align-items: center;
-            gap: 15px;
+            flex-direction: column;
             opacity: 0;
             transform: translateY(-10px);
-            pointer-events: none; /* 隐藏时不可点击 */
+            pointer-events: none;
             transition: opacity 0.2s, transform 0.2s;
-            white-space: nowrap;
+            min-width: 260px;
+            max-width: 320px;
         }
 
         /* 指向下方的小三角 */
@@ -159,43 +160,90 @@
         .floating-card.active {
             opacity: 1;
             transform: translateY(0);
-            pointer-events: auto; /* 显示时可点击 */
+            pointer-events: auto;
         }
 
-        .floating-card .card-symbol {
+        .card-header {
             font-family: 'Times New Roman', serif;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             color: #46b8da;
             font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #e0e9f0;
+            padding-bottom: 8px;
         }
 
-        .floating-card .card-word-btn {
-            font-size: 1.4rem;
-            font-weight: 500;
-            color: #1e2b3a;
-            background: #f0f7fa;
-            border: 1px solid #bce8f1;
-            border-radius: 6px;
-            padding: 4px 12px;
-            cursor: pointer;
-            transition: all 0.2s;
+        /* 单词列表 */
+        .word-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        /* 滚动条美化 */
+        .word-list::-webkit-scrollbar {
+            width: 5px;
+        }
+        .word-list::-webkit-scrollbar-thumb {
+            background: #bce8f1;
+            border-radius: 5px;
+        }
+
+        .word-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
+            background: #f8fbfd;
+            border: 1px solid #e1f0f7;
+            border-radius: 8px;
+            padding: 8px 12px;
+            transition: all 0.2s;
         }
 
-        .floating-card .card-word-btn:hover {
+        .word-item:hover {
+            background: #eef7fa;
+            border-color: #bce8f1;
+        }
+
+        .word-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .word-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e2b3a;
+        }
+
+        .word-phonetic {
+            font-size: 0.9rem;
+            color: #6c7a8a;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .play-btn {
+            background: white;
+            border: 1px solid #5bc0de;
+            color: #46b8da;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .play-btn:hover {
             background: #5bc0de;
             color: white;
-        }
-
-        .floating-card .card-word-btn .speaker {
-            font-size: 1rem;
-        }
-
-        .floating-card .card-phonetic {
-            font-size: 1rem;
-            color: #6c7a8a;
         }
 
         .footer {
@@ -213,7 +261,18 @@
             .subgroup .symbol-btn { width: 48px; height: 48px; font-size: 1.4rem; }
             .row-label { min-width: 70px; font-size: 0.9rem; }
             .tag { display: none; }
-            .floating-card { flex-direction: column; gap: 5px; padding: 10px; }
+            .floating-card {
+                position: fixed; /* 手机端改为屏幕居中弹出 */
+                left: 50% !important;
+                top: 50% !important;
+                transform: translate(-50%, -50%) scale(0.9) !important;
+                width: 90%;
+                max-width: 350px;
+            }
+            .floating-card.active {
+                transform: translate(-50%, -50%) scale(1) !important;
+            }
+            .floating-card::before { display: none; } /* 手机端隐藏小三角 */
         }
     </style>
 </head>
@@ -222,14 +281,11 @@
 <div class="container" id="mainContainer">
     <h1>Sounds of English</h1>
 
-    <!-- 跟随音标位置的浮动卡片 (初始隐藏) -->
+    <!-- 跟随音标位置的浮动卡片 -->
     <div id="floatingCard" class="floating-card">
-        <div class="card-symbol" id="cardSymbol"></div>
-        <div>
-            <button class="card-word-btn" id="cardWordBtn">
-                <span id="cardWordText"></span> <span class="speaker">🔊</span>
-            </button>
-            <div class="card-phonetic" id="cardPhonetic"></div>
+        <div class="card-header" id="cardHeader"></div>
+        <div class="word-list" id="wordList">
+            <!-- 单词将由 JS 动态生成 -->
         </div>
     </div>
 
@@ -328,71 +384,75 @@
             <span class="tag">other</span>
         </div>
     </div>
-    <div class="footer">点击音标听纯音，点击单词听完整发音</div>
+    <div class="footer">点击音标听纯音，点击列表内单词听完整发音</div>
 </div>
 
 <script>
     (function() {
-        // 数据映射：音标 -> 单词、单词音标、用于提取单音的英文拼写近似（辅助 TTS）
+        // 核心数据升级：每个音标对应多个单词及音标，以及用于模拟纯音的 TTS 拼写
         const wordData = {
-            'ɪ': { word: 'kit', phonetic: '/kɪt/', ttsStr: 'ih' },
-            'ʊ': { word: 'book', phonetic: '/bʊk/', ttsStr: 'oo' },
-            'ʌ': { word: 'cup', phonetic: '/kʌp/', ttsStr: 'uh' },
-            'ɒ': { word: 'lot', phonetic: '/lɒt/', ttsStr: 'aw' },
-            'ə': { word: 'about', phonetic: '/əˈbaʊt/', ttsStr: 'uh' },
-            'e': { word: 'bed', phonetic: '/bed/', ttsStr: 'eh' },
-            'æ': { word: 'cat', phonetic: '/kæt/', ttsStr: 'a' },
-            'iː': { word: 'see', phonetic: '/siː/', ttsStr: 'ee' },
-            'uː': { word: 'food', phonetic: '/fuːd/', ttsStr: 'oo' },
-            'ɑː': { word: 'car', phonetic: '/kɑː/', ttsStr: 'ah' },
-            'ɔː': { word: 'ball', phonetic: '/bɔːl/', ttsStr: 'aw' },
-            'ɜː': { word: 'bird', phonetic: '/bɜːd/', ttsStr: 'ur' },
-            'ɪə': { word: 'near', phonetic: '/nɪə/', ttsStr: 'ear' },
-            'ʊə': { word: 'tour', phonetic: '/tʊə/', ttsStr: 'oor' },
-            'aɪ': { word: 'time', phonetic: '/taɪm/', ttsStr: 'eye' },
-            'ɔɪ': { word: 'boy', phonetic: '/bɔɪ/', ttsStr: 'oy' },
-            'əʊ': { word: 'go', phonetic: '/ɡəʊ/', ttsStr: 'oh' },
-            'eə': { word: 'hair', phonetic: '/heə/', ttsStr: 'air' },
-            'aʊ': { word: 'now', phonetic: '/naʊ/', ttsStr: 'ow' },
-            'eɪ': { word: 'name', phonetic: '/neɪm/', ttsStr: 'ay' },
-            'p': { word: 'pen', phonetic: '/pen/', ttsStr: 'p' },
-            't': { word: 'ten', phonetic: '/ten/', ttsStr: 't' },
-            'tʃ': { word: 'chair', phonetic: '/tʃeə/', ttsStr: 'ch' },
-            'k': { word: 'key', phonetic: '/kiː/', ttsStr: 'k' },
-            'f': { word: 'fish', phonetic: '/fɪʃ/', ttsStr: 'f' },
-            'θ': { word: 'think', phonetic: '/θɪŋk/', ttsStr: 'th' },
-            's': { word: 'sun', phonetic: '/sʌn/', ttsStr: 's' },
-            'ʃ': { word: 'she', phonetic: '/ʃiː/', ttsStr: 'sh' },
-            'b': { word: 'bag', phonetic: '/bæɡ/', ttsStr: 'b' },
-            'd': { word: 'day', phonetic: '/deɪ/', ttsStr: 'd' },
-            'dʒ': { word: 'jump', phonetic: '/dʒʌmp/', ttsStr: 'j' },
-            'g': { word: 'girl', phonetic: '/ɡɜːl/', ttsStr: 'g' },
-            'v': { word: 'very', phonetic: '/ˈveri/', ttsStr: 'v' },
-            'ð': { word: 'this', phonetic: '/ðɪs/', ttsStr: 'th' },
-            'z': { word: 'zoo', phonetic: '/zuː/', ttsStr: 'z' },
-            'ʒ': { word: 'usually', phonetic: '/ˈjuːʒuəli/', ttsStr: 'zh' },
-            'm': { word: 'mother', phonetic: '/ˈmʌðə/', ttsStr: 'm' },
-            'n': { word: 'nose', phonetic: '/nəʊz/', ttsStr: 'n' },
-            'ŋ': { word: 'sing', phonetic: '/sɪŋ/', ttsStr: 'ng' },
-            'h': { word: 'hand', phonetic: '/hænd/', ttsStr: 'h' },
-            'l': { word: 'look', phonetic: '/lʊk/', ttsStr: 'l' },
-            'r': { word: 'red', phonetic: '/red/', ttsStr: 'r' },
-            'w': { word: 'water', phonetic: '/ˈwɔːtə/', ttsStr: 'w' },
-            'j': { word: 'yes', phonetic: '/jes/', ttsStr: 'y' }
+            // 短元音
+            'ɪ': { pure: 'ih', words: [{ w: 'sit', p: '/sɪt/' }, { w: 'big', p: '/bɪɡ/' }, { w: 'fish', p: '/fɪʃ/' }, { w: 'happy', p: '/ˈhæpi/' }, { w: 'village', p: '/ˈvɪlɪdʒ/' }] },
+            'ʊ': { pure: 'oo', words: [{ w: 'put', p: '/pʊt/' }, { w: 'book', p: '/bʊk/' }, { w: 'good', p: '/ɡʊd/' }, { w: 'could', p: '/kʊd/' }, { w: 'woman', p: '/ˈwʊmən/' }] },
+            'ʌ': { pure: 'uh', words: [{ w: 'cup', p: '/kʌp/' }, { w: 'bus', p: '/bʌs/' }, { w: 'love', p: '/lʌv/' }, { w: 'money', p: '/ˈmʌni/' }, { w: 'country', p: '/ˈkʌntri/' }] },
+            'ɒ': { pure: 'aw', words: [{ w: 'hot', p: '/hɒt/' }, { w: 'dog', p: '/dɒɡ/' }, { w: 'stop', p: '/stɒp/' }, { w: 'box', p: '/bɒks/' }, { w: 'watch', p: '/wɒtʃ/' }] },
+            'ə': { pure: 'uh', words: [{ w: 'about', p: '/əˈbaʊt/' }, { w: 'teacher', p: '/ˈtiːtʃə/' }, { w: 'sofa', p: '/ˈsəʊfə/' }, { w: 'banana', p: '/bəˈnɑːnə/' }, { w: 'support', p: '/səˈpɔːt/' }] },
+            'e': { pure: 'eh', words: [{ w: 'bed', p: '/bed/' }, { w: 'pen', p: '/pen/' }, { w: 'head', p: '/hed/' }, { w: 'said', p: '/sed/' }, { w: 'friend', p: '/frend/' }] },
+            'æ': { pure: 'a', words: [{ w: 'cat', p: '/kæt/' }, { w: 'hat', p: '/hæt/' }, { w: 'man', p: '/mæn/' }, { w: 'apple', p: '/ˈæpl/' }, { w: 'family', p: '/ˈfæməli/' }] },
+            // 长元音
+            'iː': { pure: 'ee', words: [{ w: 'see', p: '/siː/' }, { w: 'tea', p: '/tiː/' }, { w: 'meet', p: '/miːt/' }, { w: 'people', p: '/ˈpiːpl/' }, { w: 'police', p: '/pəˈliːs/' }] },
+            'uː': { pure: 'oo', words: [{ w: 'food', p: '/fuːd/' }, { w: 'blue', p: '/bluː/' }, { w: 'room', p: '/ruːm/' }, { w: 'school', p: '/skuːl/' }, { w: 'fruit', p: '/fruːt/' }] },
+            'ɑː': { pure: 'ah', words: [{ w: 'car', p: '/kɑː/' }, { w: 'star', p: '/stɑː/' }, { w: 'heart', p: '/hɑːt/' }, { w: 'father', p: '/ˈfɑːðə/' }, { w: 'laugh', p: '/lɑːf/' }] },
+            'ɔː': { pure: 'aw', words: [{ w: 'ball', p: '/bɔːl/' }, { w: 'door', p: '/dɔː/' }, { w: 'four', p: '/fɔː/' }, { w: 'thought', p: '/θɔːt/' }, { w: 'morning', p: '/ˈmɔːnɪŋ/' }] },
+            'ɜː': { pure: 'ur', words: [{ w: 'bird', p: '/bɜːd/' }, { w: 'girl', p: '/ɡɜːl/' }, { w: 'work', p: '/wɜːk/' }, { w: 'learn', p: '/lɜːn/' }, { w: 'nurse', p: '/nɜːs/' }] },
+            // 双元音
+            'ɪə': { pure: 'ear', words: [{ w: 'near', p: '/nɪə/' }, { w: 'here', p: '/hɪə/' }, { w: 'beer', p: '/bɪə/' }, { w: 'idea', p: '/aɪˈdɪə/' }, { w: 'serious', p: '/ˈsɪəriəs/' }] },
+            'ʊə': { pure: 'oor', words: [{ w: 'tour', p: '/tʊə/' }, { w: 'pure', p: '/pjʊə/' }, { w: 'cure', p: '/kjʊə/' }, { w: 'sure', p: '/ʃʊə/' }, { w: 'tourist', p: '/ˈtʊərɪst/' }] },
+            'aɪ': { pure: 'eye', words: [{ w: 'time', p: '/taɪm/' }, { w: 'my', p: '/maɪ/' }, { w: 'five', p: '/faɪv/' }, { w: 'like', p: '/laɪk/' }, { w: 'night', p: '/naɪt/' }] },
+            'ɔɪ': { pure: 'oy', words: [{ w: 'boy', p: '/bɔɪ/' }, { w: 'toy', p: '/tɔɪ/' }, { w: 'voice', p: '/vɔɪs/' }, { w: 'enjoy', p: '/ɪnˈdʒɔɪ/' }, { w: 'choice', p: '/tʃɔɪs/' }] },
+            'əʊ': { pure: 'oh', words: [{ w: 'go', p: '/ɡəʊ/' }, { w: 'no', p: '/nəʊ/' }, { w: 'home', p: '/həʊm/' }, { w: 'open', p: '/ˈəʊpən/' }, { w: 'window', p: '/ˈwɪndəʊ/' }] },
+            'eə': { pure: 'air', words: [{ w: 'hair', p: '/heə/' }, { w: 'care', p: '/keə/' }, { w: 'where', p: '/weə/' }, { w: 'chair', p: '/tʃeə/' }, { w: 'parent', p: '/ˈpeərənt/' }] },
+            'aʊ': { pure: 'ow', words: [{ w: 'now', p: '/naʊ/' }, { w: 'how', p: '/haʊ/' }, { w: 'mouth', p: '/maʊθ/' }, { w: 'house', p: '/haʊs/' }, { w: 'flower', p: '/ˈflaʊə/' }] },
+            'eɪ': { pure: 'ay', words: [{ w: 'name', p: '/neɪm/' }, { w: 'day', p: '/deɪ/' }, { w: 'make', p: '/meɪk/' }, { w: 'face', p: '/feɪs/' }, { w: 'paper', p: '/ˈpeɪpə/' }] },
+            // 清辅音
+            'p': { pure: 'p', words: [{ w: 'pen', p: '/pen/' }, { w: 'apple', p: '/ˈæpl/' }, { w: 'stop', p: '/stɒp/' }, { w: 'happy', p: '/ˈhæpi/' }] },
+            't': { pure: 't', words: [{ w: 'tea', p: '/tiː/' }, { w: 'water', p: '/ˈwɔːtə/' }, { w: 'sit', p: '/sɪt/' }, { w: 'letter', p: '/ˈletə/' }] },
+            'tʃ': { pure: 'ch', words: [{ w: 'chair', p: '/tʃeə/' }, { w: 'watch', p: '/wɒtʃ/' }, { w: 'teacher', p: '/ˈtiːtʃə/' }, { w: 'rich', p: '/rɪtʃ/' }] },
+            'k': { pure: 'k', words: [{ w: 'key', p: '/kiː/' }, { w: 'book', p: '/bʊk/' }, { w: 'school', p: '/skuːl/' }, { w: 'cat', p: '/kæt/' }] },
+            'f': { pure: 'f', words: [{ w: 'fish', p: '/fɪʃ/' }, { w: 'coffee', p: '/ˈkɒfi/' }, { w: 'laugh', p: '/lɑːf/' }, { w: 'phone', p: '/fəʊn/' }] },
+            'θ': { pure: 'th', words: [{ w: 'think', p: '/θɪŋk/' }, { w: 'three', p: '/θriː/' }, { w: 'bath', p: '/bɑːθ/' }, { w: 'math', p: '/mæθ/' }] },
+            's': { pure: 's', words: [{ w: 'sun', p: '/sʌn/' }, { w: 'see', p: '/siː/' }, { w: 'bus', p: '/bʌs/' }, { w: 'class', p: '/klɑːs/' }] },
+            'ʃ': { pure: 'sh', words: [{ w: 'she', p: '/ʃiː/' }, { w: 'ship', p: '/ʃɪp/' }, { w: 'wash', p: '/wɒʃ/' }, { w: 'station', p: '/ˈsteɪʃn/' }] },
+            // 浊辅音
+            'b': { pure: 'b', words: [{ w: 'bag', p: '/bæɡ/' }, { w: 'boy', p: '/bɔɪ/' }, { w: 'job', p: '/dʒɒb/' }, { w: 'baby', p: '/ˈbeɪbi/' }] },
+            'd': { pure: 'd', words: [{ w: 'day', p: '/deɪ/' }, { w: 'dog', p: '/dɒɡ/' }, { w: 'red', p: '/red/' }, { w: 'ladder', p: '/ˈlædə/' }] },
+            'dʒ': { pure: 'j', words: [{ w: 'jump', p: '/dʒʌmp/' }, { w: 'job', p: '/dʒɒb/' }, { w: 'bridge', p: '/brɪdʒ/' }, { w: 'orange', p: '/ˈɒrɪndʒ/' }] },
+            'g': { pure: 'g', words: [{ w: 'girl', p: '/ɡɜːl/' }, { w: 'go', p: '/ɡəʊ/' }, { w: 'bag', p: '/bæɡ/' }, { w: 'bigger', p: '/ˈbɪɡə/' }] },
+            'v': { pure: 'v', words: [{ w: 'very', p: '/ˈveri/' }, { w: 'five', p: '/faɪv/' }, { w: 'love', p: '/lʌv/' }, { w: 'give', p: '/ɡɪv/' }] },
+            'ð': { pure: 'th', words: [{ w: 'this', p: '/ðɪs/' }, { w: 'mother', p: '/ˈmʌðə/' }, { w: 'they', p: '/ðeɪ/' }, { w: 'weather', p: '/ˈweðə/' }] },
+            'z': { pure: 'z', words: [{ w: 'zoo', p: '/zuː/' }, { w: 'is', p: '/ɪz/' }, { w: 'easy', p: '/ˈiːzi/' }, { w: 'music', p: '/ˈmjuːzɪk/' }] },
+            'ʒ': { pure: 'zh', words: [{ w: 'usually', p: '/ˈjuːʒuəli/' }, { w: 'vision', p: '/ˈvɪʒn/' }, { w: 'measure', p: '/ˈmeʒə/' }, { w: 'pleasure', p: '/ˈpleʒə/' }] },
+            // 其他辅音
+            'm': { pure: 'm', words: [{ w: 'mother', p: '/ˈmʌðə/' }, { w: 'man', p: '/mæn/' }, { w: 'time', p: '/taɪm/' }, { w: 'summer', p: '/ˈsʌmə/' }] },
+            'n': { pure: 'n', words: [{ w: 'nose', p: '/nəʊz/' }, { w: 'no', p: '/nəʊ/' }, { w: 'sun', p: '/sʌn/' }, { w: 'dinner', p: '/ˈdɪnə/' }] },
+            'ŋ': { pure: 'ng', words: [{ w: 'sing', p: '/sɪŋ/' }, { w: 'long', p: '/lɒŋ/' }, { w: 'think', p: '/θɪŋk/' }, { w: 'morning', p: '/ˈmɔːnɪŋ/' }] },
+            'h': { pure: 'h', words: [{ w: 'hand', p: '/hænd/' }, { w: 'hat', p: '/hæt/' }, { w: 'behind', p: '/bɪˈhaɪnd/' }, { w: 'who', p: '/huː/' }] },
+            'l': { pure: 'l', words: [{ w: 'look', p: '/lʊk/' }, { w: 'light', p: '/laɪt/' }, { w: 'ball', p: '/bɔːl/' }, { w: 'yellow', p: '/ˈjeləʊ/' }] },
+            'r': { pure: 'r', words: [{ w: 'red', p: '/red/' }, { w: 'run', p: '/rʌn/' }, { w: 'car', p: '/kɑː/' }, { w: 'sorry', p: '/ˈsɒri/' }] },
+            'w': { pure: 'w', words: [{ w: 'water', p: '/ˈwɔːtə/' }, { w: 'we', p: '/wiː/' }, { w: 'window', p: '/ˈwɪndəʊ/' }, { w: 'away', p: '/əˈweɪ/' }] },
+            'j': { pure: 'y', words: [{ w: 'yes', p: '/jes/' }, { w: 'you', p: '/juː/' }, { w: 'music', p: '/ˈmjuːzɪk/' }, { w: 'new', p: '/njuː/' }] }
         };
 
         const container = document.getElementById('mainContainer');
         const floatingCard = document.getElementById('floatingCard');
-        const cardSymbol = document.getElementById('cardSymbol');
-        const cardWordText = document.getElementById('cardWordText');
-        const cardPhonetic = document.getElementById('cardPhonetic');
-        const cardWordBtn = document.getElementById('cardWordBtn');
+        const cardHeader = document.getElementById('cardHeader');
+        const wordList = document.getElementById('wordList');
         const allBtns = document.querySelectorAll('.symbol-btn');
 
         let currentActiveBtn = null;
 
         // 语音合成函数
-        function speak(text, isPureSound = false, symbol = '') {
+        function speak(text, isPureSound = false) {
             if (!window.speechSynthesis) {
                 alert('您的浏览器不支持语音合成，请使用 Chrome/Edge/Safari。');
                 return;
@@ -401,18 +461,18 @@
 
             const utterance = new SpeechSynthesisUtterance();
             
-            if (isPureSound && wordData[symbol]) {
-                // 技巧：纯前端无法直接读 IPA，这里传入其拼写近似音（如 'sh' 'ee'），并加快语速、拉长音调，模拟单音
-                utterance.text = wordData[symbol].ttsStr;
-                utterance.rate = 0.7; // 稍慢以便听清
-            } else {
+            if (isPureSound) {
+                // 纯音模拟：读 TTS 拼写，略慢
                 utterance.text = text;
-                utterance.rate = 0.9;
+                utterance.rate = 0.65; 
+            } else {
+                // 读完整单词
+                utterance.text = text;
+                utterance.rate = 0.85;
             }
 
-            utterance.lang = 'en-GB'; // 英式英语
+            utterance.lang = 'en-GB'; // 英式发音
             
-            // 尝试获取英式语音
             const voices = window.speechSynthesis.getVoices();
             const gbVoice = voices.find(v => v.lang === 'en-GB' || v.lang === 'en_GB');
             if (gbVoice) {
@@ -422,25 +482,43 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        // 定位并显示卡片
+        // 渲染单词列表并定位卡片
         function showCard(btn, sound) {
             const data = wordData[sound];
             if (!data) return;
 
-            // 更新卡片内容
-            cardSymbol.textContent = `/${sound}/`;
-            cardWordText.textContent = data.word;
-            cardPhonetic.textContent = data.phonetic;
+            // 渲染头部音标
+            cardHeader.textContent = `/${sound}/`;
+            
+            // 渲染单词列表
+            wordList.innerHTML = '';
+            data.words.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'word-item';
+                div.innerHTML = `
+                    <div class="word-info">
+                        <span class="word-text">${item.w}</span>
+                        <span class="word-phonetic">${item.p}</span>
+                    </div>
+                    <button class="play-btn" data-word="${item.w}">▶</button>
+                `;
+                // 绑定播放单词事件
+                div.querySelector('.play-btn').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    speak(item.w, false);
+                });
+                wordList.appendChild(div);
+            });
 
-            // 计算位置
+            // 计算位置并显示卡片
             const btnRect = btn.getBoundingClientRect();
             const containerRect = container.getBoundingClientRect();
 
-            // 使卡片水平居中对齐按钮，垂直在按钮正下方
+            // 为了让卡片更好地对齐，我们可以让卡片位于按钮正下方
             const left = (btnRect.left - containerRect.left) + (btnRect.width / 2) - (floatingCard.offsetWidth / 2);
             const top = (btnRect.top - containerRect.top) + btnRect.height + 10;
 
-            // 防止卡片超出容器左边或右边
+            // 防止卡片超出左右边界
             let finalLeft = left;
             if (finalLeft < 10) finalLeft = 10;
             if (finalLeft + floatingCard.offsetWidth > containerRect.width - 10) {
@@ -450,11 +528,10 @@
             floatingCard.style.left = `${finalLeft}px`;
             floatingCard.style.top = `${top}px`;
             
-            // 显示卡片
+            // 显示动画
             floatingCard.classList.add('active');
         }
 
-        // 隐藏卡片
         function hideCard() {
             floatingCard.classList.remove('active');
             if (currentActiveBtn) {
@@ -467,6 +544,7 @@
         allBtns.forEach(btn => {
             btn.addEventListener('click', function(e) {
                 const sound = this.getAttribute('data-sound');
+                const data = wordData[sound];
 
                 // 如果点击的是同一个且卡片已展开，则收起
                 if (currentActiveBtn === this && floatingCard.classList.contains('active')) {
@@ -474,41 +552,29 @@
                     return;
                 }
 
-                // 移除上一个高亮
-                if (currentActiveBtn) {
-                    currentActiveBtn.classList.remove('active');
-                }
+                if (currentActiveBtn) currentActiveBtn.classList.remove('active');
                 
-                // 高亮当前
                 this.classList.add('active');
                 currentActiveBtn = this;
 
-                // 1. 发音标的纯音
-                speak('', true, sound);
+                // 1. 发纯音
+                if (data) speak(data.pure, true);
 
-                // 2. 定位并显示单词卡片
-                // 稍微延迟一点点，确保卡片 DOM 尺寸计算准确
+                // 2. 显示卡片（由于卡片高度会根据单词数量变化，需在 DOM 渲染后计算位置）
                 requestAnimationFrame(() => {
                     showCard(this, sound);
                 });
             });
         });
 
-        // 绑定卡片内单词按钮的点击事件（发单词完整音）
-        cardWordBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // 防止点击事件冒泡导致卡片收起
-            const wordToSpeak = cardWordText.textContent;
-            speak(wordToSpeak, false);
-        });
-
-        // 点击页面空白处关闭卡片
+        // 点击空白处隐藏
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.symbol-btn') && !e.target.closest('.floating-card')) {
                 hideCard();
             }
         });
 
-        // 预加载语音引擎
+        // 预加载语音
         if (window.speechSynthesis) {
             window.speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = function() {
