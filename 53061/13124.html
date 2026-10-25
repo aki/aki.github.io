@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sounds of English - BBC 英式音标发音</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: #eef2f6;
+            border: 2px solid #5bc0de;
+            border-radius: 24px;
+            padding: 30px 35px 25px 35px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 400;
+            color: #1e2b3a;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #1e2b3a;
+            margin: 20px 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .row-label {
+            font-size: 1.1rem;
+            color: #2b3e50;
+            min-width: 110px;
+            font-weight: 400;
+            margin-right: 10px;
+        }
+
+        .symbol-btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 68px;
+            height: 68px;
+            background: white;
+            border: 2px solid #5bc0de;
+            border-radius: 12px;
+            font-size: 2rem;
+            font-weight: 400;
+            color: #1e2b3a;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+            font-family: 'Times New Roman', 'Segoe UI', serif;
+            line-height: 1;
+            padding: 5px;
+        }
+
+        .symbol-btn:hover {
+            background: #d9edf7;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(91, 192, 222, 0.3);
+        }
+
+        .symbol-btn:active {
+            transform: scale(0.95);
+            background: #bce8f1;
+        }
+
+        .subgroup {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .subgroup .symbol-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+        }
+
+        .tag {
+            font-size: 1rem;
+            color: #4a5c6e;
+            margin-left: 15px;
+            font-style: italic;
+            min-width: 80px;
+        }
+
+        .footer {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #6c7a8a;
+            margin-top: 20px;
+            border-top: 1px solid #cbd7e3;
+            padding-top: 15px;
+        }
+
+        .footer a {
+            color: #2b3e50;
+            text-decoration: none;
+            border-bottom: 1px dotted #2b3e50;
+        }
+
+        .audio-hint {
+            font-size: 0.85rem;
+            color: #7a8b9e;
+            margin-left: auto;
+            font-style: italic;
+        }
+
+        @media (max-width: 700px) {
+            .container { padding: 20px; }
+            .symbol-btn { width: 55px; height: 55px; font-size: 1.6rem; }
+            .subgroup .symbol-btn { width: 50px; height: 50px; font-size: 1.5rem; }
+            .row-label { min-width: 70px; font-size: 1rem; }
+            .tag { font-size: 0.9rem; margin-left: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Sounds of English</h1>
+
+    <!-- 元音部分 -->
+    <div class="section">
+        <h2>VOWELS</h2>
+
+        <!-- 短元音 -->
+        <div class="row">
+            <span class="row-label">短元音</span>
+            <div class="subgroup">
+                <button class="symbol-btn" data-sound="ɪ">ɪ</button>
+                <button class="symbol-btn" data-sound="ʊ">ʊ</button>
+                <button class="symbol-btn" data-sound="ʌ">ʌ</button>
+                <button class="symbol-btn" data-sound="ɒ">ɒ</button>
+                <button class="symbol-btn" data-sound="ə">ə</button>
+                <button class="symbol-btn" data-sound="e">e</button>
+                <button class="symbol-btn" data-sound="æ">æ</button>
+            </div>
+            <span class="tag">‘short’</span>
+        </div>
+
+        <!-- 长元音 -->
+        <div class="row">
+            <span class="row-label">长元音</span>
+            <div class="subgroup">
+                <button class="symbol-btn" data-sound="iː">iː</button>
+                <button class="symbol-btn" data-sound="uː">uː</button>
+                <button class="symbol-btn" data-sound="ɑː">ɑː</button>
+                <button class="symbol-btn" data-sound="ɔː">ɔː</button>
+                <button class="symbol-btn" data-sound="ɜː">ɜː</button>
+            </div>
+            <span class="tag">‘long’</span>
+        </div>
+
+        <!-- 双元音 -->
+        <div class="row">
+            <span class="row-label">双元音</span>
+            <div class="subgroup">
+                <button class="symbol-btn" data-sound="ɪə">ɪə</button>
+                <button class="symbol-btn" data-sound="ʊə">ʊə</button>
+                <button class="symbol-btn" data-sound="aɪ">aɪ</button>
+                <button class="symbol-btn" data-sound="ɔɪ">ɔɪ</button>
+                <button class="symbol-btn" data-sound="əʊ">əʊ</button>
+                <button class="symbol-btn" data-sound="eə">eə</button>
+                <button class="symbol-btn" data-sound="aʊ">aʊ</button>
+                <button class="symbol-btn" data-sound="eɪ">eɪ</button>
+            </div>
+            <span class="tag">diphthongs</span>
+        </div>
+    </div>
+
+    <!-- 辅音部分 -->
+    <div class="section">
+        <h2>CONSONANTS</h2>
+
+        <!-- 清辅音 -->
+        <div class="row">
+            <span class="row-label">清辅音</span>
+            <div class="subgroup">
+                <button class="symbol-btn" data-sound="p">p</button>
+                <button class="symbol-btn" data-sound="t">t</button>
+                <button class="symbol-btn" data-sound="tʃ">tʃ</button>
+                <button class="symbol-btn" data-sound="k">k</button>
+                <button class="symbol-btn" data-sound="f">f</button>
+                <button class="symbol-btn" data-sound="θ">θ</button>
+                <button class="symbol-btn" data-sound="s">s</button>
+                <button class="symbol-btn" data-sound="ʃ">ʃ</button>
+            </div>
+            <span class="tag">voiceless</span>
+        </div>
+
+        <!-- 浊辅音 -->
+        <div class="row">
+            <span class="row-label">浊辅音</span>
+            <div class="subgroup">
+                <button class="symbol-btn" data-sound="b">b</button>
+                <button class="symbol-btn" data-sound="d">d</button>
+                <button class="symbol-btn" data-sound="dʒ">dʒ</button>
+                <button class="symbol-btn" data-sound="g">g</button>
+                <button class="symbol-btn" data-sound="v">v</button>
+                <button class="symbol-btn" data-sound="ð">ð</button>
+                <button class="symbol-btn" data-sound="z">z</button>
+                <button class="symbol-btn" data-sound="ʒ">ʒ</button>
+            </div>
+            <span class="tag">voiced</span>
+        </div>
+
+        <!-- 其他辅音 -->
+        <div class="row">
+            <span class="row-label">其他辅音</span>
+            <div class="subgroup">
+                <button class="symbol-btn" data-sound="m">m</button>
+                <button class="symbol-btn" data-sound="n">n</button>
+                <button class="symbol-btn" data-sound="ŋ">ŋ</button>
+                <button class="symbol-btn" data-sound="h">h</button>
+                <button class="symbol-btn" data-sound="l">l</button>
+                <button class="symbol-btn" data-sound="r">r</button>
+                <button class="symbol-btn" data-sound="w">w</button>
+                <button class="symbol-btn" data-sound="j">j</button>
+            </div>
+            <span class="tag">other</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span class="audio-hint">点击音标即可收听 BBC 标准发音</span>
+        <br>
+        <span>参考: <a href="https://www.bbc.co.uk/learningenglish/english/features/pronunciation" target="_blank">BBC Learning English</a> · 示例单词与发音指导</span>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // 每个音标对应的 BBC 示例单词（基于 BBC Learning English 及超星页面参考）
+        // 点击时先播放对应单词发音，让用户听到该音标在真实单词中的读音
+        const wordMap = {
+            // 短元音
+            'ɪ': 'kit',      // kit /kɪt/
+            'ʊ': 'book',     // book /bʊk/
+            'ʌ': 'cup',      // cup /kʌp/
+            'ɒ': 'lot',      // lot /lɒt/
+            'ə': 'about',    // about /əˈbaʊt/
+            'e': 'bed',      // bed /bed/
+            'æ': 'cat',      // cat /kæt/
+            // 长元音
+            'iː': 'see',     // see /siː/
+            'uː': 'food',    // food /fuːd/
+            'ɑː': 'car',     // car /kɑː/
+            'ɔː': 'ball',    // ball /bɔːl/
+            'ɜː': 'bird',    // bird /bɜːd/
+            // 双元音
+            'ɪə': 'near',    // near /nɪə/
+            'ʊə': 'tour',    // tour /tʊə/
+            'aɪ': 'time',    // time /taɪm/
+            'ɔɪ': 'boy',     // boy /bɔɪ/
+            'əʊ': 'go',      // go /ɡəʊ/
+            'eə': 'hair',    // hair /heə/
+            'aʊ': 'now',     // now /naʊ/
+            'eɪ': 'name',    // name /neɪm/
+            // 清辅音
+            'p': 'pen',
+            't': 'ten',
+            'tʃ': 'chair',
+            'k': 'key',
+            'f': 'fish',
+            'θ': 'think',
+            's': 'sun',
+            'ʃ': 'she',
+            // 浊辅音
+            'b': 'bag',
+            'd': 'day',
+            'dʒ': 'jump',
+            'g': 'girl',
+            'v': 'very',
+            'ð': 'this',
+            'z': 'zoo',
+            'ʒ': 'usually',
+            // 其他辅音
+            'm': 'mother',
+            'n': 'nose',
+            'ŋ': 'sing',
+            'h': 'hand',
+            'l': 'look',
+            'r': 'red',
+            'w': 'water',
+            'j': 'yes'
+        };
+
+        // 因为纯前端没有音标音频文件，这里使用 Web Speech API 的 TTS 来朗读示例单词
+        // 选择英式英语 (en-GB) 来模拟 BBC 发音
+        function speak(word) {
+            if (!word) return;
+            if (!window.speechSynthesis) {
+                alert('您的浏览器不支持语音合成，建议使用 Chrome / Edge / Safari。');
+                return;
+            }
+            // 取消当前可能正在播放的语音
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-GB'; // 英式英语
+            utterance.rate = 0.85;    // 稍慢，便于听清
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            // 尝试选择英式语音
+            const voices = window.speechSynthesis.getVoices();
+            const gbVoice = voices.find(v => v.lang === 'en-GB' || v.lang === 'en_GB');
+            if (gbVoice) {
+                utterance.voice = gbVoice;
+            }
+            // 如果找不到英式语音，使用默认的 en 即可
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 绑定点击事件
+        document.querySelectorAll('.symbol-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const sound = this.getAttribute('data-sound');
+                const word = wordMap[sound];
+                if (word) {
+                    speak(word);
+                } else {
+                    // 如果没有对应单词，尝试直接读符号（但符号无法读），给出提示
+                    console.warn('No word mapped for sound:', sound);
+                    // 回退：直接读字符本身（效果不好，所以尽量确保映射完整）
+                }
+            });
+        });
+
+        // 预加载语音列表（某些浏览器需要）
+        if (window.speechSynthesis) {
+            window.speechSynthesis.getVoices();
+            // 当语音列表变化时重新加载
+            window.speechSynthesis.onvoiceschanged = function() {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    })();
+</script>
+</body>
+</html>
