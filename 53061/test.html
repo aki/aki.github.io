@@ -15,15 +15,16 @@
   .tab.active { background:var(--accent); color:#0f172a; border-color:var(--accent); font-weight:600; }
   .panel { display:none; }
   .panel.active { display:block; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:8px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:8px; }
   .card { background:var(--card); border:1px solid #334155; border-radius:12px; padding:10px; text-align:center; cursor:pointer; transition:.15s; }
   .card:hover { border-color:var(--accent); transform:translateY(-2px); }
   .card .ipa { font-size:22px; font-weight:600; color:var(--accent); }
-  .card .word { font-size:12px; color:var(--muted); margin-top:4px; }
+  .card .word { font-size:13px; color:var(--muted); margin-top:4px; }
+  u { text-decoration-color:var(--accent); text-decoration-thickness:2px; text-underline-offset:3px; color:var(--text); font-weight:600; }
   .group-title { font-size:14px; color:var(--muted); margin:18px 0 8px; border-left:3px solid var(--accent); padding-left:8px; }
   .drill { background:var(--card); border:1px solid #334155; border-radius:16px; padding:20px; max-width:520px; }
   .pair { display:flex; gap:12px; justify-content:center; margin:20px 0; }
-  .opt { flex:1; padding:18px; border-radius:12px; background:#0f172a; border:2px solid #334155; font-size:20px; cursor:pointer; text-align:center; }
+  .opt { flex:1; padding:18px; border-radius:12px; background:#0f172a; border:2px solid #334155; font-size:22px; cursor:pointer; text-align:center; }
   .opt:hover { border-color:var(--accent); }
   .opt.correct { border-color:var(--ok); background:rgba(34,197,94,.15); }
   .opt.wrong { border-color:var(--bad); background:rgba(239,68,68,.15); }
@@ -42,7 +43,7 @@
 <body>
 
 <h1>BBC 音标训练器</h1>
-<div class="sub">44 音素 · 最小对立听辨 · 录音对比 · 间隔复习</div>
+<div class="sub">44 音素 · 下划线标出发音字母 · 最小对立听辨 · 录音对比</div>
 
 <div class="tabs">
   <div class="tab active" data-tab="chart">音标表</div>
@@ -50,12 +51,8 @@
   <div class="tab" data-tab="record">录音对比</div>
 </div>
 
-<!-- 音标表 -->
-<div class="panel active" id="panel-chart">
-  <div id="chart"></div>
-</div>
+<div class="panel active" id="panel-chart"><div id="chart"></div></div>
 
-<!-- 听辨练习 -->
 <div class="panel" id="panel-drill">
   <div class="drill">
     <div class="hint">听发音，选出你听到的单词（点播放，再点选项）</div>
@@ -72,13 +69,10 @@
   </div>
 </div>
 
-<!-- 录音对比 -->
 <div class="panel" id="panel-record">
   <div class="drill">
     <div class="hint">选一个音标，点“播放示范”，再点“录音”跟读，最后回放对比</div>
-    <div class="row">
-      <select id="recSelect" class="btn ghost" style="padding:10px"></select>
-    </div>
+    <div class="row"><select id="recSelect" class="btn ghost" style="padding:10px"></select></div>
     <div class="target" id="recTarget">/ɪ/</div>
     <div class="hint" id="recWord">ship</div>
     <div class="row">
@@ -86,67 +80,70 @@
       <button class="btn ghost" id="recBtn">● 录音</button>
       <button class="btn ghost" id="stopBtn" disabled>■ 停止</button>
     </div>
-    <div class="rec-row">
-      <span class="hint">我的录音：</span>
-      <audio id="myAudio" controls></audio>
-    </div>
+    <div class="rec-row"><span class="hint">我的录音：</span><audio id="myAudio" controls></audio></div>
     <div class="feedback" id="recFeedback"></div>
   </div>
 </div>
 
 <script>
-// ---------- 数据：44 音素 + 锚词 ----------
+// word: 完整单词；u: 要加下划线的片段（发该音标的字母）
 const VOWELS = [
-  {ipa:'/ɪ/', word:'ship', group:'短元音'},
-  {ipa:'/ʊ/', word:'book', group:'短元音'},
-  {ipa:'/ɒ/', word:'hot', group:'短元音'},
-  {ipa:'/ʌ/', word:'cup', group:'短元音'},
-  {ipa:'/ə/', word:'about', group:'短元音'},
-  {ipa:'/e/', word:'bed', group:'短元音'},
-  {ipa:'/æ/', word:'cat', group:'短元音'},
-  {ipa:'/iː/', word:'sheep', group:'长元音'},
-  {ipa:'/uː/', word:'food', group:'长元音'},
-  {ipa:'/ɔː/', word:'door', group:'长元音'},
-  {ipa:'/ɑː/', word:'car', group:'长元音'},
-  {ipa:'/ɜː/', word:'bird', group:'长元音'},
-  {ipa:'/ɪə/', word:'here', group:'双元音'},
-  {ipa:'/ʊə/', word:'tour', group:'双元音'},
-  {ipa:'/eə/', word:'hair', group:'双元音'},
-  {ipa:'/eɪ/', word:'day', group:'双元音'},
-  {ipa:'/ɔɪ/', word:'boy', group:'双元音'},
-  {ipa:'/aɪ/', word:'my', group:'双元音'},
-  {ipa:'/aʊ/', word:'now', group:'双元音'},
-  {ipa:'/əʊ/', word:'go', group:'双元音'},
+  {ipa:'/ɪ/', word:'ship', u:'i', group:'短元音'},
+  {ipa:'/ʊ/', word:'book', u:'oo', group:'短元音'},
+  {ipa:'/ɒ/', word:'hot', u:'o', group:'短元音'},
+  {ipa:'/ʌ/', word:'cup', u:'u', group:'短元音'},
+  {ipa:'/ə/', word:'about', u:'a', group:'短元音'},
+  {ipa:'/e/', word:'bed', u:'e', group:'短元音'},
+  {ipa:'/æ/', word:'cat', u:'a', group:'短元音'},
+  {ipa:'/iː/', word:'sheep', u:'ee', group:'长元音'},
+  {ipa:'/uː/', word:'food', u:'oo', group:'长元音'},
+  {ipa:'/ɔː/', word:'door', u:'oor', group:'长元音'},
+  {ipa:'/ɑː/', word:'car', u:'ar', group:'长元音'},
+  {ipa:'/ɜː/', word:'bird', u:'ir', group:'长元音'},
+  {ipa:'/ɪə/', word:'here', u:'ere', group:'双元音'},
+  {ipa:'/ʊə/', word:'tour', u:'our', group:'双元音'},
+  {ipa:'/eə/', word:'hair', u:'air', group:'双元音'},
+  {ipa:'/eɪ/', word:'day', u:'ay', group:'双元音'},
+  {ipa:'/ɔɪ/', word:'boy', u:'oy', group:'双元音'},
+  {ipa:'/aɪ/', word:'my', u:'y', group:'双元音'},
+  {ipa:'/aʊ/', word:'now', u:'ow', group:'双元音'},
+  {ipa:'/əʊ/', word:'go', u:'o', group:'双元音'},
 ];
 const CONSONANTS = [
-  {ipa:'/p/', word:'pen', group:'清辅音'},
-  {ipa:'/t/', word:'tea', group:'清辅音'},
-  {ipa:'/tʃ/', word:'chair', group:'清辅音'},
-  {ipa:'/k/', word:'key', group:'清辅音'},
-  {ipa:'/f/', word:'fish', group:'清辅音'},
-  {ipa:'/θ/', word:'think', group:'清辅音'},
-  {ipa:'/s/', word:'see', group:'清辅音'},
-  {ipa:'/ʃ/', word:'she', group:'清辅音'},
-  {ipa:'/b/', word:'book', group:'浊辅音'},
-  {ipa:'/d/', word:'dog', group:'浊辅音'},
-  {ipa:'/dʒ/', word:'job', group:'浊辅音'},
-  {ipa:'/g/', word:'go', group:'浊辅音'},
-  {ipa:'/v/', word:'very', group:'浊辅音'},
-  {ipa:'/ð/', word:'this', group:'浊辅音'},
-  {ipa:'/z/', word:'zoo', group:'浊辅音'},
-  {ipa:'/ʒ/', word:'measure', group:'浊辅音'},
-  {ipa:'/m/', word:'man', group:'其他辅音'},
-  {ipa:'/n/', word:'no', group:'其他辅音'},
-  {ipa:'/ŋ/', word:'sing', group:'其他辅音'},
-  {ipa:'/h/', word:'hat', group:'其他辅音'},
-  {ipa:'/l/', word:'leg', group:'其他辅音'},
-  {ipa:'/r/', word:'red', group:'其他辅音'},
-  {ipa:'/w/', word:'we', group:'其他辅音'},
-  {ipa:'/j/', word:'yes', group:'其他辅音'},
+  {ipa:'/p/', word:'pen', u:'p', group:'清辅音'},
+  {ipa:'/t/', word:'tea', u:'t', group:'清辅音'},
+  {ipa:'/tʃ/', word:'chair', u:'ch', group:'清辅音'},
+  {ipa:'/k/', word:'key', u:'k', group:'清辅音'},
+  {ipa:'/f/', word:'fish', u:'f', group:'清辅音'},
+  {ipa:'/θ/', word:'think', u:'th', group:'清辅音'},
+  {ipa:'/s/', word:'see', u:'s', group:'清辅音'},
+  {ipa:'/ʃ/', word:'she', u:'sh', group:'清辅音'},
+  {ipa:'/b/', word:'book', u:'b', group:'浊辅音'},
+  {ipa:'/d/', word:'dog', u:'d', group:'浊辅音'},
+  {ipa:'/dʒ/', word:'job', u:'j', group:'浊辅音'},
+  {ipa:'/g/', word:'go', u:'g', group:'浊辅音'},
+  {ipa:'/v/', word:'very', u:'v', group:'浊辅音'},
+  {ipa:'/ð/', word:'this', u:'th', group:'浊辅音'},
+  {ipa:'/z/', word:'zoo', u:'z', group:'浊辅音'},
+  {ipa:'/ʒ/', word:'measure', u:'s', group:'浊辅音'},
+  {ipa:'/m/', word:'man', u:'m', group:'其他辅音'},
+  {ipa:'/n/', word:'no', u:'n', group:'其他辅音'},
+  {ipa:'/ŋ/', word:'sing', u:'ng', group:'其他辅音'},
+  {ipa:'/h/', word:'hat', u:'h', group:'其他辅音'},
+  {ipa:'/l/', word:'leg', u:'l', group:'其他辅音'},
+  {ipa:'/r/', word:'red', u:'r', group:'其他辅音'},
+  {ipa:'/w/', word:'we', u:'w', group:'其他辅音'},
+  {ipa:'/j/', word:'yes', u:'y', group:'其他辅音'},
 ];
 const ALL = [...VOWELS, ...CONSONANTS];
 
-// ---------- 最小对立对（用于听辨） ----------
+// 把单词中 u 片段包成 <u>，只替换第一次出现
+function markWord(item) {
+  const i = item.word.indexOf(item.u);
+  if (i < 0) return item.word;
+  return item.word.slice(0,i) + '<u>' + item.u + '</u>' + item.word.slice(i + item.u.length);
+}
+
 const PAIRS = [
   {a:'ship', b:'sheep', ipaA:'/ɪ/', ipaB:'/iː/'},
   {a:'sit', b:'seat', ipaA:'/ɪ/', ipaB:'/iː/'},
@@ -165,7 +162,7 @@ const PAIRS = [
   {a:'light', b:'right', ipaA:'/l/', ipaB:'/r/'},
 ];
 
-// ---------- 渲染音标表 ----------
+// 渲染音标表
 const chart = document.getElementById('chart');
 const groups = [...new Set(ALL.map(x=>x.group))];
 groups.forEach(g => {
@@ -178,14 +175,13 @@ groups.forEach(g => {
   ALL.filter(x=>x.group===g).forEach(item => {
     const card = document.createElement('div');
     card.className = 'card';
-    card.innerHTML = `<div class="ipa">${item.ipa}</div><div class="word">${item.word}</div>`;
+    card.innerHTML = `<div class="ipa">${item.ipa}</div><div class="word">${markWord(item)}</div>`;
     card.onclick = () => speak(item.word);
     grid.appendChild(card);
   });
   chart.appendChild(grid);
 });
 
-// ---------- 语音合成 ----------
 function speak(text, rate=0.85) {
   if (!window.speechSynthesis) { alert('当前浏览器不支持语音合成'); return; }
   speechSynthesis.cancel();
@@ -193,14 +189,13 @@ function speak(text, rate=0.85) {
   u.lang = 'en-GB';
   u.rate = rate;
   const voices = speechSynthesis.getVoices();
-  const gb = voices.find(v=>v.lang==='en-GB' && /female|Sonia|Libby/i.test(v.name)) 
-          || voices.find(v=>v.lang==='en-GB') 
+  const gb = voices.find(v=>v.lang==='en-GB' && /female|Sonia|Libby/i.test(v.name))
+          || voices.find(v=>v.lang==='en-GB')
           || voices.find(v=>v.lang.startsWith('en'));
   if (gb) u.voice = gb;
   speechSynthesis.speak(u);
 }
 
-// ---------- Tab 切换 ----------
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
@@ -210,7 +205,6 @@ document.querySelectorAll('.tab').forEach(tab => {
   };
 });
 
-// ---------- 听辨练习 ----------
 let current = null, answered = false, correctCount = 0, totalCount = 0;
 
 function newQuestion() {
@@ -226,22 +220,23 @@ function newQuestion() {
     word: swap ? p.b : p.a,
     ipa: swap ? p.ipaB : p.ipaA,
     a: swap ? p.b : p.a,
-    b: swap ? p.a : p.b
+    b: swap ? p.a : p.b,
+    ipaA: swap ? p.ipaB : p.ipaA,
+    ipaB: swap ? p.ipaA : p.ipaB
   };
-  document.getElementById('optA').textContent = current.a;
-  document.getElementById('optB').textContent = current.b;
+  // 听辨选项里也标下划线（用 ALL 里对应词条找 u 片段）
+  const itemA = ALL.find(x=>x.word===current.a);
+  const itemB = ALL.find(x=>x.word===current.b);
+  document.getElementById('optA').innerHTML = (itemA?markWord(itemA):current.a) + `<div style="font-size:12px;color:var(--muted);margin-top:4px">${current.ipaA}</div>`;
+  document.getElementById('optB').innerHTML = (itemB?markWord(itemB):current.b) + `<div style="font-size:12px;color:var(--muted);margin-top:4px">${current.ipaB}</div>`;
 }
 
-document.getElementById('playBtn').onclick = () => {
-  if (current) speak(current.word, 0.8);
-};
-
+document.getElementById('playBtn').onclick = () => { if (current) speak(current.word, 0.8); };
 document.getElementById('nextBtn').onclick = newQuestion;
 
 function answer(choice) {
   if (!current || answered) return;
-  answered = true;
-  totalCount++;
+  answered = true; totalCount++;
   const fb = document.getElementById('feedback');
   const optA = document.getElementById('optA');
   const optB = document.getElementById('optB');
@@ -263,7 +258,6 @@ function answer(choice) {
 document.getElementById('optA').onclick = () => answer('A');
 document.getElementById('optB').onclick = () => answer('B');
 
-// ---------- 录音对比 ----------
 const recSelect = document.getElementById('recSelect');
 ALL.forEach((item, i) => {
   const o = document.createElement('option');
@@ -277,17 +271,14 @@ let mediaRecorder = null, chunks = [], stream = null;
 function updateRecordTarget() {
   const item = ALL[recSelect.value];
   document.getElementById('recTarget').textContent = item.ipa;
-  document.getElementById('recWord').textContent = item.word;
+  document.getElementById('recWord').innerHTML = markWord(item);
   document.getElementById('recFeedback').textContent = '';
   document.getElementById('myAudio').src = '';
 }
 recSelect.onchange = updateRecordTarget;
 updateRecordTarget();
 
-document.getElementById('playDemo').onclick = () => {
-  const item = ALL[recSelect.value];
-  speak(item.word, 0.75);
-};
+document.getElementById('playDemo').onclick = () => speak(ALL[recSelect.value].word, 0.75);
 
 document.getElementById('recBtn').onclick = async () => {
   try {
@@ -319,7 +310,6 @@ document.getElementById('stopBtn').onclick = () => {
   document.getElementById('recFeedback').style.color = 'var(--muted)';
 };
 
-// 预加载语音
 if (window.speechSynthesis) speechSynthesis.getVoices();
 newQuestion();
 </script>
