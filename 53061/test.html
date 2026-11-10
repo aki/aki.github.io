@@ -38,12 +38,13 @@
   audio { height:36px; }
   .target { font-size:28px; text-align:center; color:var(--accent); font-weight:700; margin:8px 0; }
   .hint { font-size:13px; color:var(--muted); text-align:center; }
+  .loading { color:var(--accent); font-size:13px; }
 </style>
 </head>
 <body>
 
 <h1>BBC 音标训练器</h1>
-<div class="sub">44 音素 · 下划线标出发音字母 · 最小对立听辨 · 录音对比</div>
+<div class="sub">44 音素 · 下划线标出发音字母 · 百度英音发音 · 最小对立听辨 · 录音对比</div>
 
 <div class="tabs">
   <div class="tab active" data-tab="chart">音标表</div>
@@ -63,6 +64,7 @@
     <div class="row" style="justify-content:center">
       <button class="btn" id="playBtn">▶ 播放</button>
       <button class="btn ghost" id="nextBtn">下一题</button>
+      <span class="loading" id="playStatus"></span>
     </div>
     <div class="feedback" id="feedback"></div>
     <div class="score" id="score">正确 0 / 0</div>
@@ -79,6 +81,7 @@
       <button class="btn" id="playDemo">▶ 播放示范</button>
       <button class="btn ghost" id="recBtn">● 录音</button>
       <button class="btn ghost" id="stopBtn" disabled>■ 停止</button>
+      <span class="loading" id="demoStatus"></span>
     </div>
     <div class="rec-row"><span class="hint">我的录音：</span><audio id="myAudio" controls></audio></div>
     <div class="feedback" id="recFeedback"></div>
@@ -137,11 +140,38 @@ const CONSONANTS = [
 ];
 const ALL = [...VOWELS, ...CONSONANTS];
 
-// 把单词中 u 片段包成 <u>，只替换第一次出现
 function markWord(item) {
   const i = item.word.indexOf(item.u);
   if (i < 0) return item.word;
   return item.word.slice(0,i) + '<u>' + item.u + '</u>' + item.word.slice(i + item.u.length);
+}
+
+// ---------- 百度发音 ----------
+let currentAudio = null;
+let playSeq = 0;
+
+function baiduSpeak(text, statusEl) {
+  // 取消上一次播放
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  const seq = ++playSeq;
+  const url = 'https://fanyi.baidu.com/gettts?lan=uk&text=' + encodeURIComponent(text) + '&spd=3&source=web';
+  if (statusEl) statusEl.textContent = '加载中…';
+  const audio = new Audio(url);
+  audio.crossOrigin = 'anonymous';
+  currentAudio = audio;
+  audio.oncanplaythrough = () => { if (statusEl && seq === playSeq) statusEl.textContent = ''; };
+  audio.onended = () => { if (statusEl && seq === playSeq) statusEl.textContent = ''; };
+  audio.onerror = () => {
+    if (statusEl && seq === playSeq) statusEl.textContent = '发音加载失败（网络或接口限制）';
+    currentAudio = null;
+  };
+  const p = audio.play();
+  if (p && p.catch) {
+    p.catch(() => {
+      if (statusEl && seq === playSeq) statusEl.textContent = '播放被拦截，请再点一次';
+    });
+  }
+  return audio;
 }
 
 const PAIRS = [
@@ -162,7 +192,6 @@ const PAIRS = [
   {a:'light', b:'right', ipaA:'/l/', ipaB:'/r/'},
 ];
 
-// 渲染音标表
 const chart = document.getElementById('chart');
 const groups = [...new Set(ALL.map(x=>x.group))];
 groups.forEach(g => {
@@ -176,25 +205,11 @@ groups.forEach(g => {
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `<div class="ipa">${item.ipa}</div><div class="word">${markWord(item)}</div>`;
-    card.onclick = () => speak(item.word);
+    card.onclick = () => baiduSpeak(item.word, null);
     grid.appendChild(card);
   });
   chart.appendChild(grid);
 });
-
-function speak(text, rate=0.85) {
-  if (!window.speechSynthesis) { alert('当前浏览器不支持语音合成'); return; }
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-GB';
-  u.rate = rate;
-  const voices = speechSynthesis.getVoices();
-  const gb = voices.find(v=>v.lang==='en-GB' && /female|Sonia|Libby/i.test(v.name))
-          || voices.find(v=>v.lang==='en-GB')
-          || voices.find(v=>v.lang.startsWith('en'));
-  if (gb) u.voice = gb;
-  speechSynthesis.speak(u);
-}
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.onclick = () => {
@@ -213,6 +228,7 @@ function newQuestion() {
   document.getElementById('optA').className = 'opt';
   document.getElementById('optB').className = 'opt';
   document.getElementById('playBtn').disabled = false;
+  document.getElementById('playStatus').textContent = '';
   const p = PAIRS[Math.floor(Math.random()*PAIRS.length)];
   const swap = Math.random() < 0.5;
   current = {
@@ -224,14 +240,15 @@ function newQuestion() {
     ipaA: swap ? p.ipaB : p.ipaA,
     ipaB: swap ? p.ipaA : p.ipaB
   };
-  // 听辨选项里也标下划线（用 ALL 里对应词条找 u 片段）
   const itemA = ALL.find(x=>x.word===current.a);
   const itemB = ALL.find(x=>x.word===current.b);
   document.getElementById('optA').innerHTML = (itemA?markWord(itemA):current.a) + `<div style="font-size:12px;color:var(--muted);margin-top:4px">${current.ipaA}</div>`;
   document.getElementById('optB').innerHTML = (itemB?markWord(itemB):current.b) + `<div style="font-size:12px;color:var(--muted);margin-top:4px">${current.ipaB}</div>`;
 }
 
-document.getElementById('playBtn').onclick = () => { if (current) speak(current.word, 0.8); };
+document.getElementById('playBtn').onclick = () => {
+  if (current) baiduSpeak(current.word, document.getElementById('playStatus'));
+};
 document.getElementById('nextBtn').onclick = newQuestion;
 
 function answer(choice) {
@@ -273,12 +290,15 @@ function updateRecordTarget() {
   document.getElementById('recTarget').textContent = item.ipa;
   document.getElementById('recWord').innerHTML = markWord(item);
   document.getElementById('recFeedback').textContent = '';
+  document.getElementById('demoStatus').textContent = '';
   document.getElementById('myAudio').src = '';
 }
 recSelect.onchange = updateRecordTarget;
 updateRecordTarget();
 
-document.getElementById('playDemo').onclick = () => speak(ALL[recSelect.value].word, 0.75);
+document.getElementById('playDemo').onclick = () => {
+  baiduSpeak(ALL[recSelect.value].word, document.getElementById('demoStatus'));
+};
 
 document.getElementById('recBtn').onclick = async () => {
   try {
@@ -310,7 +330,6 @@ document.getElementById('stopBtn').onclick = () => {
   document.getElementById('recFeedback').style.color = 'var(--muted)';
 };
 
-if (window.speechSynthesis) speechSynthesis.getVoices();
 newQuestion();
 </script>
 </body>
